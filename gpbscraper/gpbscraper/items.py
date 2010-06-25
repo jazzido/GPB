@@ -15,7 +15,9 @@ class ProveedorItem(Item):
 
 class CompraItem(Item):
     orden_compra = Field()
+    # TODO aca un input processor que parsee la fecha
     fecha = Field()
+    # TODO aca un input processor que convierta los strings tipo "12.123,00" a un numero normal
     importe = Field()
     suministro = Field()
     proveedor = Field()

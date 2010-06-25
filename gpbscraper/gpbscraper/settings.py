@@ -15,6 +15,6 @@ BOT_VERSION = '1.0'
 
 SPIDER_MODULES = ['gpbscraper.spiders']
 NEWSPIDER_MODULE = 'gpbscraper.spiders'
-DEFAULT_ITEM_CLASS = 'gpbscraper.items.GpbscraperItem'
+DEFAULT_ITEM_CLASS = 'gpbscraper.items.CompraItem'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
