@@ -5,7 +5,20 @@
 
 from scrapy.item import Item, Field
 
-class GpbscraperItem(Item):
+class ProveedorItem(Item):
     # define the fields for your item here like:
     # name = Field()
-    pass
+    nombre = Field()
+    domicilio = Field()
+    cuit = Field()
+    localidad = Field()
+
+class CompraItem(Item):
+    orden_compra = Field()
+    fecha = Field()
+    importe = Field()
+    suministro = Field()
+    proveedor = Field()
+    destino = Field()
+    # XXX lista de dicts?
+    compra_lineas = Field()
