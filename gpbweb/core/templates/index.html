@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load objlink %}
+{% load currency %}
+
+{% block content %}
+<h1>Gasto Público Bahiense</h1>
+<hr>
+<h2 class="alt">En lo que va del mes de <strong>{% now "F \de Y" %}</strong>, <a href="http://www.bahiablanca.gov.ar">la Municipalidad</a> gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
+<hr>
+<div class="span-10 colborder">
+  <h5>Las 5 reparticiones que más gastaron en {% now "F \de Y" %}</h6>
+  <table class="tabla-sumario">
+    <caption>Las 5 reparticiones que más gastaron en {% now "F \de Y" %}</caption>
+    <thead>
+      <tr>
+	<th>Reparticion</th>
+	<th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in reparticiones|slice:":5" %}
+      <tr>
+	<td>{{r|objlink}}</td>
+	<td><strong>{{r.total_compras|currency}}</strong></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="span-13 last">
+  <h5>Los 5 proveedores más beneficiados en {% now "F \de Y" %}</h5>
+  <table class="tabla-sumario">
+    <caption>Los 5 proveedores más beneficiados en {% now "F \de Y" %}</caption>
+    <thead>
+      <tr>
+	<th>Proveedor</th>
+	<th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in proveedores|slice:":5" %}
+      <tr>
+	<td>{{p|objlink}}</td>
+	<td><strong>{{p.total_compras|currency}}</strong></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<!--div class="span-10 colborder">
+  <h3>Gastos del año 2010</h3>
+  <img src="http://chart.apis.google.com/chart?cht=lc&chs=500x250&chd=e:AAYT..e9bKIb&chxt=x&chxl=0:|2010-01|2010-02|2010-03|2010-04|2010-05|2010-06">
+</div -->
+{% endblock %}
+

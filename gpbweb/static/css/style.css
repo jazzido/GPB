@@ -1,0 +1,7 @@
+div.container {
+    margin-top: 20px;
+}
+
+table.tabla-sumario caption, table.tabla-sumario thead {
+    display: none;
+}
