@@ -94,7 +94,6 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     'south',
-    'GChartWrapper.charts',
     'annoying',
     'django_extensions',
     'gpbweb.core',

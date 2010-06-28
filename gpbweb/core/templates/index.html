@@ -2,6 +2,30 @@
 {% load objlink %}
 {% load currency %}
 
+{% block extrajs %}
+<script type="text/javascript">
+
+  function draw_table() {
+    {{ gasto_por_mes_datatable_js|safe }}
+    var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM'});
+    date_formatter.format(gasto_por_mes, 0);
+    var number_formatter = new google.visualization.NumberFormat({prefix: '$', negativeColor: 'red', negativeParens: true, groupingSymbol:'.', decimalSymbol:','});
+    number_formatter = number_formatter.format(gasto_por_mes, 1);
+
+    var linechart = new google.visualization.LineChart(document.getElementById('table_div_jscode'));
+    linechart.draw(gasto_por_mes, {showRowNumber: true});
+  
+    {{reparticion_datatable_js|safe}}
+    var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
+    piechart.draw(reparticion_gastos, {width: 450, height: 300, title: 'Gastos por reparticion'});
+
+  }
+
+  google.setOnLoadCallback(draw_table);
+
+</script>
+{% endblock %}
+
 {% block content %}
 <h1>Gasto Público Bahiense</h1>
 <hr>
@@ -47,9 +71,14 @@
     </tbody>
   </table>
 </div>
-<!--div class="span-10 colborder">
+
+<div class="span-10">
   <h3>Gastos del año 2010</h3>
-  <img src="http://chart.apis.google.com/chart?cht=lc&chs=500x250&chd=e:AAYT..e9bKIb&chxt=x&chxl=0:|2010-01|2010-02|2010-03|2010-04|2010-05|2010-06">
-</div -->
+  <div id="table_div_jscode" style="height: 200px; width: 100%"></div>
+</div>
+<div class="span-10 last">
+  <h3>Gastos por Repartición</h3>
+  <div id="piechart_div"></div> 
+</div>
 {% endblock %}
 
