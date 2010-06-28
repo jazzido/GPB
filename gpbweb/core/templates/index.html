@@ -17,7 +17,7 @@
   
     {{reparticion_datatable_js|safe}}
     var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
-    piechart.draw(reparticion_gastos, {width: 450, height: 300, title: 'Gastos por reparticion'});
+    piechart.draw(reparticion_gastos, {width: 450, height: 300 });
 
   }
 
@@ -33,6 +33,7 @@
 <hr>
 <div class="span-10 colborder">
   <h5>Las 5 reparticiones que más gastaron en {% now "F \de Y" %}</h6>
+  <div id="piechart_div"></div> 
   <table class="tabla-sumario">
     <caption>Las 5 reparticiones que más gastaron en {% now "F \de Y" %}</caption>
     <thead>
@@ -72,13 +73,10 @@
   </table>
 </div>
 
-<div class="span-10">
+<div class="span-20 last">
   <h3>Gastos del año 2010</h3>
   <div id="table_div_jscode" style="height: 200px; width: 100%"></div>
 </div>
-<div class="span-10 last">
-  <h3>Gastos por Repartición</h3>
-  <div id="piechart_div"></div> 
-</div>
+
 {% endblock %}
 

@@ -21,6 +21,15 @@ def _gasto_por_mes():
 
     return gasto_mensual
 
+def _reparticion_gastos_data(data):
+    rv = []
+    for r in data[:5]:
+        rv.append({'reparticion': r.nombre, 'total': float(r.total_compras)})
+    rv.append({'reparticion': 'Otras Reparticiones', 'total': sum([float(r.total_compras) for r in data[5:]])})
+    return rv;
+    
+        
+
 @render_to('index.html')
 def index(request):
     
@@ -32,8 +41,7 @@ def index(request):
     reparticion_gastos_datatable = gviz_api.DataTable({"reparticion": ("string", "Reparticion"),
                                                        "total": ("number", "Gasto")})
 
-    reparticion_gastos_datatable.LoadData([{'reparticion': reparticion.nombre, 'total': float(reparticion.total_compras) }
-                                           for reparticion in models.Reparticion.objects.por_gastos()])
+    reparticion_gastos_datatable.LoadData(_reparticion_gastos_data(models.Reparticion.objects.por_gastos()))
 
     return { 
         'reparticiones': models.Reparticion.objects.por_gastos(),
