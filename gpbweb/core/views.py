@@ -3,6 +3,7 @@ from gpbweb.core import models
 from gpbweb.utils import gviz_api
 from datetime import datetime
 from django.db import connection, transaction
+from django.db.models import Sum
 from django.utils.datastructures import SortedDict
 
 
@@ -20,6 +21,7 @@ def _gasto_por_mes():
         gasto_mensual.append({'mes': c[0], 'total': float(c[1])})
 
     return gasto_mensual
+
 
 def _reparticion_gastos_data(data):
     rv = []
@@ -56,14 +58,26 @@ def index(request):
         'fecha_ahora': datetime.now(),
         }
 
+
+@render_to('reparticion/show.html')
 def reparticion(request, reparticion_slug):
     reparticion = models.Reparticion.objects.get(slug=reparticion_slug)
 
-    return { 'reparticion': reparticion }
+    return { 'reparticion': reparticion,
+             'proveedores': models.Proveedor.objects.por_compras(compra__destino=reparticion),
+             'gasto_mensual_total': models.Compra.objects \
+                                        .filter(destino=reparticion, 
+                                                fecha__gte=datetime(2010,6,1), fecha__lte=datetime.now()) \
+                                        .aggregate(total=Sum('importe'))['total'] }
 
 
 @render_to('proveedor/show.html')
 def proveedor(request, proveedor_slug):
     proveedor = models.Proveedor.objects.get(slug=proveedor_slug)
 
-    return { 'proveedor' : proveedor }
+    return { 'proveedor' : proveedor,
+             'clientes': models.Reparticion.objects.por_gastos(compra__proveedor=proveedor),
+             'facturacion_mensual_total': models.Compra.objects \
+                                             .filter(proveedor=proveedor,
+                                                     fecha__gte=datetime(2010,6,1), fecha__lte=datetime.now()) \
+                                             .aggregate(total=Sum('importe'))['total'] }

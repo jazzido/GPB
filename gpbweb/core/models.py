@@ -10,9 +10,13 @@ from datetime import datetime
 
 class ProveedorManager(models.Manager):
 
-    def por_compras(self, fecha_desde=datetime(datetime.now().year, datetime.now().month, 1), fecha_hasta=datetime.now()):
+    def por_compras(self, **filter_args):
+
+        filter_args['compra__fecha__gte'] = filter_args.get('compra__fecha__gte', datetime(datetime.now().year, datetime.now().month, 1))
+        filter_args['compra__fecha__lte'] = filter_args.get('compra__fecha__lte', datetime.now())
+
         return self.select_related('compra_set') \
-            .filter(compra__fecha__gte=fecha_desde, compra__fecha__lte=fecha_hasta) \
+            .filter(**filter_args) \
             .annotate(total_compras=models.Sum('compra__importe')) \
             .order_by('-total_compras')
 
@@ -36,11 +40,16 @@ class Proveedor(models.Model):
 
 
 class ReparticionManager(models.Manager):
-    def por_gastos(self, fecha_desde=datetime(datetime.now().year, datetime.now().month, 1), fecha_hasta=datetime.now()):
+    def por_gastos(self, **filter_args):
         """ Lista de Reparticion ordenadas por la que mas gastos produjo en un período """
 
+        filter_args['compra__fecha__gte'] = filter_args.get('compra__fecha__gte', datetime(datetime.now().year, datetime.now().month, 1))
+        filter_args['compra__fecha__lte'] = filter_args.get('compra__fecha__lte', datetime.now())
+
+        print filter_args
+
         return self.select_related('compra_set') \
-            .filter(compra__fecha__gte=fecha_desde, compra__fecha__lte=fecha_hasta) \
+            .filter(**filter_args) \
             .annotate(total_compras=models.Sum('compra__importe')) \
             .order_by('-total_compras')
 

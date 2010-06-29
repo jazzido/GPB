@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load objlink %}
+{% load currency %}
+{% block content %}
+<h2 class="alt">En lo que va del mes de <strong>{% now "F \de Y" %}</strong>, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
+<hr>
+<div class="span-10 colborder">
+  <h5>Sus 5 proveedores principales en {% now "F \de Y" %}</h5>
+  <table class="tabla-sumario">
+    <thead>
+      <tr>
+	<th>Proveedor</th>
+	<th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in proveedores|slice:":5" %}
+      <tr>
+	<td>{{p|objlink}}</td>
+	<td><strong>{{p.total_compras|currency}}</strong></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
