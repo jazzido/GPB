@@ -46,8 +46,6 @@ class ReparticionManager(models.Manager):
         filter_args['compra__fecha__gte'] = filter_args.get('compra__fecha__gte', datetime(datetime.now().year, datetime.now().month, 1))
         filter_args['compra__fecha__lte'] = filter_args.get('compra__fecha__lte', datetime.now())
 
-        print filter_args
-
         return self.select_related('compra_set') \
             .filter(**filter_args) \
             .annotate(total_compras=models.Sum('compra__importe')) \
