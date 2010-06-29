@@ -27,6 +27,57 @@
 {% endblock %}
 
 {% block content %}
+<div class="span-22 last prepend-1">
+  <ul id="months-menu" style="margin: 0 auto;">
+    <li class="year">
+      <ul class="months">
+	<li><a href="#">Jun</a></li>
+	<li><a href="#">May</a></li>
+	<li><a href="">Abr</a></li>
+	<li><a href="">Mar</a></li>
+	<li><a href="">Feb</a></li>
+	<li><a href="">Ene</a></li>
+      </ul>
+      <a href="#" class="year-link">2010</a>
+    </li>
+    <li class="year">
+      <ul class="months">
+	<li><a href="">Dic</a></li>
+	<li><a href="">Nov</a></li>
+	<li><a href="">Oct</a></li>
+	<li><a href="">Sep</a></li>
+	<li><a href="">Ago</a></li>
+	<li><a href="">Jul</a></li>
+	<li><a href="">Jun</a></li>
+	<li><a href="">May</a></li>
+	<li><a href="">Abr</a></li>
+	<li><a href="">Mar</a></li>
+	<li><a href="">Feb</a></li>
+	<li><a href="">Ene</a></li>
+      </ul>
+      <a href="#" class="year-link">2009</a>
+    </li>
+    <li class="year">
+      <ul class="months">
+	<li><a href="">Dic</a></li>
+	<li><a href="">Nov</a></li>
+	<li><a href="">Oct</a></li>
+	<li><a href="">Sep</a></li>
+	<li><a href="">Ago</a></li>
+	<li><a href="">Jul</a></li>
+	<li><a href="">Jun</a></li>
+	<li><a href="">May</a></li>
+	<li><a href="">Abr</a></li>
+	<li><a href="">Mar</a></li>
+	<li><a href="">Feb</a></li>
+	<li><a href="">Ene</a></li>
+      </ul>
+      <a href="#" class="year-link">2008</a>
+    </li>
+
+  </ul>
+</div>
+<hr>
 <h2 class="alt">En lo que va del mes de <strong>{% now "F \de Y" %}</strong>, <a href="http://www.bahiablanca.gov.ar">la Municipalidad</a> gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
 <hr>
 <div class="span-10 colborder">
@@ -71,7 +122,7 @@
   </table>
 </div>
 
-<div class="span-20 last">
+<div class="span-24 last">
   <h3>Gastos del año 2010</h3>
   <div id="table_div_jscode" style="height: 200px; width: 100%"></div>
 </div>

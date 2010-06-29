@@ -10,3 +10,40 @@ div.container {
 table.tabla-sumario caption, table.tabla-sumario thead {
     display: none;
 }
+
+ul#months-menu {
+    padding-left: 0;
+    border-right: 1px solid #eeeeee;
+}
+
+  ul#months-menu a {
+      text-decoration: none;
+  }
+
+  ul#months-menu a:hover {
+      text-decoration: underline;
+  }
+
+a.year-link {
+    font-weight: bold;
+}
+
+li.year {
+    float: left;
+    display: block;
+    border-left: 1px solid #eeeeee;
+}
+  li.year ul.months {
+      padding: 0;
+  }
+
+
+  li.year ul.months li {
+      float: left;
+      display: block;
+      margin: 0;
+      padding: 0;
+      width: 25px;
+      text-align: left;
+      
+  }

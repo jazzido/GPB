@@ -33,7 +33,7 @@ def _reparticion_gastos_data(data):
         
 
 @render_to('index.html')
-def index(request):
+def index(request, start_date, finish_date):
     
     gasto_por_mes_datatable = gviz_api.DataTable({ "mes": ("date", "Mes"),
                                       "total": ("number", "Gasto") })

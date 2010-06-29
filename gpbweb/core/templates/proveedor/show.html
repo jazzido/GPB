@@ -2,6 +2,7 @@
 {% load objlink %}
 {% load currency %}
 {% block content %}
+<hr>
 <h2 class="alt">En lo que va del mes de <strong>{% now "F \de Y" %}</strong>, {{proveedor|objlink}} facturó <strong>{{facturacion_mensual_total|currency}}</strong> a la Municipalidad.</h2>
 <hr>
 <div class="span-10 colborder">
