@@ -5,6 +5,11 @@
 {% block extrajs %}
 <script type="text/javascript">
 
+  $(document).ready(function() {
+    $('#slider').css('width', $('li.year').inject(0, function(acc) { return acc + $(this).width(); }));
+    $('#slider').slider({range: true, max: $('ul#months-menu li ul li').length - 1 });
+  });
+
   function draw_table() {
     {{ gasto_por_mes_datatable_js|safe }}
     var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM'});
@@ -27,8 +32,11 @@
 {% endblock %}
 
 {% block content %}
+<hr>
+<h2 class="alt">En lo que va del mes de <strong>{% now "F \de Y" %}</strong>, la Municipalidad gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
 <div class="span-22 last prepend-1">
-  <ul id="months-menu" style="margin: 0 auto;">
+  <div id="slider"></div>
+  <ul id="months-menu">
     <li class="year">
       <ul class="months">
 	<li><a href="#">Jun</a></li>
@@ -74,11 +82,9 @@
       </ul>
       <a href="#" class="year-link">2008</a>
     </li>
-
   </ul>
+  <hr class="space">
 </div>
-<hr>
-<h2 class="alt">En lo que va del mes de <strong>{% now "F \de Y" %}</strong>, <a href="http://www.bahiablanca.gov.ar">la Municipalidad</a> gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
 <hr>
 <div class="span-10 colborder">
   <h5>Las 5 reparticiones que más gastaron en {% now "F \de Y" %}</h6>

@@ -12,10 +12,14 @@
     <link rel="stylesheet" href="/static/css/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
 
     <link rel="stylesheet" href="/static/css/style.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/smoothness/jquery-ui.css" type="text/css" media="screen, projection">
     <script src="http://www.google.com/jsapi" type="text/javascript"></script>
     <script type="text/javascript">
-      google.load("visualization", "1", {packages:["table", "linechart", "corechart"]});
+      google.load("jquery", "1.4.2");
+      google.load("jqueryui", "1.8.2");
+      google.load("visualization", "1", {packages:["table", "linechart", "corechart"], locale: 'es'});
     </script>
+    <script type="text/javascript" src="/static/js/jquery.enumerable.js"></script>
     {% block extrajs %}{% endblock %}
   </head>
   <body>

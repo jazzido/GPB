@@ -31,7 +31,6 @@ a.year-link {
 li.year {
     float: left;
     display: block;
-    border-left: 1px solid #eeeeee;
 }
   li.year ul.months {
       padding: 0;
