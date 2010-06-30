@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% load objlink %}
 {% load currency %}
+{% load tiempo_en_letras %}
 {% block content %}
-<h2 class="alt">En lo que va del mes de <strong>{% now "F \de Y" %}</strong>, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
+
+<hr>
+<h2 class="alt">{% tiempo_en_letras start_date end_date %}, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
 <hr>
 <div class="span-10 colborder">
-  <h5>Sus 5 proveedores principales en {% now "F \de Y" %}</h5>
+  <h5>Sus 5 proveedores principales en {% tiempo_en_letras start_date end_date %}</h5>
   <table class="tabla-sumario">
     <thead>
       <tr>

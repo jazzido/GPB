@@ -1,13 +1,25 @@
 {% extends "base.html" %}
 {% load objlink %}
 {% load currency %}
+{% load tiempo_en_letras %}
+{% load common_html %}
+
 
 {% block extrajs %}
 <script type="text/javascript">
 
   $(document).ready(function() {
+    var months_li = $('ul#months-menu li ul li');
     $('#slider').css('width', $('li.year').inject(0, function(acc) { return acc + $(this).width(); }));
-    $('#slider').slider({range: true, max: $('ul#months-menu li ul li').length - 1 });
+    $('#slider').slider({range: true, 
+                         max: months_li.length - 1,
+                         slide: function(event, ui) {
+                                  months_li.css('background-color', 'white');
+                                  for(i = ui.values[0]; i <= ui.values[1]; i++) {
+                                     $(months_li[i]).css('background-color', '#eeeeee');
+                                  }
+                                } 
+                         });
   });
 
   function draw_table() {
@@ -32,8 +44,9 @@
 {% endblock %}
 
 {% block content %}
+{% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">En lo que va del mes de <strong>{% now "F \de Y" %}</strong>, la Municipalidad gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
+<h2 class="alt">{{periodo|first_upper}}, la Municipalidad gastó <strong>{{gasto_mensual_total|currency}}</strong></h2>
 <div class="span-22 last prepend-1">
   <div id="slider"></div>
   <ul id="months-menu">
@@ -87,10 +100,10 @@
 </div>
 <hr>
 <div class="span-10 colborder">
-  <h5>Las 5 reparticiones que más gastaron en {% now "F \de Y" %}</h6>
+  <h5>Las 5 reparticiones que más gastaron {{periodo}}</h6>
   <div id="piechart_div"></div> 
   <table class="tabla-sumario">
-    <caption>Las 5 reparticiones que más gastaron en {% now "F \de Y" %}</caption>
+    <caption>Las 5 reparticiones que más gastaron {{periodo}}</caption>
     <thead>
       <tr>
 	<th>Reparticion</th>
@@ -108,7 +121,7 @@
   </table>
 </div>
 <div class="span-13 last">
-  <h5>Los 5 proveedores más beneficiados en {% now "F \de Y" %}</h5>
+  <h5>Los 5 proveedores más beneficiados {{periodo}}</h5>
   <table class="tabla-sumario">
     <caption>Los 5 proveedores más beneficiados en {% now "F \de Y" %}</caption>
     <thead>
