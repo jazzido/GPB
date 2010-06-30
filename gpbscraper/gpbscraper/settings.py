@@ -23,6 +23,6 @@ NEWSPIDER_MODULE = 'gpbscraper.spiders'
 DEFAULT_ITEM_CLASS = 'gpbscraper.items.CompraItem'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
-ITEM_PIPELINES = ['gpbscraper.pipelines.ItemCounterPipeline', 'gpbscraper.pipelines.ComprasPersisterPipeline']
+ITEM_PIPELINES = ['gpbscraper.pipelines.ItemCounterPipeline', 'gpbscraper.pipelines.ComprasPersisterPipeline', 'gpbscraper.pipelines.CompraLineasPersisterPipeline']
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpbweb.settings')

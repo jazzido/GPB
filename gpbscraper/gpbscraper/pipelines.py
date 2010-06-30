@@ -6,11 +6,13 @@
 
 from scrapy.xlib.pydispatch import dispatcher
 from scrapy.core import signals
-# from scrapy.contrib.exporter.jsonlines import JsonLinesItemExporter
-# from scrapy.contrib.exporter import CsvItemExporter, XmlItemExporter, PickleItemExporter
 from scrapy.core.exceptions import DropItem
+from scrapy.core.manager import scrapymanager
+from scrapy.http import Request
 from scrapy import log
 from gpbscraper.items import CompraItem, CompraLineaItem
+from gpbscraper.spiders.compras import ComprasSpider
+from gpbscraper.spiders.compra_linea import CompraLineasSpider
 from gpbweb.core import models
 
 from twisted.internet import defer, threads
@@ -75,6 +77,7 @@ class ComprasPersisterPipeline(object):
 
     def spider_idle(self, spider):
         log.msg("Spider esta idle: consumir los compra_line_items y persistirlos")
+        if not isinstance(spider, ComprasSpider): return
         for cli in self.compras_line_items:
             # no vale la pena hacerlo asincronico. Que se bloquee un poco el reactor, no me calienta :)
             # la corrida del spider se hace dentro de un "AÑO" (ejercicio), así que puedo hacer esto:
@@ -85,3 +88,20 @@ class ComprasPersisterPipeline(object):
 
     def spider_closed(self, spider):
         pass
+
+class CompraLineasPersisterPipeline(object):
+    def __init__(self):
+        dispatcher.connect(self.spider_opened, signals.spider_opened)
+    
+    def spider_opened(self, spider):
+        for c in models.Compra.objects.all():
+            scrapymanager.engine.crawl(Request('http://www.bahiablanca.gov.ar/compras4/dcomprV2.asp?wOC=%s&wEjercicio=%s' % (c.orden_compra, c.fecha.year),
+                                               spider.parse),
+                                       spider)
+
+    def process_item(self, spider, item):
+        compra = models.Compra.objects.get(fecha__year=item['anio'], orden_compra=int(cli['orden_compra']))
+        print compra
+        return item
+
+

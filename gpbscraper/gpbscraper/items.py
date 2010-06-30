@@ -31,5 +31,7 @@ class CompraLineaItem(Item):
     importe = Field(output_processor=lambda x: parse_money(x[0]))
     detalle = Field(output_processor=TakeFirst())
     orden_compra = Field(output_processor=TakeFirst())
+    anio = Field(output_processor=TakeFirst())
+
 
 

@@ -37,7 +37,6 @@ class ComprasSpider(BaseSpider):
             l.add_xpath('detalle', 'td[3]/text()')
             l.add_value('orden_compra', orden_compra)
             x = l.load_item()
-            print x
             yield x
 
     def parse(self, response):
