@@ -100,8 +100,17 @@ class CompraLineasPersisterPipeline(object):
                                        spider)
 
     def process_item(self, spider, item):
-        compra = models.Compra.objects.get(fecha__year=item['anio'], orden_compra=int(cli['orden_compra']))
-        print compra
+        @transaction.commit_on_success
+        def persist(item):
+            compra = models.Compra.objects.get(fecha__year=item['anio'], orden_compra=int(item['orden_compra']))
+            cli_obj = models.CompraLineaItem(compra=compra,
+                                             importe_unitario=str(item['importe']),
+                                             cantidad=item['cantidad'],
+                                             detalle=item['detalle'])
+            cli_obj.save()
+
+        threads.deferToThread(persist, item)
+
         return item
 
 
