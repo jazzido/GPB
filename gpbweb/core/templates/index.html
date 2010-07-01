@@ -2,22 +2,32 @@
 {% load objlink %}
 {% load currency %}
 {% load tiempo_en_letras %}
+{% load meses %}
 {% load common_html %}
 
 
 {% block extrajs %}
 <script type="text/javascript">
 
+  var start_date = new Date('{{start_date|date:"Y-m-d"}}');
+  var end_date = new Date('{{end_date|date:"Y-m-d"}}');
+  if (end_date > new Date()) end_date = new Date();
+
+
   $(document).ready(function() {
     var months_li = $('ul#months-menu li ul li');
     $('#slider').css('width', $('li.year').inject(0, function(acc) { return acc + $(this).width(); }));
+    console.log(months_li.length);
     $('#slider').slider({range: true, 
-                         max: months_li.length - 1,
+                         max: months_li.length - 2,
+                         min: 0,
+//                         values: 
                          slide: function(event, ui) {
                                   months_li.css('background-color', 'white');
-                                  for(i = ui.values[0]; i <= ui.values[1]; i++) {
+                                  for(i = ui.values[0]; i < ui.values[1]; i++) {
                                      $(months_li[i]).css('background-color', '#eeeeee');
                                   }
+				  console.log(ui.values);
                                 } 
                          });
   });
@@ -45,6 +55,8 @@
 
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
+{% month_range from start_date until end_date as mrange %}
+{% regroup mrange by year as year_months %}
 <hr>
 <h2 class="alt">{{periodo|first_upper}}, la Municipalidad gastó <strong>{{gasto_mensual_total|currency}}</strong></h2>
 <div class="span-22 last prepend-1">
@@ -52,6 +64,7 @@
   <ul id="months-menu">
     <li class="year">
       <ul class="months">
+	<li><a href="#">Jul</a></li>
 	<li><a href="#">Jun</a></li>
 	<li><a href="#">May</a></li>
 	<li><a href="">Abr</a></li>
@@ -100,7 +113,7 @@
 </div>
 <hr>
 <div class="span-10 colborder">
-  <h5>Las 5 reparticiones que más gastaron {{periodo}}</h6>
+  <h5>Las 5 reparticiones que más gastaron {{periodo}}</h5>
   <div id="piechart_div"></div> 
   <table class="tabla-sumario">
     <caption>Las 5 reparticiones que más gastaron {{periodo}}</caption>
