@@ -2,13 +2,14 @@
 {% load objlink %}
 {% load currency %}
 {% load tiempo_en_letras %}
+{% load common_html %}
 {% block content %}
-
+{% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">{% tiempo_en_letras start_date end_date %}, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
+<h2 class="alt">{{periodo|first_upper}}, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
 <hr>
 <div class="span-10 colborder">
-  <h5>Sus 5 proveedores principales en {% tiempo_en_letras start_date end_date %}</h5>
+  <h5>Sus 5 proveedores principales {{periodo}}</h5>
   <table class="tabla-sumario">
     <thead>
       <tr>

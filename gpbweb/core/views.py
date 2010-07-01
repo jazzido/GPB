@@ -1,3 +1,4 @@
+# coding: utf-8
 from annoying.decorators import render_to
 from gpbweb.core import models
 from gpbweb.utils import gviz_api
@@ -8,12 +9,13 @@ from django.utils.datastructures import SortedDict
 
 import calendar
 
-def _gasto_por_mes():
+def _gasto_por_mes(additional_where=''):
     cursor = connection.cursor()
     sql = """ SELECT DATE_TRUNC('month', fecha)::date AS mes, SUM(importe) AS importe_total
                                FROM core_compra
+                               %(where_clause)s
                                GROUP BY mes
-                               ORDER BY mes ASC """
+                               ORDER BY mes ASC """ % {'where_clause': additional_where }
     cursor.execute(sql)
     gasto_mensual = []
     while True:
@@ -63,6 +65,11 @@ def index(request, start_date, end_date):
         'end_date': end_date
         }
 
+def index_anual(request, anio):
+    return index(request, 
+                 datetime(int(anio), 1, 1), # principio del año
+                 datetime(int(anio), 12, 31)) # ultimo dia del año
+
 def index_mensual(request, anio, mes):
     return index(request, 
                  datetime(int(anio), int(mes), 1), # principio del mes
@@ -85,21 +92,52 @@ def reparticion(request, reparticion_slug, start_date, end_date):
              'end_date': end_date
              }
 
+def reparticion_anual(request, reparticion_slug, anio):
+    return reparticion(request, 
+                       reparticion_slug,
+                       datetime(int(anio), 1, 1), # principio del año
+                       datetime(int(anio), 12, 31)) # ultimo dia del año
+
+
 
 def reparticion_mensual(request, reparticion_slug, anio, mes):
     return reparticion(request,
                        reparticion_slug,
                        datetime(int(anio), int(mes), 1), # principio del mes
                        datetime(int(anio), int(mes), calendar.monthrange(int(anio), int(mes))[1])) # ultimo dia del mes
+
+def reparticion_periodo(request, reparticion_slug, start_anio, start_mes, end_anio, end_mes):
+    return reparticion(request,
+                       reparticion_slug,
+                       datetime(int(start_anio), int(start_mes), 1), # principio del mes
+                       datetime(int(end_anio), int(end_mes), calendar.monthrange(int(end_anio), int(end_mes))[1])) # ultimo dia del mes
                        
 
 @render_to('proveedor/show.html')
-def proveedor(request, proveedor_slug):
+def proveedor(request, proveedor_slug, start_date, end_date):
     proveedor = models.Proveedor.objects.get(slug=proveedor_slug)
 
     return { 'proveedor' : proveedor,
-             'clientes': models.Reparticion.objects.por_gastos(compra__proveedor=proveedor),
+             'clientes': models.Reparticion.objects.por_gastos(compra__fecha__gte=start_date, 
+                                                               compra__fecha__lte=end_date,
+                                                               compra__proveedor=proveedor),
+
              'facturacion_mensual_total': models.Compra.objects \
                                              .filter(proveedor=proveedor,
-                                                     fecha__gte=datetime(2010,6,1), fecha__lte=datetime.now()) \
-                                             .aggregate(total=Sum('importe'))['total'] }
+                                                     fecha__gte=start_date, 
+                                                     fecha__lte=end_date) \
+                                             .aggregate(total=Sum('importe'))['total'] or 0,
+             'start_date': start_date,
+             'end_date': end_date }
+
+def proveedor_mensual(request, proveedor_slug, anio, mes):
+    return proveedor(request,
+                     proveedor_slug,
+                     datetime(int(anio), int(mes), 1), # principio del mes
+                     datetime(int(anio), int(mes), calendar.monthrange(int(anio), int(mes))[1])) # ultimo dia del mes
+
+def proveedor_periodo(request, proveedor_slug, start_anio, start_mes, end_anio, end_mes):
+    return proveedor(request,
+                     proveedor_slug,
+                     datetime(int(start_anio), int(start_mes), 1), # principio del mes
+                     datetime(int(end_anio), int(end_mes), calendar.monthrange(int(end_anio), int(end_mes))[1])) # ultimo dia del mes

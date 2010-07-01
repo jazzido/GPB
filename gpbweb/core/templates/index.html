@@ -34,7 +34,7 @@
   
     {{reparticion_datatable_js|safe}}
     var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
-    piechart.draw(reparticion_gastos, {width: 450, height: 300 });
+    piechart.draw(reparticion_gastos, {width: 385, height: 270, legend: 'bottom' });
 
   }
 
@@ -123,7 +123,7 @@
 <div class="span-13 last">
   <h5>Los 5 proveedores más beneficiados {{periodo}}</h5>
   <table class="tabla-sumario">
-    <caption>Los 5 proveedores más beneficiados en {% now "F \de Y" %}</caption>
+    <caption>Los 10 proveedores más beneficiados {{ periodo }}</caption>
     <thead>
       <tr>
 	<th>Proveedor</th>
@@ -131,7 +131,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for p in proveedores|slice:":5" %}
+      {% for p in proveedores|slice:":10" %}
       <tr>
 	<td>{{p|objlink}}</td>
 	<td><strong>{{p.total_compras|currency}}</strong></td>

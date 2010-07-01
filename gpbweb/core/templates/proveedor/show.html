@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% load objlink %}
 {% load currency %}
+{% load tiempo_en_letras %}
+{% load common_html %}
 {% block content %}
+{% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">En lo que va del mes de <strong>{% now "F \de Y" %}</strong>, {{proveedor|objlink}} facturó <strong>{{facturacion_mensual_total|currency}}</strong> a la Municipalidad.</h2>
+<h2 class="alt">{{periodo|first_upper}}, {{proveedor|objlink}} facturó <strong>{{facturacion_mensual_total|currency}}</strong> a la Municipalidad.</h2>
 <hr>
 <div class="span-10 colborder">
-  <h5>Sus mejores clientes en {% now "F \de Y" %}</h5>
+  <h5>Sus mejores clientes {{periodo}}</h5>
   <table class="tabla-sumario">
     <thead>
       <tr>
@@ -23,5 +26,7 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
+<div class="span-10 last">
 </div>
 {% endblock %}

@@ -1,3 +1,4 @@
+# coding: utf-8
 from django import template
 from datetime import datetime, date
 import re, calendar
@@ -20,7 +21,12 @@ class TiempoEnLetrasNode(template.Node):
 
         rv = ''
 
-        if now >= self.start_time and now <= self.end_time:
+        if self.start_time.month == 1 and self.start_time.day == 1 and self.end_time.day == 31 and self.end_time.month == 12:
+            if self.start_time.year == now.year:
+                rv = "en lo que va del <strong>año %s</strong>" % self.start_time.year
+            else:
+                rv = "en el <strong>año %s</strong>" % self.start_time.year
+        elif now >= self.start_time and now <= self.end_time:
             rv = "en lo que va del mes de <strong>%s de %s</strong>" % (self.start_time.strftime("%B"), self.start_time.strftime("%Y"))
         elif now > self.start_time:
             if self.start_time.month == self.end_time.month \
@@ -30,7 +36,7 @@ class TiempoEnLetrasNode(template.Node):
                 rv = "en el mes de <strong>%s de %s</strong>" % (self.start_time.strftime("%B"), self.start_time.strftime("%Y"))
             elif self.start_time.month < self.end_time.month:
                 if self.start_time.year < self.end_time.year:
-                    rv = "entre <strong>%s de %s</strong> y %s de %s</strong>" % (self.start_time.strftime("%B"), self.start_time.strftime("%Y"),
+                    rv = "entre <strong>%s de %s y %s de %s</strong>" % (self.start_time.strftime("%B"), self.start_time.strftime("%Y"),
                                                                                   self.end_time.strftime("%B"), self.end_time.strftime("%Y"))
                 else:
                     rv = "entre <strong>%s y %s de %s</strong>" % (self.start_time.strftime("%B"), self.end_time.strftime("%B"),
