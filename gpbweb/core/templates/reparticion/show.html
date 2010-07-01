@@ -9,7 +9,7 @@
 <h2 class="alt">{{periodo|first_upper}}, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
 <hr>
 <div class="span-10 colborder">
-  <h5>Sus 5 proveedores principales {{periodo}}</h5>
+  <h5>Sus 10 proveedores principales {{periodo}}</h5>
   <table class="tabla-sumario">
     <thead>
       <tr>
@@ -18,7 +18,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for p in proveedores|slice:":5" %}
+      {% for p in proveedores|slice:":10" %}
       <tr>
 	<td>{{p|objlink}}</td>
 	<td><strong>{{p.total_compras|currency}}</strong></td>
