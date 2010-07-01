@@ -130,6 +130,13 @@ def proveedor(request, proveedor_slug, start_date, end_date):
              'start_date': start_date,
              'end_date': end_date }
 
+def proveedor_anual(request, proveedor_slug, anio):
+    return proveedor(request,
+                     proveedor_slug,
+                     datetime(int(anio), 1, 1), # principio del año
+                     datetime(int(anio), 12, 31)) # ultimo dia del año
+                     
+
 def proveedor_mensual(request, proveedor_slug, anio, mes):
     return proveedor(request,
                      proveedor_slug,

@@ -9,8 +9,8 @@ periodo_expression = r'(?P<start_anio>20\d\d)/(?P<start_mes>01|02|03|04|05|06|07
 urlpatterns = patterns('',
                        url(r'^$',
                            'gpbweb.core.views.index',
-                           {'start_date': datetime(datetime.now().year, datetime.now().month, 1),
-                            'end_date': datetime.now() },
+                           {'start_date': datetime(datetime.now().year, 1, 1),
+                            'end_date': datetime(datetime.now().year, 12, 31) },
                            name='index'),
 
                        url(r'^%s$' % mensual_expression,
@@ -44,6 +44,10 @@ urlpatterns = patterns('',
                            {'start_date': datetime(datetime.now().year, datetime.now().month, 1),
                             'end_date': datetime.now() },
                            name='proveedor'),
+
+                       url(r'^proveedor/(?P<proveedor_slug>[a-z0-9\-]+)/%s$' % anual_expression,
+                           'gpbweb.core.views.proveedor_anual',
+                           name='proveedor_anual'),
 
                        url(r'^proveedor/(?P<proveedor_slug>[a-z0-9\-]+)/%s$' % mensual_expression,
                            'gpbweb.core.views.proveedor_mensual',
