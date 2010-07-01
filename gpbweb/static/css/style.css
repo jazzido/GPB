@@ -43,6 +43,23 @@ li.year {
       margin: 0;
       padding: 0;
       width: 25px;
-      text-align: left;
+      text-align: justify;
+      font-family: monospace;
       
   }
+
+/* jquery theme para slider */
+
+.ui-slider.ui-widget-content {
+    border: 0;
+    border-bottom: 1px solid #AAA !important;
+}
+
+.ui-slider-range.ui-widget-header {
+    background: none !important;
+    border-bottom: 1px solid red !important;
+}
+
+.ui-slider-horizontal .ui-slider-handle {
+/*    margin-left: 0;*/
+}
