@@ -18,6 +18,12 @@ def parse_money(value):
     return float("%s.%s" % (pesos.replace('.', ''), centavos))
     
 
+class ProveedorItem(Item):
+    nombre = Field(output_processor=TakeFirst())
+    domicilio = Field(output_processor=TakeFirst())
+    cuit = Field(output_processor=TakeFirst())
+    localidad = Field(output_processor=TakeFirst())
+
 class CompraItem(Item):
     orden_compra = Field(output_processor=TakeFirst())
     fecha = Field(output_processor=lambda x: spanish_date(*(string.split(x[0], '/'))))
