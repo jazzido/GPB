@@ -10,7 +10,7 @@ from scrapy.core.exceptions import DropItem
 from scrapy.core.manager import scrapymanager
 from scrapy.http import Request
 from scrapy import log
-from gpbscraper.items import CompraItem, CompraLineaItem
+from gpbscraper.items import CompraItem, CompraLineaItem, ProveedorItem 
 from gpbscraper.spiders.compras import ComprasSpider
 from gpbscraper.spiders.compra_linea import CompraLineasSpider
 from gpbweb.core import models
@@ -35,16 +35,11 @@ class ItemCounterPipeline(object):
         print "COMPRAS REGISTRADAS: %s" % self.proyectos_count
 
 class ComprasPersisterPipeline(object):
-    def __init__(self):
-        self.compras_line_items = []
-        dispatcher.connect(self.spider_idle, signals.spider_idle)
 
     def process_item(self, spider, item):
         if isinstance(item, CompraItem):
             d = threads.deferToThread(self._persistCompraItem, item)
             d.addErrback(log.err, "No pude persistir el item %s" % item)
-        elif isinstance(item, CompraLineaItem):
-            self.compras_line_items.append(item)
 
         return item
     
@@ -66,35 +61,14 @@ class ComprasPersisterPipeline(object):
 
         transaction.commit_on_success(inner(item))
 
-    @transaction.commit_on_success
-    def _persistCompraLineaItem(self, compra_linea_item, compra):
-        cli_obj = models.CompraLineaItem(compra=compra,
-                                         importe_unitario=str(compra_linea_item['importe']),
-                                         cantidad=compra_linea_item['cantidad'],
-                                         detalle=compra_linea_item['detalle'])
-        cli_obj.save()
-            
 
-    def spider_idle(self, spider):
-        log.msg("Spider esta idle: consumir los compra_line_items y persistirlos")
-        if not isinstance(spider, ComprasSpider): return
-        for cli in self.compras_line_items:
-            # no vale la pena hacerlo asincronico. Que se bloquee un poco el reactor, no me calienta :)
-            # la corrida del spider se hace dentro de un "AÑO" (ejercicio), así que puedo hacer esto:
-            compra = models.Compra.objects.get(fecha__year=int(spider.anio), orden_compra=int(cli['orden_compra']))
-            self._persistCompraLineaItem(cli, compra)
-        self.compra_line_items = []
-        
-
-    def spider_closed(self, spider):
-        pass
 
 class CompraLineasPersisterPipeline(object):
     def __init__(self):
         dispatcher.connect(self.spider_opened, signals.spider_opened)
     
     def spider_opened(self, spider):
-        for c in models.Compra.objects.all():
+        for c in models.Compra.objects.filter(compralineaitem=None):
             scrapymanager.engine.crawl(Request('http://www.bahiablanca.gov.ar/compras4/dcomprV2.asp?wOC=%s&wEjercicio=%s' % (c.orden_compra, c.fecha.year),
                                                spider.parse),
                                        spider)
@@ -109,8 +83,30 @@ class CompraLineasPersisterPipeline(object):
                                              detalle=item['detalle'])
             cli_obj.save()
 
-        threads.deferToThread(persist, item)
+        if isinstance(item, CompraLineaItem):
+            threads.deferToThread(persist, item)
 
         return item
 
 
+class ProveedoresPersisterPipeline(object):
+    def process_item(self, spider, item):
+
+        @transaction.commit_on_success
+        def persist(item):
+            if not models.Proveedor.objects.filter(nombre=item['nombre']).exists():
+                models.Proveedor(nombre=item['nombre'],
+                                 domicilio=item['domicilio'],
+                                 cuit=item['cuit'],
+                                 localidad=item['localidad']).save()
+            else:
+                p = models.Proveedor.objects.get(nombre=item['nombre'])
+                p.domicilio = item['domicilio']
+                p.cuit = item['cuit']
+                p.localidad = item['localidad']
+                p.save()
+
+        if isinstance(item, ProveedorItem):
+            threads.deferToThread(persist, item)
+        
+        return item

@@ -14,6 +14,8 @@ import os.path
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'gpbweb')))
+
 
 BOT_NAME = 'gpbscraper'
 BOT_VERSION = '1.0'
@@ -23,7 +25,8 @@ NEWSPIDER_MODULE = 'gpbscraper.spiders'
 DEFAULT_ITEM_CLASS = 'gpbscraper.items.CompraItem'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
-#ITEM_PIPELINES = ['gpbscraper.pipelines.ItemCounterPipeline', 'gpbscraper.pipelines.ComprasPersisterPipeline', 'gpbscraper.pipelines.CompraLineasPersisterPipeline']
-ITEM_PIPELINES = ['gpbscraper.pipelines.CompraLineasPersisterPipeline']
+#ITEM_PIPELINES = ['gpbscraper.pipelines.ItemCounterPipeline', 'gpbscraper.pipelines.ComprasPersisterPipeline']
+ITEM_PIPELINES = ['gpbscraper.pipelines.ProveedoresPersisterPipeline']#, 'gpbscraper.pipelines.CompraLineasPersisterPipeline']
+#ITEM_PIPELINES = []
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpbweb.settings')

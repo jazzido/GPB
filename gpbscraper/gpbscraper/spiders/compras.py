@@ -52,10 +52,10 @@ class ComprasSpider(BaseSpider):
             l.add_xpath('proveedor', 'td[5]/text()')
             l.add_xpath('destino', 'td[6]/text()')
 
-            compra_detalle_url = urljoin(response.url, tr.select('td[7]/a/@href').extract()[0])
-            yield Request(compra_detalle_url, 
-                          callback=lambda response: self.load_compra_items(response,
-                                                                           tr.select('td[1]/text()').extract()[0]))
+            # compra_detalle_url = urljoin(response.url, tr.select('td[7]/a/@href').extract()[0])
+            # yield Request(compra_detalle_url, 
+            #               callback=lambda response: self.load_compra_items(response,
+            #                                                                tr.select('td[1]/text()').extract()[0]))
 
             yield l.load_item()
 
