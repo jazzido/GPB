@@ -41,8 +41,8 @@ urlpatterns = patterns('',
 
                        url(r'^proveedor/(?P<proveedor_slug>[a-z0-9\-]+)$',
                            'gpbweb.core.views.proveedor',
-                           {'start_date': datetime(datetime.now().year, datetime.now().month, 1),
-                            'end_date': datetime.now() },
+                           {'start_date': datetime(datetime.now().year, 1, 1),
+                            'end_date': datetime(datetime.now().year, 12, 31) },
                            name='proveedor'),
 
                        url(r'^proveedor/(?P<proveedor_slug>[a-z0-9\-]+)/%s$' % anual_expression,
