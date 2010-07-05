@@ -13,10 +13,8 @@ $(document).ready(function() {
 						   for(i = ui.values[0]; i < ui.values[1]; i++) {
 						       $(months_li[i]).css('background-color', '#eeeeee');
 						   }
-						   console.log(ui.values);
 					       } 
 					      });
-			  console.log($('#slider .ui-slider-handle'));
 			  $('#slider .ui-slider-handle:eq(0)').addClass('wResize');
 			  $('#slider .ui-slider-handle:eq(1)').addClass('eResize');
 			  sliderInit = true;
