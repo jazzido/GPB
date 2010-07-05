@@ -87,6 +87,12 @@
   {% include "palabras_clave.html" %}
   {% endcache %}
 </div>
+<hr class="space" />
+<div class="span-24 last">
+  <h3>Evolución del gasto {{periodo}}</h3>
+  <div id="table_div_jscode" style="height: 200px; width: 100%"></div>
+</div>
+
 <div class="span-24 last">
   {% regroup ordenes_de_compra by fecha as compras_por_dia %}
   <h3>Ordenes de compra emitidas por la Municipalidad {{periodo}}</h3>
@@ -111,11 +117,6 @@
     {% endfor %}
   </table>
   <a href="#TODO">Ver todas las ordenes de compra emitidas por la municipalidad {{periodo}}</a>
-</div>
-<hr class="space" />
-<div class="span-24 last">
-  <h3>Evolución del gasto {{periodo}}</h3>
-  <div id="table_div_jscode" style="height: 200px; width: 100%"></div>
 </div>
 
 {% endblock %}
