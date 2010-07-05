@@ -19,7 +19,7 @@ table.tabla-sumario caption, table.tabla-sumario thead {
 
 ul#months-menu {
     padding-left: 0;
-    border-right: 1px solid #eeeeee;
+    float: left;
 }
 
   ul#months-menu a {
@@ -94,10 +94,19 @@ ul.tagcloud li {
 }
 
 .ui-slider-horizontal .ui-slider-handle {
-/*    margin-left: 0;*/
 }
 
 .ui-state-default {
     background:url("/static/img/mini-filter-arrow.gif") no-repeat scroll center bottom transparent !important;
+    
     border: 0 !important;
+}
+
+.eResize {
+    cursor: e-resize !important;
+}
+
+
+.wResize {
+    cursor: w-resize !important;
 }
