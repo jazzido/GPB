@@ -1,0 +1,6 @@
+<h5>Palabras clave en las ordenes de compra {{ periodo }}</h5>
+<ul class="tagcloud">
+  {% for palabra in tagcloud|slice:":40" %}
+  <li>{{palabra.0}}</li>
+  {% endfor %}
+</ul>
