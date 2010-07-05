@@ -55,61 +55,28 @@
 
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
-{% month_range from start_date until end_date as mrange %}
-{% regroup mrange by year as year_months %}
 <hr>
 <h2 class="alt">{{periodo|first_upper}}, la Municipalidad gastó <strong>{{gasto_mensual_total|currency}}</strong></h2>
 <div class="span-22 last prepend-1">
   <div id="slider"></div>
-  <ul id="months-menu">
-    <li class="year">
-      <ul class="months">
-	<li><a href="#">Jul</a></li>
-	<li><a href="#">Jun</a></li>
-	<li><a href="#">May</a></li>
-	<li><a href="">Abr</a></li>
-	<li><a href="">Mar</a></li>
-	<li><a href="">Feb</a></li>
-	<li><a href="">Ene</a></li>
-      </ul>
-      <a href="#" class="year-link">2010</a>
-    </li>
-    <li class="year">
-      <ul class="months">
-	<li><a href="">Dic</a></li>
-	<li><a href="">Nov</a></li>
-	<li><a href="">Oct</a></li>
-	<li><a href="">Sep</a></li>
-	<li><a href="">Ago</a></li>
-	<li><a href="">Jul</a></li>
-	<li><a href="">Jun</a></li>
-	<li><a href="">May</a></li>
-	<li><a href="">Abr</a></li>
-	<li><a href="">Mar</a></li>
-	<li><a href="">Feb</a></li>
-	<li><a href="">Ene</a></li>
-      </ul>
-      <a href="#" class="year-link">2009</a>
-    </li>
-    <li class="year">
-      <ul class="months">
-	<li><a href="">Dic</a></li>
-	<li><a href="">Nov</a></li>
-	<li><a href="">Oct</a></li>
-	<li><a href="">Sep</a></li>
-	<li><a href="">Ago</a></li>
-	<li><a href="">Jul</a></li>
-	<li><a href="">Jun</a></li>
-	<li><a href="">May</a></li>
-	<li><a href="">Abr</a></li>
-	<li><a href="">Mar</a></li>
-	<li><a href="">Feb</a></li>
-	<li><a href="">Ene</a></li>
-      </ul>
-      <a href="#" class="year-link">2008</a>
-    </li>
-  </ul>
+
   <hr class="space">
+  {% month_range from request.fecha_minima until request.fecha_maxima as mrange %}
+  {% regroup mrange by year as year_months %}
+
+  <ul id="months-menu">
+    {% for year in year_months reversed %}
+    <li class="year">
+      <ul class="months">
+	{% for month in year.list reversed %}
+	<li><a href="{{month|date:"Y/m"}}">{{month|date:"M"}}</a></li>
+	{% endfor %}
+      </ul>
+      <a href="#" class="year-link">{{year.grouper}}</a>
+    </li>
+    {% endfor %}
+  </ul>
+
 </div>
 <hr>
 <div class="span-10 colborder">

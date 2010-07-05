@@ -12,8 +12,8 @@ class MesesNode(template.Node):
 
     def render(self, context):
         meses = []
-        start = self.start_var.resolve(context).date()
-        end = self.end_var.resolve(context).date()
+        start = self.start_var.resolve(context)#.date()
+        end = self.end_var.resolve(context)#.date()
 
         m = start.month
         y = start.year

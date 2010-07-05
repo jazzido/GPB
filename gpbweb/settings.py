@@ -63,6 +63,12 @@ ADMIN_MEDIA_PREFIX = '/media/'
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'h$23y4ew5qsr=4o-7_x3x8%$8l%(rejb+_@l+1--ja3p6lcmz('
 
+TEMPLATE_CONTEXT_PROCESSORS = [
+    "django.core.context_processors.auth", 
+    'django.core.context_processors.request',
+]
+
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -76,6 +82,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'gpbweb.core.middleware.DateLimitsMiddleware',
 )
 
 ROOT_URLCONF = 'gpbweb.urls'
