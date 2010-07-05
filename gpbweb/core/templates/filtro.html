@@ -1,0 +1,25 @@
+{% load meses %}
+
+<div class="span-22 last" id="filtro-container">
+  <p class="incr"><button>→ Filtrar</button></p>
+
+  <div class="span-21 prepend-1 last hide" id="filtro">
+    <div id="slider"></div>
+    {% month_range from request.fecha_minima until request.fecha_maxima as mrange %}
+    {% regroup mrange by year as year_months %}
+
+    <ul id="months-menu">
+      {% for year in year_months reversed %}
+      <li class="year">
+	<ul class="months">
+	  {% for month in year.list reversed %}
+	  <li><a href="{{month|date:"Y/m"}}">{{month|date:"M"}}</a></li>
+	  {% endfor %}
+	</ul>
+	<a href="#" class="year-link">{{year.grouper}}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</div>

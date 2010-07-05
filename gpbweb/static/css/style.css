@@ -2,14 +2,20 @@ div.container {
     margin-top: 20px;
 }
 
-.mainmenu a {
-    display: block;
+.about-header {
     font-size: 2em;
+    color: #999999;
 }
+  .about-header a {
+      color: #CCCCFF;
+  }
+  .about-header a:hover { text-decoration: none; }
 
 table.tabla-sumario caption, table.tabla-sumario thead {
     display: none;
 }
+
+/* filtro de fechas */
 
 ul#months-menu {
     padding-left: 0;
@@ -42,11 +48,38 @@ li.year {
       display: block;
       margin: 0;
       padding: 0;
-      width: 25px;
+      width: 30px;
       text-align: justify;
       font-family: monospace;
       
   }
+
+#filtro-container button {
+    border: 0;
+    background-color: transparent;
+}
+
+  #filtro button:hover {
+
+  }
+
+/* tag cloud */
+
+ul.tagcloud {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+ul.tagcloud li {
+    margin-right: 5px;
+    float: left;
+}
+
+
+
+.hide {
+    display: none;
+}
 
 /* jquery theme para slider */
 
@@ -62,4 +95,9 @@ li.year {
 
 .ui-slider-horizontal .ui-slider-handle {
 /*    margin-left: 0;*/
+}
+
+.ui-state-default {
+    background:url("/static/img/mini-filter-arrow.gif") no-repeat scroll center bottom transparent !important;
+    border: 0 !important;
 }

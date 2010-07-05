@@ -4,7 +4,7 @@
 {% load tiempo_en_letras %}
 {% load meses %}
 {% load common_html %}
-
+{% load cache %}
 
 {% block extrajs %}
 <script type="text/javascript">
@@ -13,23 +13,7 @@
   var end_date = new Date('{{end_date|date:"Y-m-d"}}');
   if (end_date > new Date()) end_date = new Date();
 
-
   $(document).ready(function() {
-    var months_li = $('ul#months-menu li ul li');
-    $('#slider').css('width', $('li.year').inject(0, function(acc) { return acc + $(this).width(); }));
-    console.log(months_li.length);
-    $('#slider').slider({range: true, 
-                         max: months_li.length - 2,
-                         min: 0,
-//                         values: 
-                         slide: function(event, ui) {
-                                  months_li.css('background-color', 'white');
-                                  for(i = ui.values[0]; i < ui.values[1]; i++) {
-                                     $(months_li[i]).css('background-color', '#eeeeee');
-                                  }
-				  console.log(ui.values);
-                                } 
-                         });
   });
 
   function draw_table() {
@@ -57,27 +41,7 @@
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
 <h2 class="alt">{{periodo|first_upper}}, la Municipalidad gastó <strong>{{gasto_mensual_total|currency}}</strong></h2>
-<div class="span-22 last prepend-1">
-  <div id="slider"></div>
-
-  <hr class="space">
-  {% month_range from request.fecha_minima until request.fecha_maxima as mrange %}
-  {% regroup mrange by year as year_months %}
-
-  <ul id="months-menu">
-    {% for year in year_months reversed %}
-    <li class="year">
-      <ul class="months">
-	{% for month in year.list reversed %}
-	<li><a href="{{month|date:"Y/m"}}">{{month|date:"M"}}</a></li>
-	{% endfor %}
-      </ul>
-      <a href="#" class="year-link">{{year.grouper}}</a>
-    </li>
-    {% endfor %}
-  </ul>
-
-</div>
+{% include "filtro.html" %}
 <hr>
 <div class="span-10 colborder">
   <h5>Las 5 reparticiones que más gastaron {{periodo}}</h5>
@@ -101,7 +65,7 @@
   </table>
 </div>
 <div class="span-13 last">
-  <h5>Los 5 proveedores más beneficiados {{periodo}}</h5>
+  <h5>Los 10 proveedores más beneficiados {{periodo}}</h5>
   <table class="tabla-sumario">
     <caption>Los 10 proveedores más beneficiados {{ periodo }}</caption>
     <thead>
@@ -119,6 +83,9 @@
       {% endfor %}
     </tbody>
   </table>
+  {% cache 500 index_tagcloud %}
+  {% include "palabras_clave.html" %}
+  {% endcache %}
 </div>
 
 <div class="span-24 last">

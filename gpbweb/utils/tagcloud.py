@@ -8,7 +8,7 @@ import unicodedata
 def strip_accents(s):
    return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
 
-CLEANER = re.compile(r'[^a-zA-Z0-9 ]', re.IGNORECASE)
+CLEANER = re.compile(r'[^a-zA-Z0-9(\r\n) ]', re.IGNORECASE)
 STOPWORDS = re.compile(r'\b([a-z]|\d+|%s)\b' % '|'.join([strip_accents(u) for u in es_stopwords.STOPWORDS]), re.IGNORECASE)
 
 def _clean_document(document):
@@ -24,4 +24,4 @@ def make_tagcloud(documents):
         if tc.get(w): tc[w] += 1
         else: tc[w] = 1
 
-    return tc
+    return sorted(tc.items(), key=lambda i: i[1], reverse=True)

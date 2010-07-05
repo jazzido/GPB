@@ -1,11 +1,12 @@
 # coding: utf-8
 from gpbweb.annoying.decorators import render_to
 from gpbweb.core import models
-from gpbweb.utils import gviz_api
+from gpbweb.utils import gviz_api, tagcloud
 from datetime import datetime
 from django.db import connection, transaction
 from django.db.models import Sum
 from django.utils.datastructures import SortedDict
+
 
 import calendar
 
@@ -33,7 +34,10 @@ def _reparticion_gastos_data(data):
     rv.append({'reparticion': 'Otras Reparticiones', 'total': sum([float(r.total_compras) for r in data[5:]])})
     return rv;
     
-        
+
+def _tagcloud(compra_lineas):
+    return tagcloud.make_tagcloud([cli.detalle 
+                                   for cli in compra_lineas])
 
 @render_to('index.html')
 def index(request, start_date, end_date):
@@ -41,7 +45,8 @@ def index(request, start_date, end_date):
     gasto_por_mes_datatable = gviz_api.DataTable({ "mes": ("date", "Mes"),
                                       "total": ("number", "Gasto") })
 
-    gasto_por_mes_datatable.LoadData(_gasto_por_mes())
+    gasto_por_mes_datatable.LoadData(_gasto_por_mes("WHERE core_compra.fecha BETWEEN '%s' AND '%s'" 
+                                                    % (start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))))
 
     reparticion_gastos_datatable = gviz_api.DataTable({"reparticion": ("string", "Reparticion"),
                                                        "total": ("number", "Gasto")})
@@ -50,6 +55,7 @@ def index(request, start_date, end_date):
                                                                          compra__fecha__lte=end_date)
 
     reparticion_gastos_datatable.LoadData(_reparticion_gastos_data(top_reparticiones_por_gastos))
+
 
     return { 
         'reparticiones': top_reparticiones_por_gastos,
@@ -61,6 +67,8 @@ def index(request, start_date, end_date):
         'reparticion_datatable_js': reparticion_gastos_datatable.ToJSCode('reparticion_gastos',
                                                                          columns_order=('reparticion', 'total'),
                                                                          order_by='reparticion'),
+        'tagcloud': _tagcloud(models.CompraLineaItem.objects.filter(compra__fecha__gte=start_date,  
+                                                                    compra__fecha__lte=end_date)),
         'start_date': start_date,
         'end_date': end_date
         }
@@ -88,6 +96,9 @@ def reparticion(request, reparticion_slug, start_date, end_date):
                                         .filter(destino=reparticion, 
                                                 fecha__gte=start_date, fecha__lte=end_date) \
                                         .aggregate(total=Sum('importe'))['total'],
+             'tagcloud': _tagcloud(models.CompraLineaItem.objects.filter(compra__fecha__gte=start_date,  
+                                                                         compra__fecha__lte=end_date,
+                                                                         compra__destino=reparticion)),
              'start_date': start_date,
              'end_date': end_date
              }
@@ -127,6 +138,11 @@ def proveedor(request, proveedor_slug, start_date, end_date):
                                                      fecha__gte=start_date, 
                                                      fecha__lte=end_date) \
                                              .aggregate(total=Sum('importe'))['total'] or 0,
+
+             'tagcloud': _tagcloud(models.CompraLineaItem.objects.filter(compra__fecha__gte=start_date,  
+                                                                         compra__fecha__lte=end_date,
+                                                                         compra__proveedor=proveedor)),
+
              'start_date': start_date,
              'end_date': end_date }
 

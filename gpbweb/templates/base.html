@@ -19,14 +19,15 @@
       google.load("visualization", "1", {packages:["table", "linechart", "corechart"], locale: 'es'});
     </script>
     <script type="text/javascript" src="/static/js/jquery.enumerable.js"></script>
+    <script type="text/javascript" src="/static/js/app.js"></script>
     {% block extrajs %}{% endblock %}
   </head>
   <body>
     <div class="container">
       <h1 class="span-10">Gasto Público Bahiense</h1>
-      <div class="span-12 last prepend-2 mainmenu">
-	<a href="" class="span-4">Proveedores</a>
-	<a href="" class="span-4 last">Reparticiones</a>
+      <div class="span-12 last about-header">
+	¿Para qué se usa tu plata?
+	<a href="about">[Sobre GPB]</a>
       </div>
       {% block content %}{% endblock %}
     </div>

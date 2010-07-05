@@ -106,6 +106,8 @@ INSTALLED_APPS = (
     'gpbweb.core',
 )
 
+CACHE_BACKEND = 'file:///tmp/gpb_django_cache'
+
 try:
     from settings_local import *
 except ImportError:

@@ -1,5 +1,11 @@
 # coding: utf-8
 STOPWORDS = [
+  # BEGIN especificas de GPB
+  u'grs',
+  u'hs',
+  u'kg',
+  u'cm',
+  # END especificas de GPB
   u'a',
   u'acá',
   u'ahí',
