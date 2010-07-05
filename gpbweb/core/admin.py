@@ -10,13 +10,13 @@ class CompraLineaItemInline(admin.TabularInline):
 
 class CompraAdmin(admin.ModelAdmin):
     model = models.Compra
-    inlines = (CompraLineaItemInline)
+    inlines = (CompraLineaItemInline,)
 
 class ProveedorAdmin(admin.ModelAdmin):
     model = models.Proveedor
 
 
-admin.site.register(Reparticion, ReparticionAdmin)
-admin.site.register(Compra, CompraAdmin)
-admin.site.register(Proveedor, ProveedorAdmin)
+admin.site.register(models.Reparticion, ReparticionAdmin)
+admin.site.register(models.Compra, CompraAdmin)
+admin.site.register(models.Proveedor, ProveedorAdmin)
 

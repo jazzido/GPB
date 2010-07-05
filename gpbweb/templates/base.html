@@ -3,7 +3,7 @@
 <html lang="es">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}Gasto Público Bahiense{% endblock %}</title>
 
     <!-- Framework CSS -->
     <link rel="stylesheet" href="/static/css/blueprint/screen.css" type="text/css" media="screen, projection">
@@ -27,9 +27,13 @@
       <h1 class="span-10">Gasto Público Bahiense</h1>
       <div class="span-12 last about-header">
 	¿Para qué se usa tu plata?
-	<a href="about">[Sobre GPB]</a>
+	<a href="/acerca-de-gpb/">[Sobre GPB]</a>
       </div>
       {% block content %}{% endblock %}
+      <hr class="prepend-top">
+      <div class="prepend-2 span-20 append-2 last footer">
+	<p><strong>Gasto Público Bahiense</strong> es un proyecto de <a href="http://jazzido.com">Manuel Aristarán</a>. Es <a href="http://es.wikipedia.org/wiki/Software_libre">software libre</a> bajo licencia <a href="http://es.wikipedia.org/wiki/Affero_General_Public_License">Affero General Public Licence</a></p>
+      </div>
     </div>
   </body>
 </html>

@@ -81,6 +81,43 @@ ul.tagcloud li {
     display: none;
 }
 
+/* tabla ordenes de compra */
+
+table.ordenes_de_compra {
+    border: 0;
+    border-collapse: collapse;
+}
+
+  table.ordenes_de_compra tr.grupo_fecha {
+      border-top: 1px solid #bbbbbb;
+      border-bottom: 1px solid #bbbbbb;
+  }
+
+  table.ordenes_de_compra td.detalle a {
+      background: url("/static/img/page_white_text.png") no-repeat scroll center bottom transparent !important;
+      width: 16px;
+      height: 16px;
+      display: block;
+      text-indent: -9999px;
+      overflow: hidden;
+  }
+
+  table.ordenes_de_compra col.destino, table.ordenes_de_compra col.proveedor  {
+      border-right: 1px solid black;
+  }
+
+  table.ordenes_de_compra tr.encabezados {
+      border-bottom: 1px solid black;
+  }
+
+
+.footer {
+    opacity: .7;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+    filter: alpha(opacity=70);
+
+}
+
 /* jquery theme para slider */
 
 .ui-slider.ui-widget-content {

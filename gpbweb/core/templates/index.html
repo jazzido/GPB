@@ -40,7 +40,7 @@
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">{{periodo|first_upper}}, la Municipalidad gastó <strong>{{gasto_mensual_total|currency}}</strong></h2>
+<h2 class="alt">{{periodo|first_upper}}, la Municipalidad gastó <strong>{{gasto_mensual_total|currency}}</strong> en compras a proveedores.</h2>
 {% include "filtro.html" %}
 <hr>
 <div class="span-10 colborder">
@@ -93,18 +93,24 @@
   <div id="table_div_jscode" style="height: 200px; width: 100%"></div>
 </div>
 
-<div class="span-24 last">
+<div class="span-24 last append-bottom">
   {% regroup ordenes_de_compra by fecha as compras_por_dia %}
   <h3>Ordenes de compra emitidas por la Municipalidad {{periodo}}</h3>
-  <table>
-    <tr>
+  <table class="ordenes_de_compra">
+    <colgroup>
+      <col class="destino" />
+      <col class="proveedor"/>
+      <col class="importe" />
+      <col class="detalle" />
+    </colgroup>
+    <tr class="encabezados">
       <th>Destino</th>
       <th>Proveedor</th>
       <th>Importe</th>
       <th></th>
     </tr>
-    {% for dia in compras_por_dia|slice:":7" %}
-    <tr>
+    {% for dia in compras_por_dia|slice:":4" %}
+    <tr class="grupo_fecha">
       <th colspan="3">{{dia.grouper|date:"d/m/Y"}}</th>
     </tr>
     {% for c in dia.list %}
@@ -112,6 +118,7 @@
       <td>{{c.destino|objlink}}</td>
       <td>{{c.proveedor|objlink}}</td>
       <td>{{c.importe|currency}}</td>
+      <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="">Ver detalle</a></td>
     </tr>
     {% endfor %}
     {% endfor %}

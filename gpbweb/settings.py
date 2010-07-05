@@ -30,11 +30,11 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-ar'
+LANGUAGE_CODE = 'es-AR'
 
 SITE_ID = 1
 
@@ -83,6 +83,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'gpbweb.core.middleware.DateLimitsMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 
 ROOT_URLCONF = 'gpbweb.urls'
@@ -104,6 +105,7 @@ INSTALLED_APPS = (
     'gpbweb.annoying',
     'django_extensions',
     'gpbweb.core',
+    'django.contrib.flatpages',
 )
 
 CACHE_BACKEND = 'file:///tmp/gpb_django_cache'
