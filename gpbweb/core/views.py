@@ -1,5 +1,5 @@
 # coding: utf-8
-from annoying.decorators import render_to
+from gpbweb.annoying.decorators import render_to
 from gpbweb.core import models
 from gpbweb.utils import gviz_api
 from datetime import datetime
