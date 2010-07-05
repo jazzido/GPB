@@ -23,8 +23,8 @@ urlpatterns = patterns('',
 
                        url(r'^reparticion/(?P<reparticion_slug>[a-z0-9\-]+)$',
                            'gpbweb.core.views.reparticion',
-                           {'start_date': datetime(datetime.now().year, datetime.now().month, 1),
-                            'end_date': datetime.now() },
+                           {'start_date': datetime(datetime.now().year, 1, 1),
+                            'end_date': datetime(datetime.now().year, 12, 31) },
                            name='reparticion'),
 
                        url(r'^reparticion/(?P<reparticion_slug>[a-z0-9\-]+)/%s$' % anual_expression,
@@ -56,7 +56,5 @@ urlpatterns = patterns('',
                        url(r'^proveedor/(?P<proveedor_slug>[a-z0-9\-]+)/%s$' % periodo_expression,
                            'gpbweb.core.views.proveedor_periodo',
                            name='proveedor_periodo'),
-
-
 
 )

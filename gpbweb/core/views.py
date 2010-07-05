@@ -96,7 +96,7 @@ def reparticion(request, reparticion_slug, start_date, end_date):
              'gasto_mensual_total': models.Compra.objects \
                                         .filter(destino=reparticion, 
                                                 fecha__gte=start_date, fecha__lte=end_date) \
-                                        .aggregate(total=Sum('importe'))['total'],
+                                        .aggregate(total=Sum('importe'))['total'] or 0,
              'tagcloud': _tagcloud(models.CompraLineaItem.objects.filter(compra__fecha__gte=start_date,  
                                                                          compra__fecha__lte=end_date,
                                                                          compra__destino=reparticion)),
