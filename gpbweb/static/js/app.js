@@ -17,6 +17,16 @@ $(document).ready(function() {
 			  }
 		      };
 
+                      var showSliderPeriod = function(months_li, start, end) {
+			  var periodo = '';
+			  var a = $('a', months_li[start]);
+			  periodo += a.html() + '/' + a.attr('href').split('/')[0];
+			  periodo += ' → ';
+			  a = $('a', months_li[end - 1]);
+			  periodo += a.html() + '/' + a.attr('href').split('/')[0];
+			  $('#periodo-display a').html(periodo);
+                      };
+
 		      var sliderInit = false;
 		      
 		      var initSlider = function() {
@@ -40,13 +50,7 @@ $(document).ready(function() {
 					       values: [start_slider, end_slider + 1],
 					       slide: function(event, ui) {
 						   highLightSliderRange(this, months_li, ui.values[0], ui.values[1]);
-						   var periodo = '';
-						   var a = $('a', months_li[ui.values[0]]);
-						   periodo += a.html() + '/' + a.attr('href').split('/')[0];
-						   periodo += ' → ';
-						   a = $('a', months_li[ui.values[1] - 1]);
-						   periodo += a.html() + '/' + a.attr('href').split('/')[0];
-						   $('#periodo-display a').html(periodo);
+                                                   showSliderPeriod(months_li, ui.values[0], ui.values[1]);
 					       } 
 					      });
 
@@ -54,6 +58,7 @@ $(document).ready(function() {
 			  $('#slider .ui-slider-handle:eq(1)').addClass('eResize');
 
 			  highLightSliderRange($('#slider'), months_li, start_slider, end_slider+1);
+			  showSliderPeriod(months_li, start_slider, end_slider+1);
 
 			  sliderInit = true;
 			  
