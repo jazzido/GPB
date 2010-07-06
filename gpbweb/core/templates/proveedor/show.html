@@ -7,6 +7,7 @@
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
 <h2 class="alt">{{periodo|first_upper}}, {{proveedor|objlink}} facturó <strong>{{facturacion_mensual_total|currency}}</strong> a la Municipalidad.</h2>
+{% include "filtro.html" %}
 <hr>
 <div class="span-10 colborder">
   <h5>Sus mejores clientes {{periodo}}</h5>
