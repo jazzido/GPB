@@ -22,7 +22,6 @@ $(document).ready(function() {
 			  if (start_slider == -1) start_slider = 0;
 			  var end_slider = $.inArray(RANGO_FECHAS.start.getUTCFullYear() + '/' + pad(RANGO_FECHAS.start.getUTCMonth() + 1, 2), 
 						     $.map(months_a, function(m) { return $(m).attr('href'); }));
-			  console.log(end_slider);
 			  $('#slider').css('width', $('li.year').inject(0, function(acc) { return acc + $(this).width(); }));
 			  $('#slider').slider({range: true, 
 					       max: months_li.length,
