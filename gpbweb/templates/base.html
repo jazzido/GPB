@@ -19,6 +19,14 @@
       google.load("visualization", "1", {packages:["table", "linechart", "corechart"], locale: 'es'});
     </script>
     <script type="text/javascript" src="/static/js/jquery.enumerable.js"></script>
+    {% if start_date and end_date %} 
+    <script type="text/javascript">
+        RANGO_FECHAS = {};
+        RANGO_FECHAS.start = new Date('{{start_date|date:"Y-m-d"}}');
+	RANGO_FECHAS.end = new Date('{{end_date|date:"Y-m-d"}}');
+	if (RANGO_FECHAS.end > new Date()) RANGO_FECHAS.end = new Date();
+    </script>
+    {% endif %}
     <script type="text/javascript" src="/static/js/app.js"></script>
     {% block extrajs %}{% endblock %}
   </head>

@@ -6,7 +6,7 @@
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">{{periodo|first_upper}}, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
+<h2 class="alt">{{periodo|first_upper}}, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong> en compras a proveedores.</h2>
 <hr>
 <div class="span-10 colborder">
   <h5>Sus 10 proveedores principales {{periodo}}</h5>
@@ -27,4 +27,8 @@
     </tbody>
   </table>
 </div>
+<div class="span-10 last">
+  {% include "palabras_clave.html" %}
+</div>
+
 {% endblock %}
