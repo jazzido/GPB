@@ -1,9 +1,9 @@
 {% load meses %}
 
-<div class="span-22 last" id="filtro-container">
+<div class="span-24 last" id="filtro-container">
   <p class="incr"><button>→ Filtrar</button></p>
 
-  <div class="span-21 prepend-1 last hide" id="filtro">
+  <div class="span-23 prepend-1 last hide" id="filtro">
     <div id="slider"></div>
     {% month_range from request.fecha_minima until request.fecha_maxima as mrange %}
     {% regroup mrange by year as year_months %}
@@ -20,7 +20,7 @@
       </li>
       {% endfor %}
     </ul>
-    <p>Ver periodo: <a href="#">234234</a></p>
+    <p id="periodo-display">Ver periodo: <a href="#">234234</a></p>
   </div>
 
 </div>

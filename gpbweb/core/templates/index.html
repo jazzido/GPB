@@ -111,7 +111,7 @@
     </tr>
     {% for dia in compras_por_dia|slice:":4" %}
     <tr class="grupo_fecha">
-      <th colspan="3">{{dia.grouper|date:"d/m/Y"}}</th>
+      <th colspan="4">{{dia.grouper|date:"d/m/Y"}}</th>
     </tr>
     {% for c in dia.list %}
     <tr>

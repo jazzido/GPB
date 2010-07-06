@@ -5,12 +5,9 @@ var pad = function(num, length) {
         r = "0" + r;
     }
     return r;
-}
-
-
+};
 
 $(document).ready(function() {
-		      //		      $('#filtro').toggleClass('hide');
 		      
 		      var highLightSliderRange = function(slider, months_li, start, end) {
 			  var i;
@@ -26,24 +23,38 @@ $(document).ready(function() {
 
 			  var months_li = $('ul#months-menu li ul li');
 			  var months_a  = $('ul#months-menu li ul li a');
+
 			  // buscar los indices de los links correspondientes segun RANGO_FECHAS
 			  var start_slider = $.inArray(RANGO_FECHAS.end.getUTCFullYear() + '/' + pad(RANGO_FECHAS.end.getUTCMonth() + 1, 2), 
 						       $.map(months_a, function(m) { return $(m).attr('href'); }));
 			  if (start_slider == -1) start_slider = 0;
+
 			  var end_slider = $.inArray(RANGO_FECHAS.start.getUTCFullYear() + '/' + pad(RANGO_FECHAS.start.getUTCMonth() + 1, 2), 
 						     $.map(months_a, function(m) { return $(m).attr('href'); }));
+
 			  $('#slider').css('width', $('li.year').inject(0, function(acc) { return acc + $(this).width(); }));
+
 			  $('#slider').slider({range: true, 
 					       max: months_li.length,
 					       min: 0,
 					       values: [start_slider, end_slider + 1],
 					       slide: function(event, ui) {
-						   highLightSliderRange($('#slider'), months_li, ui.values[0], ui.values[1]);
+						   highLightSliderRange(this, months_li, ui.values[0], ui.values[1]);
+						   var periodo = '';
+						   var a = $('a', months_li[ui.values[0]]);
+						   periodo += a.html() + '/' + a.attr('href').split('/')[0];
+						   periodo += ' → ';
+						   a = $('a', months_li[ui.values[1] - 1]);
+						   periodo += a.html() + '/' + a.attr('href').split('/')[0];
+						   $('#periodo-display a').html(periodo);
 					       } 
 					      });
+
 			  $('#slider .ui-slider-handle:eq(0)').addClass('wResize');
 			  $('#slider .ui-slider-handle:eq(1)').addClass('eResize');
+
 			  highLightSliderRange($('#slider'), months_li, start_slider, end_slider+1);
+
 			  sliderInit = true;
 			  
 		      };
