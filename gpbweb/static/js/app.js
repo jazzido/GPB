@@ -11,7 +11,17 @@ var pad = function(num, length) {
 
 $(document).ready(function() {
 		      //		      $('#filtro').toggleClass('hide');
+		      
+		      var highLightSliderRange = function(slider, months_li, start, end) {
+			  var i;
+			  months_li.css('background-color', 'white');
+			  for(i = start; i < end; i++) {
+			      $(months_li[i]).css('background-color', '#eeeeee');
+			  }
+		      };
+
 		      var sliderInit = false;
+		      
 		      var initSlider = function() {
 
 			  var months_li = $('ul#months-menu li ul li');
@@ -28,15 +38,12 @@ $(document).ready(function() {
 					       min: 0,
 					       values: [start_slider, end_slider + 1],
 					       slide: function(event, ui) {
-						   var i;
-						   months_li.css('background-color', 'white');
-						   for(i = ui.values[0]; i < ui.values[1]; i++) {
-						       $(months_li[i]).css('background-color', '#eeeeee');
-						   }
+						   highLightSliderRange($('#slider'), months_li, ui.values[0], ui.values[1]);
 					       } 
 					      });
 			  $('#slider .ui-slider-handle:eq(0)').addClass('wResize');
 			  $('#slider .ui-slider-handle:eq(1)').addClass('eResize');
+			  highLightSliderRange($('#slider'), months_li, start_slider, end_slider);
 			  sliderInit = true;
 			  
 		      };
