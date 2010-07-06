@@ -15,7 +15,7 @@
 	  {% for month in year.list reversed %}
 	  <li><a href="{{month|date:"Y/m"}}">{{month|date:"M"}}</a></li>
 	  {% endfor %}
-	</ul>
+	</ul><br />
 	<a href="#" class="year-link">{{year.grouper}}</a>
       </li>
       {% endfor %}
