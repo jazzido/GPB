@@ -9,7 +9,7 @@ Detalle de la orden de compra <strong>{{orden.oc_numero}}</strong> - {{block.sup
 {% endblock %}
 {% block content %}
 <hr>
-<h2 class="alt">Detalle de la orden de compra <strong>{{orden.oc_numero}}</strong> adjudicada a {{orden.proveedor|objlink}} con destino {{orden.destino|objlink}}</h2>
+<h2 class="alt">Detalle de la orden de compra <strong>{{orden.oc_numero}}</strong> con fecha <strong>{{orden.fecha|date:"d/m/Y"}}</strong>, adjudicada a {{orden.proveedor|objlink}} con destino {{orden.destino|objlink}}</h2>
 <hr>
 <div class="prepend-2 append-2 span-20 last append-bottom">
   <table class="ordenes_de_compra">
