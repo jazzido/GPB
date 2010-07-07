@@ -104,6 +104,44 @@ def index_periodo(request, start_anio, start_mes, end_anio, end_mes):
                  datetime(int(end_anio), int(end_mes), calendar.monthrange(int(end_anio), int(end_mes))[1])) # ultimo dia del mes
 
 
+
+@render_to('list_ordenes.html')
+def index_ordenes(request, start_date, end_date):
+
+    paginator = Paginator(models.Compra.objects.select_related('proveedor') \
+                            .filter(fecha__gte=start_date,
+                                    fecha__lte=end_date) \
+                            .order_by('-fecha'), 
+                          PAGE_SIZE)
+
+    # Si la pagina esta fuera de rango, mostrar la última
+    try:
+        ordenes_de_compra = paginator.page(_get_page(request))
+    except (EmptyPage, InvalidPage):
+        ordenes_de_compra = paginator.page(paginator.num_pages)
+
+    return { 'ordenes_de_compra': ordenes_de_compra,
+             'start_date': start_date,
+             'end_date': end_date
+             }
+
+def index_ordenes_anual(request, anio):
+    return index_ordenes(request, 
+                         datetime(int(anio), 1, 1), # principio del año
+                         datetime(int(anio), 12, 31)) # ultimo dia del año
+
+def index_ordenes_mensual(request, anio, mes):
+    return index_ordenes(request, 
+                         datetime(int(anio), int(mes), 1), # principio del mes
+                         datetime(int(anio), int(mes), calendar.monthrange(int(anio), int(mes))[1])) # ultimo dia del mes
+
+def index_ordenes_periodo(request, start_anio, start_mes, end_anio, end_mes):
+    return index_ordenes(request,
+                         datetime(int(start_anio), int(start_mes), 1), # principio del mes
+                         datetime(int(end_anio), int(end_mes), calendar.monthrange(int(end_anio), int(end_mes))[1])) # ultimo dia del mes
+
+
+
 @render_to('reparticion/list.html')
 def reparticiones(request):
     return { 'reparticiones': models.Reparticion.objects \
@@ -300,3 +338,9 @@ def proveedor_ordenes_periodo(request, proveedor_slug, start_anio, start_mes, en
                              proveedor_slug,
                              datetime(int(start_anio), int(start_mes), 1), # principio del mes
                              datetime(int(end_anio), int(end_mes), calendar.monthrange(int(end_anio), int(end_mes))[1])) # ultimo dia del mes
+
+
+@render_to('orden_de_compra.html')
+def orden_de_compra(request, numero, anio):
+    orden = get_object_or_404(models.Compra, orden_compra=int(numero), fecha__year=int(anio))
+    return { 'orden': orden }

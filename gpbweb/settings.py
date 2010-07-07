@@ -10,6 +10,8 @@ ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
 
+SMART_APPEND_SLASH = True
+
 MANAGERS = ADMINS
 
 DATABASES = {
@@ -82,7 +84,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'gpbweb.core.middleware.SmartAppendSlashMiddleware',
     'gpbweb.core.middleware.DateLimitsMiddleware',
+    'gpbweb.core.middleware.StripDateRangeMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 

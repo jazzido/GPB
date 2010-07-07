@@ -10,7 +10,7 @@
 {% include "filtro.html" %}
 <hr>
 <div class="span-10 colborder">
-  <h5>Sus mejores clientes {{periodo}}</h5>
+  <h5>Principales destinos de los suministros de {{proveedor}} {{periodo}}</h5>
   <table class="tabla-sumario">
     <thead>
       <tr>
@@ -54,11 +54,11 @@
   <tr>
     <td>{{c.destino|objlink}}</td>
     <td>{{c.importe|currency}}</td>
-    <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="">Ver detalle</a></td>
+    <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
   </tr>
   {% endfor %}
   {% endfor %}
 </table>
-<a href="#TODO">Ver todas las ordenes de compra adjudicadas al proveedor {{reparticion}} {{periodo}}</a>
+<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a>
 </div>
 {% endblock %}

@@ -13,14 +13,14 @@
       <li class="year">
 	<ul class="months">
 	  {% for month in year.list reversed %}
-	  <li><a href="{{month|date:"Y/m"}}">{{month|date:"M"}}</a></li>
+	  <li><a name="{{month|date:"Y/m"}}" href="{{request.gpb_base_url}}{{month|date:"Y/m"}}">{{month|date:"M"}}</a></li>
 	  {% endfor %}
 	</ul><br />
-	<a href="#" class="year-link">{{year.grouper}}</a>
+	<a href="{{request.gpb_base_url}}{{year.grouper}}" class="year-link">{{year.grouper}}</a>
       </li>
       {% endfor %}
     </ul>
-    <p id="periodo-display">Ver periodo: <a href="#">234234</a></p>
+    <p id="periodo-display">Ver período: <a href="#"></a></p>
   </div>
 
 </div>

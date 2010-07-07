@@ -58,12 +58,13 @@ Gastos de {{reparticion.nombre}} {{periodo|striptags}} - {{block.super}}
   <tr>
     <td>{{c.proveedor|objlink}}</td>
     <td>{{c.importe|currency}}</td>
-    <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="">Ver detalle</a></td>
+    <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
   </tr>
   {% endfor %}
   {% endfor %}
 </table>
-<a href="#TODO">Ver todas las ordenes de compra con destino {{reparticion}} {{periodo}}</a>
+{{request.gpb_date_range}}
+<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra con destino {{reparticion}} {{periodo}}</a>
 </div>
 
 {% endblock %}

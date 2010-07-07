@@ -6,39 +6,41 @@
 
 {% block title %}
 {% tiempo_en_letras start_date end_date as periodo %}
-Ordenes de Compra adjudicadas a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
+Órdenes de Compra emitidas por la Municipalidad de Bahía Blanca {{periodo|striptags}} - {{block.super}}
 {% endblock %}
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">Órdenes de compra adjudicadas al proveedor {{proveedor|objlink}} {{periodo}}</h2>
+<h2 class="alt">Órdenes de Compra emitidas por la Municipalidad de Bahía Blanca {{periodo}}</h2>
 {% include "filtro.html" %}
 <hr>
-<div class="prepend-3 append-3 span-18 last append-bottom">
+<div class="prepend-1 append-1 span-22 last append-bottom">
   <div class="pagination">
     <span class="step-links">
-        {% if ordenes_de_compra.has_previous %}
-            <a href="?page={{ ordenes_de_compra.previous_page_number }}">anterior</a>
-        {% endif %}
+      {% if ordenes_de_compra.has_previous %}
+      <a href="?page={{ ordenes_de_compra.previous_page_number }}">anterior</a>
+      {% endif %}
 
-        <span class="current">
-            Página {{ ordenes_de_compra.number }} de {{ ordenes_de_compra.paginator.num_pages }}.
-        </span>
+      <span class="current">
+        Página {{ ordenes_de_compra.number }} de {{ ordenes_de_compra.paginator.num_pages }}.
+      </span>
 
-        {% if ordenes_de_compra.has_next %}
-            <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
-        {% endif %}
+      {% if ordenes_de_compra.has_next %}
+      <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
+      {% endif %}
     </span>
   </div>
   <table class="ordenes_de_compra">
     <colgroup>
       <col class="oc_numero">
+      <col class="proveedor">
       <col class="destino">
       <col class="importe">
       <col class="detalle">
     </colgroup>
     <tr class="encabezados">
       <th>OC Nº</th>
+      <th>Proveedor</th>
       <th>Destino</th>
       <th>Importe</th>
       <th></th>
@@ -52,6 +54,7 @@ Ordenes de Compra adjudicadas a {{proveedor.nombre}} {{periodo|striptags}} - {{b
     {% for c in dia.list %}
     <tr>
       <td>{{c.oc_numero}}</td>
+      <td>{{c.proveedor|objlink}}</td>
       <td>{{c.destino|objlink}}</td>
       <td>{{c.importe|currency}}</td>
       <td class="detalle"><a title="Detalle de la orden de compra {{c.oc_numero}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
@@ -62,17 +65,17 @@ Ordenes de Compra adjudicadas a {{proveedor.nombre}} {{periodo|striptags}} - {{b
   </table>
   <div class="pagination">
     <span class="step-links">
-        {% if ordenes_de_compra.has_previous %}
-            <a href="?page={{ ordenes_de_compra.previous_page_number }}">anterior</a>
-        {% endif %}
+      {% if ordenes_de_compra.has_previous %}
+      <a href="?page={{ ordenes_de_compra.previous_page_number }}">anterior</a>
+      {% endif %}
 
-        <span class="current">
-            Página {{ ordenes_de_compra.number }} de {{ ordenes_de_compra.paginator.num_pages }}.
-        </span>
+      <span class="current">
+        Página {{ ordenes_de_compra.number }} de {{ ordenes_de_compra.paginator.num_pages }}.
+      </span>
 
-        {% if ordenes_de_compra.has_next %}
-            <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
-        {% endif %}
+      {% if ordenes_de_compra.has_next %}
+      <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
+      {% endif %}
     </span>
   </div>
 

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load objlink %}
+{% load currency %}
+{% load common_html %}
+{% load tiempo_en_letras %}
+
+{% block title %}
+Detalle de la orden de compra <strong>{{orden.oc_numero}}</strong> - {{block.super}}
+{% endblock %}
+{% block content %}
+<hr>
+<h2 class="alt">Detalle de la orden de compra <strong>{{orden.oc_numero}}</strong> adjudicada a {{orden.proveedor|objlink}} con destino {{orden.destino|objlink}}</h2>
+<hr>
+<div class="prepend-2 append-2 span-20 last append-bottom">
+  <table class="ordenes_de_compra">
+    <colgroup>
+      <col class="cantidad">
+      <col class="detalle">
+      <col class="importe">
+    </colgroup>
+    <tr>
+      <th>Cantidad</th>
+      <th>Detalle</th>
+      <th>Importe unitario</th>
+    </tr>
+    {% for cli in orden.compralineaitem_set.all %}
+    <tr>
+    <td>{{cli.cantidad}}</td>
+    <td>{{cli.detalle}}</td>
+    <td>{{cli.importe_unitario|currency}}</td>
+    </tr>
+    {% endfor %}
+    <tr style="border-top: 1px solid black">
+      <td colspan="2" style="text-align: right">Total:</td>
+      <td><strong>{{orden.importe|currency}}</strong></td>
+    </tr>
+  </table>
+</div>
+{% endblock %}

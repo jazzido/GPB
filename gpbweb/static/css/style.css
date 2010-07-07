@@ -2,6 +2,11 @@ div.container {
     margin-top: 20px;
 }
 
+h1 a {
+    text-decoration: none;
+    color: black;
+}
+
 .about-header {
     font-size: 2em;
     color: #999999;

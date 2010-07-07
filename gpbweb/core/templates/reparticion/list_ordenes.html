@@ -54,7 +54,7 @@ Ordenes de Compra para {{reparticion.nombre|first_upper}} {{periodo|striptags}} 
       <td>{{c.oc_numero}}</td>
       <td>{{c.proveedor|objlink}}</td>
       <td>{{c.importe|currency}}</td>
-      <td class="detalle"><a title="Detalle de la orden de compra {{c.oc_numero}}" href="">Ver detalle</a></td>
+      <td class="detalle"><a title="Detalle de la orden de compra {{c.oc_numero}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
     </tr>
     {% endfor %}
     {% endfor %}

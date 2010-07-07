@@ -88,6 +88,13 @@ class Compra(models.Model):
     def __unicode__(self):
         return "%s compra a %s por $%s" % (self.destino, self.proveedor, self.importe)
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('gpbweb.core.views.orden_de_compra', (),
+                {'numero': self.orden_compra,
+                 'anio': self.fecha.year })
+
+
 class CompraLineaItem(models.Model):
     compra = models.ForeignKey(Compra)
     importe_unitario = models.DecimalField(_('Importe'), decimal_places=2, max_digits=19)

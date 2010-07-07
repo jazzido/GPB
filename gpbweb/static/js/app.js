@@ -22,19 +22,24 @@ $(document).ready(function() {
 			  var periodo = '';
 
 			  var a = $('a', months_li[end - 1]);
-			  periodo += a.html() + '/' + a.attr('href').split('/')[0];
+			  var href = BASE_URL + a.attr('name');
+			  periodo += a.html() + '/' + a.attr('name').split('/')[0];
 
 			  if (end - start == 1) { 
 			      $('#periodo-display a').html(periodo);
+         		      $('#periodo-display a').attr('href', href);
 			      return;
 			  }
 			  
 			  periodo += ' → ';
 
 			  a = $('a', months_li[start]);
-			  periodo += a.html() + '/' + a.attr('href').split('/')[0];
+			  href += '/' + a.attr('name');
+			  periodo += a.html() + '/' + a.attr('name').split('/')[0];
 
 			  $('#periodo-display a').html(periodo);
+			  $('#periodo-display a').attr('href', href);
+
                       };
 
 		      var sliderInit = false;
@@ -46,11 +51,11 @@ $(document).ready(function() {
 
 			  // buscar los indices de los links correspondientes segun RANGO_FECHAS
 			  var start_slider = $.inArray(RANGO_FECHAS.end.getUTCFullYear() + '/' + pad(RANGO_FECHAS.end.getUTCMonth() + 1, 2), 
-						       $.map(months_a, function(m) { return $(m).attr('href'); }));
+						       $.map(months_a, function(m) { return $(m).attr('name'); }));
 			  if (start_slider == -1) start_slider = 0;
 
 			  var end_slider = $.inArray(RANGO_FECHAS.start.getUTCFullYear() + '/' + pad(RANGO_FECHAS.start.getUTCMonth() + 1, 2), 
-						     $.map(months_a, function(m) { return $(m).attr('href'); }));
+						     $.map(months_a, function(m) { return $(m).attr('name'); }));
 
 			  $('#slider').css('width', $('li.year').inject(0, function(acc) { return acc + $(this).width(); }));
 

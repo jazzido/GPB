@@ -21,6 +21,7 @@
     <script type="text/javascript" src="/static/js/jquery.enumerable.js"></script>
     {% if start_date and end_date %} 
     <script type="text/javascript">
+        BASE_URL = '{{request.gpb_base_url}}';
         RANGO_FECHAS = {};
         RANGO_FECHAS.start = new Date('{{start_date|date:"Y-m-d"}}');
 	RANGO_FECHAS.end = new Date('{{end_date|date:"Y-m-d"}}');
@@ -32,7 +33,7 @@
   </head>
   <body>
     <div class="container">
-      <h1 class="span-10">Gasto Público Bahiense</h1>
+      <h1 class="span-10"><a href="/">Gasto Público Bahiense</a></h1>
       <div class="span-12 last about-header">
 	¿Para qué se usa tu plata?
 	<a href="/acerca-de-gpb/">[Sobre GPB]</a>
