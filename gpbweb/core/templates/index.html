@@ -18,7 +18,7 @@
 
   function draw_table() {
     {{ gasto_por_mes_datatable_js|safe }}
-    var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM'});
+    var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM yyyy'});
     date_formatter.format(gasto_por_mes, 0);
     var number_formatter = new google.visualization.NumberFormat({prefix: '$', negativeColor: 'red', negativeParens: true, groupingSymbol:'.', decimalSymbol:','});
     number_formatter = number_formatter.format(gasto_por_mes, 1);
@@ -92,7 +92,7 @@
   <h3>Evolución del gasto {{periodo}}</h3>
   <div id="table_div_jscode" style="height: 200px; width: 100%"></div>
 </div>
-
+<hr class="space" />
 <div class="span-24 last append-bottom">
   {% regroup ordenes_de_compra by fecha as compras_por_dia %}
   <h3>Ordenes de compra emitidas por la Municipalidad {{periodo}}</h3>

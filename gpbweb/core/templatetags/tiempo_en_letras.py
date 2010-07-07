@@ -26,7 +26,8 @@ class TiempoEnLetrasNode(template.Node):
                 rv = "en lo que va del <strong>año %s</strong>" % self.start_time.year
             else:
                 rv = "en el <strong>año %s</strong>" % self.start_time.year
-        elif now >= self.start_time and now <= self.end_time:
+        elif (now.year, now.month, 1) == (self.start_time.year, self.start_time.month, self.start_time.day) \
+                and now <= date(self.end_time.year, self.end_time.month, calendar.monthrange(self.end_time.year, self.end_time.month)[1]):
             rv = "en lo que va del mes de <strong>%s de %s</strong>" % (self.start_time.strftime("%B"), self.start_time.strftime("%Y"))
         elif now > self.start_time:
             if self.start_time.month == self.end_time.month \
@@ -34,12 +35,11 @@ class TiempoEnLetrasNode(template.Node):
                 and self.end_time.day == calendar.monthrange(self.end_time.year, self.end_time.month)[1]:
                 
                 rv = "en el mes de <strong>%s de %s</strong>" % (self.start_time.strftime("%B"), self.start_time.strftime("%Y"))
-            elif self.start_time.month < self.end_time.month:
-                if self.start_time.year < self.end_time.year:
-                    rv = "entre <strong>%s de %s y %s de %s</strong>" % (self.start_time.strftime("%B"), self.start_time.strftime("%Y"),
+            elif self.start_time.year < self.end_time.year:
+                rv = "entre <strong>%s de %s y %s de %s</strong>" % (self.start_time.strftime("%B"), self.start_time.strftime("%Y"),
                                                                                   self.end_time.strftime("%B"), self.end_time.strftime("%Y"))
-                else:
-                    rv = "entre <strong>%s y %s de %s</strong>" % (self.start_time.strftime("%B"), self.end_time.strftime("%B"),
+            else:
+                rv = "entre <strong>%s y %s de %s</strong>" % (self.start_time.strftime("%B"), self.end_time.strftime("%B"),
                                                                    self.end_time.strftime("%Y"))
 
         context[self.template_varname] = mark_safe(rv)

@@ -3,10 +3,15 @@
 {% load currency %}
 {% load tiempo_en_letras %}
 {% load common_html %}
+{% block title %}
+{% tiempo_en_letras start_date end_date as periodo %}
+Gastos de {{reparticion.nombre}} {{periodo|striptags}} - {{block.super}}
+{% endblock %}
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
 <h2 class="alt">{{periodo|first_upper}}, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong> en compras a proveedores.</h2>
+{% include "filtro.html" %}
 <hr>
 <div class="span-10 colborder">
   <h5>Sus 10 proveedores principales {{periodo}}</h5>
@@ -29,6 +34,36 @@
 </div>
 <div class="span-10 last">
   {% include "palabras_clave.html" %}
+</div>
+<hr class="space">
+<div class="span-24 last append-bottom">
+<h3>Ordenes de compra con destino {{reparticion}} {{periodo}}</h3>
+<table class="ordenes_de_compra">
+  <colgroup>
+    <col class="proveedor" />
+    <col class="importe" />
+    <col class="detalle" />
+  </colgroup>
+  <tr class="encabezados">
+    <th>Proveedor</th>
+    <th>Importe</th>
+    <th></th>
+  </tr>
+  {% regroup ordenes_de_compra by fecha as compras_por_dia %}
+  {% for dia in compras_por_dia|slice:":4" %}
+  <tr class="grupo_fecha">
+    <th colspan="3">{{dia.grouper|date:"d/m/Y"}}</th>
+  </tr>
+  {% for c in dia.list %}
+  <tr>
+    <td>{{c.proveedor|objlink}}</td>
+    <td>{{c.importe|currency}}</td>
+    <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="">Ver detalle</a></td>
+  </tr>
+  {% endfor %}
+  {% endfor %}
+</table>
+<a href="#TODO">Ver todas las ordenes de compra con destino {{reparticion}} {{periodo}}</a>
 </div>
 
 {% endblock %}

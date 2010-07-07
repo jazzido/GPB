@@ -82,6 +82,9 @@ class Compra(models.Model):
     proveedor = models.ForeignKey(Proveedor)
     destino = models.ForeignKey(Reparticion)
 
+    def oc_numero(self):
+        return "%s/%s" % (self.orden_compra, self.fecha.strftime("%Y"))
+
     def __unicode__(self):
         return "%s compra a %s por $%s" % (self.destino, self.proveedor, self.importe)
 

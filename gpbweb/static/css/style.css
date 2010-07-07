@@ -59,8 +59,9 @@ li.year {
     background-color: transparent;
 }
 
-  #filtro button:hover {
-
+  #filtro-container button:hover {
+      background-color: #dddddd;
+      cursor: pointer;
   }
 
 /* tag cloud */

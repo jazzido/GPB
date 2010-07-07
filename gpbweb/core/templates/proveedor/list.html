@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load objlink %}
+{% load currency %}
+{% load common_html %}
+{% block title %}
+Listado de Proveedores - {{block.super}}
+{% endblock %}
+{% block content %}
+<hr>
+<h2 class="alt">Proveedores que facturaron a la Municipalidad entre 2008 y 2010</h2>
+<hr>
+<div class="span-24 last">
+  <table>
+    <tr>
+      <th>Nombre</th>
+      <th>Domicilio</th>
+      <th>Localidad</th>
+      <th>CUIT</th>
+    </tr>
+    {% for p in proveedores %}
+    <tr>
+      <td>{{p|objlink}}</td>
+      <td>{{p.domicilio|default_if_none:"-"}}</td>
+      <td>{{p.localidad|default_if_none:"-"}}</td>
+      <td>{{p.cuit|default_if_none:"-"}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

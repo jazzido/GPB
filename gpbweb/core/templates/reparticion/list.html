@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load objlink %}
+{% load currency %}
+{% load common_html %}
+{% block title %}
+Reparticiones Municipales - {{block.super}}
+{% endblock %}
+{% block content %}
+<hr>
+<h2 class="alt">Reparticiones municipales que realizaron compras entre 2008 y 2010</h2>
+<hr>
+<div class="span-24 last">
+  <table>
+    <tr>
+      <th>Nombre</th>
+    </tr>
+    {% for r in reparticiones %}
+    <tr>
+      <td>{{r|objlink}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

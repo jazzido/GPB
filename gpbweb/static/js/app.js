@@ -18,12 +18,22 @@ $(document).ready(function() {
 		      };
 
                       var showSliderPeriod = function(months_li, start, end) {
+			  // mostrar el periodo indicado con el slider
 			  var periodo = '';
-			  var a = $('a', months_li[start]);
+
+			  var a = $('a', months_li[end - 1]);
 			  periodo += a.html() + '/' + a.attr('href').split('/')[0];
+
+			  if (end - start == 1) { 
+			      $('#periodo-display a').html(periodo);
+			      return;
+			  }
+			  
 			  periodo += ' → ';
-			  a = $('a', months_li[end - 1]);
+
+			  a = $('a', months_li[start]);
 			  periodo += a.html() + '/' + a.attr('href').split('/')[0];
+
 			  $('#periodo-display a').html(periodo);
                       };
 

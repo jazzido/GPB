@@ -31,4 +31,34 @@
 <div class="span-10 last">
   {% include "palabras_clave.html" %}
 </div>
+<hr class="space">
+<div class="span-24 last append-bottom">
+<h3>Ordenes de compra adjudicadas al proveedor {{reparticion}} {{periodo}}</h3>
+<table class="ordenes_de_compra">
+  <colgroup>
+    <col class="destino" />
+    <col class="importe" />
+    <col class="detalle" />
+  </colgroup>
+  <tr class="encabezados">
+    <th>Destino</th>
+    <th>Importe</th>
+    <th></th>
+  </tr>
+  {% regroup ordenes_de_compra by fecha as compras_por_dia %}
+  {% for dia in compras_por_dia|slice:":4" %}
+  <tr class="grupo_fecha">
+    <th colspan="3">{{dia.grouper|date:"d/m/Y"}}</th>
+  </tr>
+  {% for c in dia.list %}
+  <tr>
+    <td>{{c.destino|objlink}}</td>
+    <td>{{c.importe|currency}}</td>
+    <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="">Ver detalle</a></td>
+  </tr>
+  {% endfor %}
+  {% endfor %}
+</table>
+<a href="#TODO">Ver todas las ordenes de compra adjudicadas al proveedor {{reparticion}} {{periodo}}</a>
+</div>
 {% endblock %}

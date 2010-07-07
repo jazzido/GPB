@@ -14,6 +14,13 @@ STOPWORDS = [
   u'unidades',
   u'orden',
   u'incluye',
+  u'hora',
+  u'horas',
+  u'mes',
+  u'meses'
+  u'dia',
+  u'dias',
+  u'traves',
   # END especificas de GPB
   u'a',
   u'acá',

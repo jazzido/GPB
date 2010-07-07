@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load objlink %}
+{% load currency %}
+{% load common_html %}
+{% load tiempo_en_letras %}
+
+{% block title %}
+{% tiempo_en_letras start_date end_date as periodo %}
+Ordenes de Compra para {{reparticion.nombre|first_upper}} {{periodo|striptags}} - {{block.super}}
+{% endblock %}
+{% block content %}
+{% tiempo_en_letras start_date end_date as periodo %}
+<hr>
+<h2 class="alt">Órdenes de compra con destino {{reparticion|objlink}} {{periodo}}</h2>
+{% include "filtro.html" %}
+<hr>
+<div class="prepend-3 append-3 span-18 last append-bottom">
+  <div class="pagination">
+    <span class="step-links">
+        {% if ordenes_de_compra.has_previous %}
+            <a href="?page={{ ordenes_de_compra.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Página {{ ordenes_de_compra.number }} de {{ ordenes_de_compra.paginator.num_pages }}.
+        </span>
+
+        {% if ordenes_de_compra.has_next %}
+            <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
+        {% endif %}
+    </span>
+  </div>
+  <table class="ordenes_de_compra">
+    <colgroup>
+      <col class="oc_numero">
+      <col class="proveedor">
+      <col class="importe">
+      <col class="detalle">
+    </colgroup>
+    <tr class="encabezados">
+      <th>OC Nº</th>
+      <th>Proveedor</th>
+      <th>Importe</th>
+      <th></th>
+    </tr>
+    {% with ordenes_de_compra.object_list as ordenes %}
+    {% regroup ordenes by fecha as compras_por_dia %}
+    {% for dia in compras_por_dia %}
+    <tr class="grupo_fecha">
+      <th colspan="4">{{dia.grouper|date:"d/m/Y"}}</th>
+    </tr>
+    {% for c in dia.list %}
+    <tr>
+      <td>{{c.oc_numero}}</td>
+      <td>{{c.proveedor|objlink}}</td>
+      <td>{{c.importe|currency}}</td>
+      <td class="detalle"><a title="Detalle de la orden de compra {{c.oc_numero}}" href="">Ver detalle</a></td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+    {% endwith %}
+  </table>
+  <div class="pagination">
+    <span class="step-links">
+        {% if ordenes_de_compra.has_previous %}
+            <a href="?page={{ ordenes_de_compra.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Página {{ ordenes_de_compra.number }} de {{ ordenes_de_compra.paginator.num_pages }}.
+        </span>
+
+        {% if ordenes_de_compra.has_next %}
+            <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
+        {% endif %}
+    </span>
+  </div>
+
+</div>
+{% endblock %}
