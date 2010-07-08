@@ -7,6 +7,10 @@ h1 a {
     color: black;
 }
 
+.alt strong {
+	background-color: #FFFF9E;
+}
+
 .about-header {
     font-size: 2em;
     color: #999999;
