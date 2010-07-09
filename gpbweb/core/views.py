@@ -21,7 +21,6 @@ def _gasto_por_mes(additional_where=''):
                                GROUP BY mes
                                ORDER BY mes ASC """ % {'where_clause': additional_where }
 
-    print sql
     cursor.execute(sql)
     gasto_mensual = []
     while True:

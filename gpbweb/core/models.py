@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from django_extensions.db import fields
 
 from datetime import datetime
-# Create your models here.
+import fts
+
 
 class ProveedorManager(models.Manager):
 
