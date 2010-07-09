@@ -104,12 +104,13 @@ table.ordenes_de_compra {
   }
 
   table.ordenes_de_compra td.detalle a {
-      background: url("/static/img/page_white_text.png") no-repeat scroll center bottom transparent !important;
-      width: 16px;
-      height: 16px;
-      display: block;
-      text-indent: -9999px;
-      overflow: hidden;
+      /*background: url("/static/img/page_white_text.png") no-repeat scroll center bottom transparent !important; */
+      /* width: 16px; */
+      /* height: 16px; */
+      /* display: block; */
+      /*text-indent: -9999px;*/
+      /*overflow: hidden;*/
+      visibility: hidden;
   }
 
   table.ordenes_de_compra col.destino, table.ordenes_de_compra col.proveedor  {
@@ -118,6 +119,14 @@ table.ordenes_de_compra {
 
   table.ordenes_de_compra tr.encabezados {
       border-bottom: 1px solid black;
+  }
+
+  table.ordenes_de_compra tr.orden:hover {
+      background-color: #dddddd;
+  }
+  
+  table.ordenes_de_compra tr.orden:hover td.detalle a {
+      visibility: visible;
   }
 
 
