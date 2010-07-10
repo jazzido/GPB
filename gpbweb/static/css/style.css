@@ -24,6 +24,18 @@ table.tabla-sumario caption, table.tabla-sumario thead {
     display: none;
 }
 
+/* footer menu */
+
+ul.footer-menu {
+    padding-left: 0;
+    float: left;
+}
+
+  ul.footer-menu li {
+      display: block;
+      float: left;
+  }
+
 /* filtro de fechas */
 
 ul#months-menu {
