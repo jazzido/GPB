@@ -3,6 +3,12 @@
 {% load currency %}
 {% load tiempo_en_letras %}
 {% load common_html %}
+
+{% block title %}
+{% tiempo_en_letras start_date end_date as periodo %}
+Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
+{% endblock %}
+
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>

@@ -6,7 +6,7 @@
 
 {% block title %}
 {% tiempo_en_letras start_date end_date as periodo %}
-Ordenes de Compra para {{reparticion.nombre|first_upper}} {{periodo|striptags}} - {{block.super}}
+Órdenes de Compra para {{reparticion.nombre|first_upper}} {{periodo|striptags}} - {{block.super}}
 {% endblock %}
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
