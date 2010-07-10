@@ -109,6 +109,7 @@ INSTALLED_APPS = (
     'gpbweb.annoying',
     'django_extensions',
     'gpbweb.core',
+    'gpbweb.postgres_fts',
     'django.contrib.flatpages',
 )
 

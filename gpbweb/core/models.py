@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_extensions.db import fields
 
 from datetime import datetime
-import fts
+from gpbweb.postgres_fts import models as fts_models
 
 
 class ProveedorManager(models.Manager):
@@ -83,8 +83,10 @@ class Compra(models.Model):
     proveedor = models.ForeignKey(Proveedor)
     destino = models.ForeignKey(Reparticion)
 
-    def oc_numero(self):
+    def _oc_numero(self):
         return "%s/%s" % (self.orden_compra, self.fecha.strftime("%Y"))
+    oc_numero = property(_oc_numero)
+
 
     def __unicode__(self):
         return "%s compra a %s por $%s" % (self.destino, self.proveedor, self.importe)
@@ -96,8 +98,13 @@ class Compra(models.Model):
                  'anio': self.fecha.year })
 
 
-class CompraLineaItem(models.Model):
+class CompraLineaItem(fts_models.SearchableModel):
     compra = models.ForeignKey(Compra)
     importe_unitario = models.DecimalField(_('Importe'), decimal_places=2, max_digits=19)
     cantidad = models.CharField(_('Cantidad'), max_length=128, null=True, blank=True)
     detalle = models.TextField(_('Detalle'), null=True, blank=True)
+
+    objects = fts_models.SearchManager(fields=('detalle',), config='spanish')
+
+    def __unicode__(self):
+        return "%s (OC: %s)" % (self.detalle, self.compra.oc_numero)

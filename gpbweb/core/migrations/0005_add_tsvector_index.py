@@ -1,16 +1,17 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
     
     def forwards(self, orm):
-        db.execute("CREATE TRIGGER core_compralineaitem_tsvectorupdate BEFORE INSERT OR UPDATE ON core_compralineaitem FOR EACH ROW EXECUTE PROCEDURE tsearch2('search_tsv', 'detalle')")
-        
+        db.execute('ALTER TABLE "core_compralineaitem" ADD "search_index" tsvector')
+    
     def backwards(self, orm):
-        "Write your backwards methods here."
+        pass
+    
     
     models = {
         'core.compra': {
