@@ -73,7 +73,7 @@ class CompraManager(models.Manager):
         return self.filter(fecha__gte=fecha_desde, fecha__lte=fecha_hasta).aggregate(total=models.Sum('importe'))['total'] or 0
 
     def search(self, query):
-        return CompraLineaItem.objects.select_related('compra').search(query)
+        return [cli.compra for cli in CompraLineaItem.objects.search(query, rank_field='detalles').select_related('compra')]
 
 class Compra(models.Model):
 
