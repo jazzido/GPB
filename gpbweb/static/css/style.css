@@ -37,6 +37,11 @@ ul.footer-menu {
       float: left;
   }
 
+form#ordenes-search input {
+    margin: 0 !important;
+    border-width: 1px;
+}
+
 /* filtro de fechas */
 
 ul#months-menu {

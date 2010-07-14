@@ -72,6 +72,9 @@ class CompraManager(models.Manager):
     def total_periodo(self, fecha_desde=datetime(datetime.now().year, datetime.now().month, 1), fecha_hasta=datetime.now()):
         return self.filter(fecha__gte=fecha_desde, fecha__lte=fecha_hasta).aggregate(total=models.Sum('importe'))['total'] or 0
 
+    def search(self, query):
+        return CompraLineaItem.objects.select_related('compra').search(query)
+
 class Compra(models.Model):
 
     objects = CompraManager()

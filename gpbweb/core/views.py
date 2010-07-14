@@ -6,8 +6,11 @@ from datetime import datetime
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.db import connection, transaction
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import RequestContext
 from django.utils.datastructures import SortedDict
+from django.utils import simplejson
 
 import calendar
 
@@ -106,6 +109,8 @@ def index_periodo(request, start_anio, start_mes, end_anio, end_mes):
 
 @render_to('list_ordenes.html')
 def index_ordenes(request, start_date, end_date):
+
+    # ["%s: %s -- %s" % (cli.cantidad, cli.importe_unitario, cli.detalle) for cli in CompraLineaItem.objects.search('office').select_related('compra')]
 
     paginator = Paginator(models.Compra.objects.select_related('proveedor') \
                             .filter(fecha__gte=start_date,
@@ -339,7 +344,32 @@ def proveedor_ordenes_periodo(request, proveedor_slug, start_anio, start_mes, en
                              datetime(int(end_anio), int(end_mes), calendar.monthrange(int(end_anio), int(end_mes))[1])) # ultimo dia del mes
 
 
-@render_to('orden_de_compra.html')
-def orden_de_compra(request, numero, anio):
+def orden_de_compra(request, numero, anio, format='html'):
     orden = get_object_or_404(models.Compra, orden_compra=int(numero), fecha__year=int(anio))
-    return { 'orden': orden }
+    if format == 'html':
+        return render_to_response('orden_de_compra.html',
+                                  { 'orden': orden },
+                                  context_instance=RequestContext(request))
+    elif format == 'json':
+        response = HttpResponse(content_type = 'application/javascript; charset=utf8')
+
+        simplejson.dump({ 'href': orden.get_absolute_url(),
+                          'numero': orden.oc_numero,
+                          'fecha': orden.fecha.strftime('%Y-%m-%d'),
+                          'importe': str(orden.importe),
+                          'proveedor': { 'nombre': orden.proveedor.nombre,
+                                         'href': orden.proveedor.get_absolute_url() },
+                          'destino': { 'nombre': orden.destino.nombre,
+                                       'href': orden.destino.get_absolute_url() },
+                          'lineas': [ { 'cantidad': cli.cantidad,
+                                        'importe_unitario': str(cli.importe_unitario),
+                                        'detalle': cli.detalle } for cli in orden.compralineaitem_set.all()]
+                          },
+                        response)
+
+        return response
+
+    else:
+        return HttpResponseBadRequest()
+              
+                             

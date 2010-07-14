@@ -1,3 +1,4 @@
+
 // format integer
 var pad = function(num, length) {
     var r = "" + num;
@@ -84,4 +85,10 @@ $(document).ready(function() {
 							      if(!$('filtro').hasClass('hide') && !sliderInit) 
 								  initSlider();
 							  });
+
+		      $('form#ordenes-search').submit(function() {
+							  $('input[type=submit]', $(this)).attr('disabled', 'disabled');
+							  return true;
+						      });
+
 		  });
