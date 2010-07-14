@@ -3,12 +3,25 @@
 {% load currency %}
 {% load tiempo_en_letras %}
 {% load common_html %}
+
+{% block title %}
+{% tiempo_en_letras start_date end_date as periodo %}
+Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
+{% endblock %}
+
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">{{periodo|first_upper}}, {{proveedor|objlink}} facturó <strong>{{facturacion_mensual_total|currency}}</strong> a la Municipalidad.</h2>
+<h2 class="alt">
+{% if facturacion_mensual_total == 0 %}
+No hay órdenes de compra adjudicadas a {{proveedor|objlink}} {{periodo}}
+{% else %}
+{{periodo|first_upper}}, {{proveedor|objlink}} facturó <strong>{{facturacion_mensual_total|currency}}</strong> a la Municipalidad.
+{% endif %}
+</h2>
 {% include "filtro.html" %}
 <hr>
+{% if facturacion_mensual_total > 0 %}
 <div class="span-10 colborder">
   <h5>Principales destinos de los suministros de {{proveedor}} {{periodo}}</h5>
   <table class="tabla-sumario">
@@ -51,7 +64,7 @@
     <th colspan="3">{{dia.grouper|date:"d/m/Y"}}</th>
   </tr>
   {% for c in dia.list %}
-  <tr>
+  <tr class="orden">
     <td>{{c.destino|objlink}}</td>
     <td>{{c.importe|currency}}</td>
     <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
@@ -61,4 +74,5 @@
 </table>
 <a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a>
 </div>
+{% endif %}
 {% endblock %}

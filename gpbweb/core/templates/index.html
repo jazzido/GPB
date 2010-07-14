@@ -40,7 +40,7 @@
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">{{periodo|first_upper}}, la Municipalidad gastó <strong>{{gasto_mensual_total|currency}}</strong> en compras a proveedores.</h2>
+<h2 class="alt">{{periodo|first_upper}}, la Municipalidad de Bahía Blanca gastó <strong>{{gasto_mensual_total|currency}}</strong> en compras a proveedores.</h2>
 {% include "filtro.html" %}
 <hr>
 <div class="span-10 colborder">
@@ -114,7 +114,7 @@
       <th colspan="4">{{dia.grouper|date:"d/m/Y"}}</th>
     </tr>
     {% for c in dia.list %}
-    <tr>
+    <tr class="orden">
       <td>{{c.destino|objlink}}</td>
       <td>{{c.proveedor|objlink}}</td>
       <td>{{c.importe|currency}}</td>

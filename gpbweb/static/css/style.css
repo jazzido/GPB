@@ -7,6 +7,10 @@ h1 a {
     color: black;
 }
 
+.alt strong {
+	background-color: #FFFF9E;
+}
+
 .about-header {
     font-size: 2em;
     color: #999999;
@@ -19,6 +23,19 @@ h1 a {
 table.tabla-sumario caption, table.tabla-sumario thead {
     display: none;
 }
+
+/* footer menu */
+
+ul.footer-menu {
+    padding-left: 0;
+    float: left;
+    list-style-type: none;
+}
+
+  ul.footer-menu li {
+      display: block;
+      float: left;
+  }
 
 /* filtro de fechas */
 
@@ -100,12 +117,13 @@ table.ordenes_de_compra {
   }
 
   table.ordenes_de_compra td.detalle a {
-      background: url("/static/img/page_white_text.png") no-repeat scroll center bottom transparent !important;
-      width: 16px;
-      height: 16px;
-      display: block;
-      text-indent: -9999px;
-      overflow: hidden;
+      /*background: url("/static/img/page_white_text.png") no-repeat scroll center bottom transparent !important; */
+      /* width: 16px; */
+      /* height: 16px; */
+      /* display: block; */
+      /*text-indent: -9999px;*/
+      /*overflow: hidden;*/
+      visibility: hidden;
   }
 
   table.ordenes_de_compra col.destino, table.ordenes_de_compra col.proveedor  {
@@ -114,6 +132,14 @@ table.ordenes_de_compra {
 
   table.ordenes_de_compra tr.encabezados {
       border-bottom: 1px solid black;
+  }
+
+  table.ordenes_de_compra tr.orden:hover {
+      background-color: #dddddd;
+  }
+  
+  table.ordenes_de_compra tr.orden:hover td.detalle a {
+      visibility: visible;
   }
 
 
