@@ -13,9 +13,6 @@
   var end_date = new Date('{{end_date|date:"Y-m-d"}}');
   if (end_date > new Date()) end_date = new Date();
 
-  $(document).ready(function() {
-  });
-
   function draw_table() {
     {{ gasto_por_mes_datatable_js|safe }}
     var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM yyyy'});
