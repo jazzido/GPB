@@ -111,11 +111,16 @@ def index_periodo(request, start_anio, start_mes, end_anio, end_mes):
 def index_ordenes(request, start_date, end_date):
 
     # ["%s: %s -- %s" % (cli.cantidad, cli.importe_unitario, cli.detalle) for cli in CompraLineaItem.objects.search('office').select_related('compra')]
-
-    paginator = Paginator(models.Compra.objects.select_related('proveedor') \
-                            .filter(fecha__gte=start_date,
-                                    fecha__lte=end_date) \
-                            .order_by('-fecha'), 
+    
+    if request.GET.get('q') is not None:
+        compras = models.Compra.objects.search(' | '.join(request.GET.get('q').split()))
+    else:
+        compras = models.Compra.objects.select_related('proveedor') \
+            .filter(fecha__gte=start_date,
+                    fecha__lte=end_date) \
+                    .order_by('-fecha')
+        
+    paginator = Paginator(compras, 
                           PAGE_SIZE)
 
     # Si la pagina esta fuera de rango, mostrar la última

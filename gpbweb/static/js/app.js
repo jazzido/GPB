@@ -9,6 +9,17 @@ var pad = function(num, length) {
 };
 
 $(document).ready(function() {
+
+		      $('td.detalle a').click(function() {
+						  var tr = $(this).parent().parent();
+						  $.getJSON($(this).attr('href') + 'json', 
+							    function(data) { 
+								tr.after('<tr class="detalle"><td colspan="' + $('td', tr).length + '">' + $('#detalle_template').jqote(data) + '</td></tr>');
+								tr.effect("highlight", {}, 1500);
+							    });
+
+						  return false;
+					      });
 		      
 		      var highLightSliderRange = function(slider, months_li, start, end) {
 			  var i;

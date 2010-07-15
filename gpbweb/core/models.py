@@ -8,6 +8,10 @@ from django_extensions.db import fields
 from datetime import datetime
 from gpbweb.postgres_fts import models as fts_models
 
+from south.modelsinspector import add_ignored_fields
+
+add_ignored_fields(["^gpbweb\.postgres_fts\.models\.VectorField",])
+
 
 class ProveedorManager(models.Manager):
 
@@ -72,8 +76,9 @@ class CompraManager(models.Manager):
     def total_periodo(self, fecha_desde=datetime(datetime.now().year, datetime.now().month, 1), fecha_hasta=datetime.now()):
         return self.filter(fecha__gte=fecha_desde, fecha__lte=fecha_hasta).aggregate(total=models.Sum('importe'))['total'] or 0
 
+    # esto esta muy mal, deberia hacerlo con SQL.
     def search(self, query):
-        return [cli.compra for cli in CompraLineaItem.objects.search(query, rank_field='detalles').select_related('compra')]
+        return sorted(list(set([cli.compra for cli in CompraLineaItem.objects.search(query, rank_field='detalles').select_related('compra')])), key=lambda c: c.fecha, reverse=True)
 
 class Compra(models.Model):
 
@@ -96,7 +101,7 @@ class Compra(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('gpbweb.core.views.orden_de_compra', (),
+        return ('orden_de_compra', (),
                 {'numero': self.orden_compra,
                  'anio': self.fecha.year })
 
