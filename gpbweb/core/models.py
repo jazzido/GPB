@@ -100,7 +100,7 @@ class CompraManager(models.Manager):
                       'id',),
                      promote=True)
 
-        return c
+        return c.distinct()
 
         
 
