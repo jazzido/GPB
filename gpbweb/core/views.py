@@ -113,7 +113,7 @@ def index_ordenes(request, start_date, end_date):
     # ["%s: %s -- %s" % (cli.cantidad, cli.importe_unitario, cli.detalle) for cli in CompraLineaItem.objects.search('office').select_related('compra')]
     
     if request.GET.get('q') is not None:
-        compras = models.Compra.objects.search(' | '.join(request.GET.get('q').split()))
+        compras = models.Compra.objects.search(' & '.join(request.GET.get('q').split())).distinct()
     else:
         compras = models.Compra.objects.select_related('proveedor') \
             .filter(fecha__gte=start_date,
