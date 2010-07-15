@@ -76,9 +76,34 @@ class CompraManager(models.Manager):
     def total_periodo(self, fecha_desde=datetime(datetime.now().year, datetime.now().month, 1), fecha_hasta=datetime.now()):
         return self.filter(fecha__gte=fecha_desde, fecha__lte=fecha_hasta).aggregate(total=models.Sum('importe'))['total'] or 0
 
-    # esto esta muy mal, deberia hacerlo con SQL.
+    # es medio hacky, pero es lo que hay
+    # idea encontrada aca: http://www.caktusgroup.com/blog/2009/09/28/custom-joins-with-djangos-queryjoin/
     def search(self, query):
-        return sorted(list(set([cli.compra for cli in CompraLineaItem.objects.search(query, rank_field='detalles').select_related('compra')])), key=lambda c: c.fecha, reverse=True)
+        c = self.order_by('-fecha').extra(where=["core_compralineaitem.search_index @@ to_tsquery('spanish', %s)"
+                                                 " OR core_proveedor.search_index @@ to_tsquery('spanish', %s)"
+                                                 " OR core_reparticion.search_index @@ to_tsquery('spanish', %s)"], 
+                                          params=[query, query, query])
+        c.query.join((None, Compra._meta.db_table, None, None,))
+        c.query.join((Compra._meta.db_table,  # core_compra
+                      CompraLineaItem._meta.db_table, # core_compralineaitem, 
+                      'id', 
+                      'compra_id'), 
+                     promote=True)
+        c.query.join((Compra._meta.db_table,
+                      Proveedor._meta.db_table,
+                      'proveedor_id',
+                      'id',),
+                     promote=True)
+        c.query.join((Compra._meta.db_table,
+                      Reparticion._meta.db_table,
+                      'destino_id',
+                      'id',),
+                     promote=True)
+
+        return c
+
+        
+
 
 class Compra(models.Model):
 
