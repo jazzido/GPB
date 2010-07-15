@@ -20,9 +20,14 @@ h1 a {
   }
   .about-header a:hover { text-decoration: none; }
 
+table, td, th {
+    vertical-align: top !important;
+}
+
 table.tabla-sumario caption, table.tabla-sumario thead {
     display: none;
 }
+
 
 /* footer menu */
 
@@ -36,6 +41,11 @@ ul.footer-menu {
       display: block;
       float: left;
   }
+
+form#ordenes-search input {
+    margin: 0 !important;
+    border-width: 1px;
+}
 
 /* filtro de fechas */
 

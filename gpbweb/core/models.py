@@ -6,7 +6,12 @@ from django.utils.translation import ugettext_lazy as _
 from django_extensions.db import fields
 
 from datetime import datetime
-# Create your models here.
+from gpbweb.postgres_fts import models as fts_models
+
+from south.modelsinspector import add_ignored_fields
+
+add_ignored_fields(["^gpbweb\.postgres_fts\.models\.VectorField",])
+
 
 class ProveedorManager(models.Manager):
 
@@ -71,6 +76,10 @@ class CompraManager(models.Manager):
     def total_periodo(self, fecha_desde=datetime(datetime.now().year, datetime.now().month, 1), fecha_hasta=datetime.now()):
         return self.filter(fecha__gte=fecha_desde, fecha__lte=fecha_hasta).aggregate(total=models.Sum('importe'))['total'] or 0
 
+    # esto esta muy mal, deberia hacerlo con SQL.
+    def search(self, query):
+        return sorted(list(set([cli.compra for cli in CompraLineaItem.objects.search(query, rank_field='detalles').select_related('compra')])), key=lambda c: c.fecha, reverse=True)
+
 class Compra(models.Model):
 
     objects = CompraManager()
@@ -82,21 +91,28 @@ class Compra(models.Model):
     proveedor = models.ForeignKey(Proveedor)
     destino = models.ForeignKey(Reparticion)
 
-    def oc_numero(self):
+    def _oc_numero(self):
         return "%s/%s" % (self.orden_compra, self.fecha.strftime("%Y"))
+    oc_numero = property(_oc_numero)
+
 
     def __unicode__(self):
         return "%s compra a %s por $%s" % (self.destino, self.proveedor, self.importe)
 
     @models.permalink
     def get_absolute_url(self):
-        return ('gpbweb.core.views.orden_de_compra', (),
+        return ('orden_de_compra', (),
                 {'numero': self.orden_compra,
                  'anio': self.fecha.year })
 
 
-class CompraLineaItem(models.Model):
+class CompraLineaItem(fts_models.SearchableModel):
     compra = models.ForeignKey(Compra)
     importe_unitario = models.DecimalField(_('Importe'), decimal_places=2, max_digits=19)
     cantidad = models.CharField(_('Cantidad'), max_length=128, null=True, blank=True)
     detalle = models.TextField(_('Detalle'), null=True, blank=True)
+
+    objects = fts_models.SearchManager(fields=('detalle',), config='spanish')
+
+    def __unicode__(self):
+        return "%s (OC: %s)" % (self.detalle, self.compra.oc_numero)

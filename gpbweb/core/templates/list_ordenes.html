@@ -6,19 +6,19 @@
 
 {% block title %}
 {% tiempo_en_letras start_date end_date as periodo %}
-Órdenes de Compra emitidas por la Municipalidad de Bahía Blanca {{periodo|striptags}} - {{block.super}}
+Órdenes de Compra emitidas por la Municipalidad de Bahía Blanca {{periodo|striptags}}- {{block.super}}
 {% endblock %}
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">Órdenes de Compra emitidas por la Municipalidad de Bahía Blanca {{periodo}}</h2>
+<h2 class="alt">Órdenes de Compra emitidas por la Municipalidad de Bahía Blanca {{periodo}}{% if request.GET.q %} que contienen "<strong>{{request.GET.q}}</strong>"{% endif %}</h2>
 {% include "filtro.html" %}
 <hr>
 <div class="prepend-1 append-1 span-22 last append-bottom">
   <div class="pagination">
     <span class="step-links">
       {% if ordenes_de_compra.has_previous %}
-      <a href="?page={{ ordenes_de_compra.previous_page_number }}">anterior</a>
+      <a href="?page={{ ordenes_de_compra.previous_page_number }}{% if request.GET.q %}&q={{request.GET.q}}{% endif %}">anterior</a>
       {% endif %}
 
       <span class="current">
@@ -26,7 +26,7 @@
       </span>
 
       {% if ordenes_de_compra.has_next %}
-      <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
+      <a href="?page={{ ordenes_de_compra.next_page_number }}{% if request.GET.q %}&q={{request.GET.q}}{% endif %}">siguiente</a>
       {% endif %}
     </span>
   </div>
@@ -66,7 +66,7 @@
   <div class="pagination">
     <span class="step-links">
       {% if ordenes_de_compra.has_previous %}
-      <a href="?page={{ ordenes_de_compra.previous_page_number }}">anterior</a>
+      <a href="?page={{ ordenes_de_compra.previous_page_number }}{% if request.GET.q %}&q={{request.GET.q}}{% endif %}">anterior</a>
       {% endif %}
 
       <span class="current">
@@ -74,7 +74,7 @@
       </span>
 
       {% if ordenes_de_compra.has_next %}
-      <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
+      <a href="?page={{ ordenes_de_compra.next_page_number }}{% if request.GET.q %}&q={{request.GET.q}}{% endif %}">siguiente</a>
       {% endif %}
     </span>
   </div>

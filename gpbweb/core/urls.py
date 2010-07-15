@@ -135,6 +135,12 @@ urlpatterns = patterns('',
 
                        url(r'^orden-de-compra/(?P<numero>[0-9]+)/(?P<anio>[0-9]+)/$',
                            'gpbweb.core.views.orden_de_compra',
-                           name='orden_de_compra')
+                           name='orden_de_compra'),
+
+                       url(r'^orden-de-compra/(?P<numero>[0-9]+)/(?P<anio>[0-9]+)/json$',
+                           'gpbweb.core.views.orden_de_compra',
+                           { 'format': 'json' },
+                           name='orden_de_compra_json')
+
 
 )

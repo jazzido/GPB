@@ -1,22 +1,17 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-class Migration(SchemaMigration):
+class Migration(DataMigration):
     
     def forwards(self, orm):
-        
-        # Adding index on 'Compra', fields ['fecha']
-        db.create_index('core_compra', ['fecha'])
+        db.execute("UPDATE core_compralineaitem SET search_index=to_tsvector('spanish', detalle);")
     
     
     def backwards(self, orm):
-        
-        # Removing index on 'Compra', fields ['fecha']
-        db.delete_index('core_compra', ['fecha'])
-    
+        pass
     
     models = {
         'core.compra': {
