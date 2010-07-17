@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls.defaults import *
 from datetime import datetime
+from gpbweb.core import feeds
 
 anual_expression   = r'(?P<anio>20\d\d)/'
 mensual_expression = r'(?P<anio>20\d\d)/(?P<mes>01|02|03|04|05|06|07|08|09|10|11|12)/'
@@ -30,6 +31,10 @@ urlpatterns = patterns('',
                            {'start_date': datetime(datetime.now().year, 1, 1),
                             'end_date': datetime(datetime.now().year, 12, 31) },
                            name='index_ordenes'),
+ 
+                       url(r'^ordenes-de-compra/rss$',
+                           feeds.OrdenesDeCompraFeed()
+                           ),
 
                        url(r'^ordenes-de-compra/%s$' % anual_expression,
                            'gpbweb.core.views.index_ordenes_anual',
@@ -73,6 +78,10 @@ urlpatterns = patterns('',
                            {'start_date': datetime(datetime.now().year, 1, 1),
                             'end_date': datetime(datetime.now().year, 12, 31) },
                            name='reparticion_ordenes'),
+
+                       url(r'^reparticion/(?P<reparticion_slug>[a-z0-9\-]+)/ordenes-de-compra/rss/$',
+                           feeds.ReparticionOrdenesDeCompraFeed()
+                           ),
 
                        url(r'^reparticion/(?P<reparticion_slug>[a-z0-9\-]+)/ordenes-de-compra/%s$' % anual_expression,
                            'gpbweb.core.views.reparticion_ordenes_anual',

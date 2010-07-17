@@ -1,0 +1,27 @@
+{% load objlink %}
+<dl>
+  <dt>OC Nro:</dt>
+  <dd>{{obj.oc_numero}}</dd>
+  <dt>Fecha:</dt>
+  <dd>{{obj.fecha}}</dd>
+  <dt>Proveedor:</dt>
+  <dd>{{obj.proveedor|objlink}}</dd>
+  <dt>Destino:</dt>
+  <dd>{{obj.destino|objlink}}</dd>
+  <dt>Importe:</dt>
+  <dd>$ {{obj.importe}}</dd>
+</dl>
+<table border="1">
+  <tr>
+    <th>Cantidad</th>
+    <th>Detalle</th>
+    <th>Imp. Unitario</th>
+  </tr>
+  {% for cli in obj.compralineaitem_set.all %}
+  <tr>
+    <td>{{cli.cantidad}}</td>
+    <td>{{cli.detalle}}</td>
+    <td>{{cli.importe_unitario}}</td>
+  </tr>
+  {% endfor %}
+</table>
