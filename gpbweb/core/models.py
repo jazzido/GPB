@@ -79,10 +79,12 @@ class CompraManager(models.Manager):
     # es medio hacky, pero es lo que hay
     # idea encontrada aca: http://www.caktusgroup.com/blog/2009/09/28/custom-joins-with-djangos-queryjoin/
     def search(self, query):
-        c = self.order_by('-fecha').extra(where=["core_compralineaitem.search_index @@ to_tsquery('spanish', %s)"
-                                                 " OR core_proveedor.search_index @@ to_tsquery('spanish', %s)"
-                                                 " OR core_reparticion.search_index @@ to_tsquery('spanish', %s)"], 
-                                          params=[query, query, query])
+        c = self.extra(select={'rank': 'ts_rank_cd(core_compralineaitem.search_index, to_tsquery(\'spanish\', E\'%s\'), %d)' % (query, 32)},
+                       where=["core_compralineaitem.search_index @@ to_tsquery('spanish', %s)"
+                              " OR core_proveedor.search_index @@ to_tsquery('spanish', %s)"
+                              " OR core_reparticion.search_index @@ to_tsquery('spanish', %s)"], 
+                       params=[query, query, query])
+
         c.query.join((None, Compra._meta.db_table, None, None,))
         c.query.join((Compra._meta.db_table,  # core_compra
                       CompraLineaItem._meta.db_table, # core_compralineaitem, 
@@ -100,7 +102,7 @@ class CompraManager(models.Manager):
                       'id',),
                      promote=True)
 
-        return c.distinct()
+        return c.distinct().order_by('-rank')
 
         
 
