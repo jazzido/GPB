@@ -32,8 +32,9 @@ urlpatterns = patterns('',
                             'end_date': datetime(datetime.now().year, 12, 31) },
                            name='index_ordenes'),
  
-                       url(r'^ordenes-de-compra/rss$',
-                           feeds.OrdenesDeCompraFeed()
+                       url(r'^ordenes-de-compra/rss/$',
+                           feeds.OrdenesDeCompraFeed(),
+                           name="ordenes_rss"
                            ),
 
                        url(r'^ordenes-de-compra/%s$' % anual_expression,
@@ -80,7 +81,8 @@ urlpatterns = patterns('',
                            name='reparticion_ordenes'),
 
                        url(r'^reparticion/(?P<reparticion_slug>[a-z0-9\-]+)/ordenes-de-compra/rss/$',
-                           feeds.ReparticionOrdenesDeCompraFeed()
+                           feeds.ReparticionOrdenesDeCompraFeed(),
+                           name="reparticion_ordenes_rss"
                            ),
 
                        url(r'^reparticion/(?P<reparticion_slug>[a-z0-9\-]+)/ordenes-de-compra/%s$' % anual_expression,
@@ -127,6 +129,11 @@ urlpatterns = patterns('',
                            {'start_date': datetime(datetime.now().year, 1, 1),
                             'end_date': datetime(datetime.now().year, 12, 31) },
                            name='proveedor_ordenes'),
+
+                       url(r'^proveedor/(?P<proveedor_slug>[a-z0-9\-]+)/ordenes-de-compra/rss/$',
+                           feeds.ProveedorOrdenesDeCompraFeed(),
+                           name="proveedor_ordenes_rss"
+                           ),
 
                        url(r'^proveedor/(?P<proveedor_slug>[a-z0-9\-]+)/ordenes-de-compra/%s$' % anual_expression,
                            'gpbweb.core.views.proveedor_ordenes_anual',

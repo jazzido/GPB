@@ -4,6 +4,12 @@
 {% load tiempo_en_letras %}
 {% load common_html %}
 
+{% block rss %}
+{{block.super}}
+<link rel="alternate" type="application/rss+xml"  title="Canal RSS del proveedor {{proveedor}}"  href="{% url proveedor_ordenes_rss proveedor.slug %}" />
+{% endblock %}
+
+
 {% block title %}
 {% tiempo_en_letras start_date end_date as periodo %}
 Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
@@ -72,7 +78,7 @@ No hay órdenes de compra adjudicadas a {{proveedor|objlink}} {{periodo}}
   {% endfor %}
   {% endfor %}
 </table>
-<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a>
+<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a> - <a href="{% url proveedor_ordenes_rss proveedor.slug %}" class="rss-link">Feed RSS de órdenes de compra</a>
 </div>
 {% endif %}
 {% endblock %}

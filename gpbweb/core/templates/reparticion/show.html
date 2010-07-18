@@ -3,10 +3,17 @@
 {% load currency %}
 {% load tiempo_en_letras %}
 {% load common_html %}
+
+{% block rss %}
+{{block.super}}
+<link rel="alternate" type="application/rss+xml"  title="Canal RSS de la repartición {{reparticion}}"  href="{% url reparticion_ordenes_rss reparticion.slug %}" />
+{% endblock %}
+
 {% block title %}
 {% tiempo_en_letras start_date end_date as periodo %}
 Gastos de {{reparticion.nombre}} {{periodo|striptags}} - {{block.super}}
 {% endblock %}
+
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
@@ -71,7 +78,7 @@ Gastos de {{reparticion.nombre}} {{periodo|striptags}} - {{block.super}}
   {% endfor %}
 </table>
 {{request.gpb_date_range}}
-<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra con destino {{reparticion}} {{periodo}}</a>
+<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra con destino {{reparticion}} {{periodo}}</a> - <a href="{% url reparticion_ordenes_rss reparticion.slug %}" class="rss-link">Feed RSS de órdenes de compra</a>
 </div>
 {% endif %}
 {% endblock %}

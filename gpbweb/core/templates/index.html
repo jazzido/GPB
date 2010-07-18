@@ -120,7 +120,7 @@
     {% endfor %}
     {% endfor %}
   </table>
-  <a href="/ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra emitidas por la municipalidad {{periodo}}</a>
+  <a href="/ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra emitidas por la municipalidad {{periodo}}</a> ― <a href="{% url ordenes_rss %}" class="rss-link">Feed RSS de órdenes de compra</a>
 </div>
 
 {% endblock %}

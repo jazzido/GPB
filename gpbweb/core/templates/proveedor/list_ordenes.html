@@ -4,6 +4,12 @@
 {% load common_html %}
 {% load tiempo_en_letras %}
 
+{% block rss %}
+{{block.super}}
+<link rel="alternate" type="application/rss+xml"  title="Canal RSS del proveedor {{proveedor}}"  href="{% url proveedor_ordenes_rss proveedor.slug %}" />
+{% endblock %}
+
+
 {% block title %}
 {% tiempo_en_letras start_date end_date as periodo %}
 Ordenes de Compra adjudicadas a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}

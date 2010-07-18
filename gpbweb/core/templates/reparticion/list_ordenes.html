@@ -4,6 +4,11 @@
 {% load common_html %}
 {% load tiempo_en_letras %}
 
+{% block rss %}
+{{block.super}}
+<link rel="alternate" type="application/rss+xml"  title="Canal RSS de la repartición {{reparticion}}"  href="{% url reparticion_ordenes_rss reparticion.slug %}" />
+{% endblock %}
+
 {% block title %}
 {% tiempo_en_letras start_date end_date as periodo %}
 Órdenes de Compra para {{reparticion.nombre|first_upper}} {{periodo|striptags}} - {{block.super}}

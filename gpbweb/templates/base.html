@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="/static/css/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/smoothness/jquery-ui.css" type="text/css" media="screen, projection">
     <link rel="stylesheet" href="/static/css/style.css" type="text/css" media="screen, projection">
+    {% block rss %}
+    <link rel="alternate" type="application/rss+xml"  title="Gasto Público Bahiense RSS"  href="{% url ordenes_rss %}" />
+    {% endblock %}
     <script src="http://www.google.com/jsapi" type="text/javascript"></script>
     <script type="text/javascript">
       google.load("jquery", "1.4.2");
