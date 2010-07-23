@@ -20,7 +20,7 @@ class CompraLineasSpider(BaseSpider):
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        orden_compra, anio = re.search(r'wOC=(\d+)&wEjercicio=(\d+)', urlparse(response.url).query).groups()
+        orden_compra, anio = re.search(r'wOCabc=(\d+)&wEjercicio=(\d+)', urlparse(response.url).query).groups()
         for tr in hxs.select('//table[contains(@width, "760")][2]/tr'):
             i = CompraLineaItem()
             l = XPathItemLoader(item=i, selector=tr)
