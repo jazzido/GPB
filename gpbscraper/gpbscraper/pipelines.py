@@ -69,7 +69,7 @@ class CompraLineasPersisterPipeline(object):
     
     def spider_opened(self, spider):
         for c in models.Compra.objects.filter(compralineaitem=None):
-            scrapymanager.engine.crawl(Request('http://www.bahiablanca.gov.ar/compras4/dcomprV2.asp?wOC=%s&wEjercicio=%s' % (c.orden_compra, c.fecha.year),
+            scrapymanager.engine.crawl(Request('http://www.bahiablanca.gov.ar/compras4/dcomprV2.asp?wOCabc=%s&wEjercicio=%s' % (c.orden_compra, c.fecha.year),
                                                spider.parse),
                                        spider)
 

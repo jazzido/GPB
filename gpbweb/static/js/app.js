@@ -9,6 +9,10 @@ var pad = function(num, length) {
 };
 
 $(document).ready(function() {
+                      var appendRow = function(data, tr) {
+                          tr.after('<tr class="detalle"><td colspan="' + $('td', tr).length + '">' + $('#detalle_template').jqote(data) + '</td></tr>');
+			  tr.effect("highlight", {}, 1500);
+                      };
 
 		      $('td.detalle a').click(function() {
 						  var tr = $(this).parent().parent();
@@ -20,7 +24,17 @@ $(document).ready(function() {
 								a.remove();
 							    });
 
-						  return false;
+
+		      $('td.detalle a').click(function(event) {
+			                          event.preventDefault();
+						  var tr = $(this).parent().parent();
+			                          $.ajax({
+						      url: $(this).attr('href') + 'json',
+						      cache: false,
+						      dataType: "json",
+						      success: function(data) {
+							  appendRow(data, tr);
+						  }});
 					      });
 		      
 		      var highLightSliderRange = function(slider, months_li, start, end) {

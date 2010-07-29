@@ -356,21 +356,22 @@ def orden_de_compra(request, numero, anio, format='html'):
                                   { 'orden': orden },
                                   context_instance=RequestContext(request))
     elif format == 'json':
-        response = HttpResponse(content_type = 'application/javascript; charset=utf8')
+        response = HttpResponse(content_type = 'application/javascript')
 
-        simplejson.dump({ 'href': orden.get_absolute_url(),
-                          'numero': orden.oc_numero,
-                          'fecha': orden.fecha.strftime('%Y-%m-%d'),
-                          'importe': str(orden.importe),
-                          'proveedor': { 'nombre': orden.proveedor.nombre,
-                                         'href': orden.proveedor.get_absolute_url() },
-                          'destino': { 'nombre': orden.destino.nombre,
-                                       'href': orden.destino.get_absolute_url() },
-                          'lineas': [ { 'cantidad': cli.cantidad,
-                                        'importe_unitario': str(cli.importe_unitario),
-                                        'detalle': cli.detalle } for cli in orden.compralineaitem_set.all()]
-                          },
-                        response)
+        obj = { 'href': orden.get_absolute_url(),
+                'numero': orden.oc_numero,
+                'fecha': orden.fecha.strftime('%Y-%m-%d'),
+                'importe': str(orden.importe),
+                'proveedor': { 'nombre': orden.proveedor.nombre,
+                               'href': orden.proveedor.get_absolute_url() },
+                'destino': { 'nombre': orden.destino.nombre,
+                             'href': orden.destino.get_absolute_url() },
+                'lineas': [ { 'cantidad': cli.cantidad,
+                              'importe_unitario': str(cli.importe_unitario),
+                              'detalle': cli.detalle } for cli in orden.compralineaitem_set.all()]
+                }
+
+        simplejson.dump(obj, response)
 
         return response
 
