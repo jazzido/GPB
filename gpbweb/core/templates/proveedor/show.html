@@ -22,7 +22,7 @@ Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
 {% if facturacion_mensual_total == 0 %}
 No hay órdenes de compra adjudicadas a {{proveedor|objlink}} {{periodo}}
 {% else %}
-{{periodo|first_upper}}, {{proveedor|objlink}} facturó <strong>{{facturacion_mensual_total|currency}}</strong> a la Municipalidad.
+{{periodo|first_upper}}, la Municipalidad adjudicó órdenes de compra a {{proveedor|objlink}} por <strong>{{facturacion_mensual_total|currency}}</strong> a la Municipalidad.
 {% endif %}
 </h2>
 {% include "filtro.html" %}

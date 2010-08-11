@@ -19,7 +19,7 @@ Gastos de {{reparticion.nombre}} {{periodo|striptags}} - {{block.super}}
 <hr>
 <h2 class="alt">
 {% if gasto_mensual_total > 0 %}
-{{periodo|first_upper}}, {{reparticion|objlink}} gastó <strong>{{gasto_mensual_total|currency}}</strong> en compras a proveedores.
+{{periodo|first_upper}}, la Municipalidad destinó compras a {{reparticion|objlink}} por <strong>{{gasto_mensual_total|currency}}</strong> en compras a proveedores.
 {% else %}
 {{reparticion|objlink}} no realizó compras {{periodo}}.
 {% endif %}
