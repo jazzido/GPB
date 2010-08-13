@@ -44,6 +44,7 @@ class Proveedor(models.Model):
                 {'proveedor_slug': self.slug})
 
 
+
 class ReparticionManager(models.Manager):
     def por_gastos(self, **filter_args):
         """ Lista de Reparticion ordenadas por la que mas gastos produjo en un período """
@@ -70,6 +71,13 @@ class Reparticion(models.Model):
     def get_absolute_url(self):
         return ('gpbweb.core.views.reparticion', (),
                 {'reparticion_slug': self.slug})
+
+class ReparticionSinonimo(models.Model):
+    nombre = models.TextField(_('Nombre'), max_length=128, null=False, blank=False, unique=True)
+    canonico = models.ForeignKey(Reparticion, related_name='sinonimos')
+
+    class Meta:
+        unique_together = (('nombre', 'canonico',))
 
 
 class CompraManager(models.Manager):
