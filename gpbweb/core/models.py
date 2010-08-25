@@ -35,6 +35,8 @@ class Proveedor(models.Model):
     localidad = models.CharField(_('Localidad'), max_length=128, null=True, blank=True)
     slug = fields.AutoSlugField(populate_from='nombre', overwrite=True)
 
+    created_at = fields.CreationDateTimeField()
+
     def __unicode__(self):
         return self.nombre
 
@@ -78,6 +80,8 @@ class Reparticion(models.Model):
 
     nombre = models.CharField(_('Nombre'), max_length=128, null=False, blank=False, unique=True)
     slug = fields.AutoSlugField(populate_from='nombre', overwrite=True)
+
+    created_at = fields.CreationDateTimeField()
 
     def __unicode__(self):
         return self.nombre
@@ -133,6 +137,8 @@ class Compra(models.Model):
     suministro = models.CharField(_('Suministro'), max_length=32, null=True, blank=True)
     proveedor = models.ForeignKey(Proveedor)
     destino = models.ForeignKey(Reparticion)
+
+    created_at = fields.CreationDateTimeField()
 
     def _oc_numero(self):
         return "%s/%s" % (self.orden_compra, self.fecha.strftime("%Y"))
