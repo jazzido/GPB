@@ -44,6 +44,13 @@ class Proveedor(models.Model):
                 {'proveedor_slug': self.slug})
 
 
+class ReparticionSinonimo(models.Model):
+    nombre = models.TextField(_('Nombre'), max_length=128, null=False, blank=False, unique=True)
+    canonico = models.ForeignKey('Reparticion', related_name='sinonimos')
+
+    class Meta:
+        unique_together = (('nombre', 'canonico',))
+
 
 class ReparticionManager(models.Manager):
     def por_gastos(self, **filter_args):
@@ -56,6 +63,14 @@ class ReparticionManager(models.Manager):
             .filter(**filter_args) \
             .annotate(total_compras=models.Sum('compra__importe')) \
             .order_by('-total_compras')
+
+    def get_or_create_by_canonical_name(self, nombre):
+        """ Obtiene una `Reparticion` por su nombre canónico (ie. usando `ReparticionSinonimo`) """
+        try:
+            # imitar el retorno de get_or_create
+            return (ReparticionSinonimo.objects.get(nombre=nombre).canonico, False)
+        except models.ObjectDoesNotExist:
+            return self.get_or_create(nombre=nombre)
 
 class Reparticion(models.Model):
 
@@ -71,13 +86,6 @@ class Reparticion(models.Model):
     def get_absolute_url(self):
         return ('gpbweb.core.views.reparticion', (),
                 {'reparticion_slug': self.slug})
-
-class ReparticionSinonimo(models.Model):
-    nombre = models.TextField(_('Nombre'), max_length=128, null=False, blank=False, unique=True)
-    canonico = models.ForeignKey(Reparticion, related_name='sinonimos')
-
-    class Meta:
-        unique_together = (('nombre', 'canonico',))
 
 
 class CompraManager(models.Manager):

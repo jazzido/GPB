@@ -50,7 +50,7 @@ class ComprasPersisterPipeline(object):
                 return
 
             proveedor, proveedor_created = models.Proveedor.objects.get_or_create(nombre=compra_item['proveedor'])
-            reparticion, reparticion_created = models.Reparticion.objects.get_or_create(nombre=compra_item['destino'])
+            reparticion, reparticion_created = models.Reparticion.objects.get_or_create_by_canonical_name(compra_item['destino'])
             compra = models.Compra(orden_compra=int(compra_item['orden_compra']),
                                    importe=str(compra_item['importe']),
                                    fecha=compra_item['fecha'],
