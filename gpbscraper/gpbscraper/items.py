@@ -31,10 +31,18 @@ class CompraItem(Item):
     suministro = Field(output_processor=TakeFirst())
     proveedor = Field(output_processor=TakeFirst())
     destino = Field(output_processor=TakeFirst())
+    # LPRI: Lic.Privada
+    # LPUB: Lic. Publica
+    # CODI: Compra directa unico proveedor
+    # CDVP: Compra directa varios proveedores
+    # CONC: Concurso de precios
+    tipo_compra = Field(output_processor=TakeFirst())
 
 class CompraLineaItem(Item):
     cantidad = Field(output_processor=TakeFirst())
+    unidad_medida = Field(output_processor=TakeFirst())
     importe = Field(output_processor=lambda x: parse_money(x[0]))
+    importe_total = Field(output_processor=lambda x: parse_money(x[0]))
     detalle = Field(output_processor=TakeFirst())
     orden_compra = Field(output_processor=TakeFirst())
     anio = Field(output_processor=TakeFirst())
