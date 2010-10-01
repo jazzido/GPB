@@ -23,6 +23,7 @@ class ProveedorItem(Item):
     domicilio = Field(output_processor=TakeFirst())
     cuit = Field(output_processor=TakeFirst())
     localidad = Field(output_processor=TakeFirst())
+    # tipo = Field(output_processor=TakeFirst())
 
 class CompraItem(Item):
     orden_compra = Field(output_processor=TakeFirst())
@@ -37,6 +38,8 @@ class CompraItem(Item):
     # CDVP: Compra directa varios proveedores
     # CONC: Concurso de precios
     tipo_compra = Field(output_processor=TakeFirst())
+    
+    observaciones = Field(output_processor=TakeFirst())
 
 class CompraLineaItem(Item):
     cantidad = Field(output_processor=TakeFirst())

@@ -32,3 +32,7 @@ ITEM_PIPELINES = ['gpbscraper.pipelines.ItemCounterPipeline', 'gpbscraper.pipeli
 #ITEM_PIPELINES = []
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpbweb.settings')
+
+FEED_URI = '%(name)s-%(time)s'
+FEED_FORMAT = 'csv'
+
