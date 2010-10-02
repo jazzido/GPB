@@ -11,7 +11,7 @@ from datetime import date
 
 spanish_date = lambda day,month,year: date(int(year),int(month),int(day))
 
-MONEY_RE = re.compile(r'^([\d\.]+),(\d+)$')
+MONEY_RE = re.compile(r'^\$?([\d\.]+),(\d+)$')
 
 def parse_money(value):
     pesos, centavos = MONEY_RE.match(value).groups()

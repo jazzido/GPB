@@ -57,10 +57,41 @@ class MDQComprasSpider(BaseSpider):
         #   <td class="textocomun"></td>
         #   <td class="textocomun">Registrada</td>
         # </tr>
+        i = CompraItem()
         for d, dnombre in dependencias.items():
             for c in hxs.select('//div[@id="solicitudes%s"]//tr[position() > 1]' % d):
+                l = XPathItemLoader(item=i, selector=c)
+                l.add_xpath('orden_compra', 'td[2]/text()')
+                l.add_xpath('fecha', 'td[3]/text()')
+                l.add_xpath('importe', 'td[4]/div/text()')
+                l.add_value('tipo_compra', response.request.meta['tipo_compra_code'])
+                l.add_value('destino', response.request.meta['jurisdiccion_nombre'])
+                l.add_xpath('observaciones', 'td[7]/text()')
+                l.add_xpath('proveedor', 'td[5]/text()')
                 
-                
+                # examinar los renglones de esta orden
+                r = Request(urljoin(response.url, c.select('td[1]/input/@onclick').re("VerDetalle\('([^']+)'")[0]),
+                            callback=self.parse_lineas)
+                r.meta['orden_de_compra'] = c.select('td[2]/text()').extract()[0]
+                yield r
+
+                yield l.load_item()
+
+    def parse_lineas(self, response):
+        hxs = HtmlXPathSelector(response)
+        for tr in hxs.select('//table//tr[position() > 1]'):
+            cli = CompraLineaItem()
+            l = XPathItemLoader(item=cli, selector=tr)
+            l.add_xpath('cantidad', 'td[4]/text()')
+            l.add_xpath('unidad_medida', 'td[5]/text()')
+            l.add_xpath('importe', 'td[3]/text()')
+            l.add_xpath('importe_total', 'td[6]/text()')
+            l.add_xpath('detalle', 'td[2]/text()')
+            l.add_value('orden_compra', [response.request.meta['orden_de_compra']]) # hack, ver ../items.py:50 (TakeFirst())
+
+            yield l.load_item()
             
         
+        
+
 SPIDER = MDQComprasSpider()

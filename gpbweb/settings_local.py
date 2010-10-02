@@ -4,7 +4,7 @@ DATABASES = {
         'OPTIONS': {
             'autocommit': False,
          },
-        'NAME': 'gpb_dev',                      # Or path to database file if using sqlite3.
+        'NAME': 'gpb_mdq',                      # Or path to database file if using sqlite3.
         'USER': 'gpb',                      # Not used with sqlite3.
         'PASSWORD': 'gpbgpb',                  # Not used with sqlite3.
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.

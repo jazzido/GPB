@@ -6,12 +6,12 @@
 
 {% block title %}
 {% tiempo_en_letras start_date end_date as periodo %}
-Órdenes de Compra emitidas por la Municipalidad de Bahía Blanca {{periodo|striptags}}- {{block.super}}
+Órdenes de Compra emitidas por la Municipalidad de General Pueyrred&oacute;n {{periodo|striptags}}- {{block.super}}
 {% endblock %}
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
 <hr>
-<h2 class="alt">Órdenes de Compra emitidas por la Municipalidad de Bahía Blanca {{periodo}}{% if request.GET.q %} que contienen "<strong>{{request.GET.q}}</strong>"{% endif %}</h2>
+<h2 class="alt">Órdenes de Compra emitidas por la Municipalidad de Municipalidad de General Pueyrred&oacute;n {{periodo}}{% if request.GET.q %} que contienen "<strong>{{request.GET.q}}</strong>"{% endif %}</h2>
 {% include "filtro.html" %}
 <hr>
 <div class="prepend-1 append-1 span-22 last append-bottom">
