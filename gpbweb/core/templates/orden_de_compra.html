@@ -35,5 +35,6 @@ Detalle de la orden de compra {{orden.oc_numero}} - {{block.super}}
       <td><strong>{{orden.importe|currency}}</strong></td>
     </tr>
   </table>
+  <p><a href="http://www.bahiablanca.gov.ar/compras4/dcomprV2.asp?wOCabc={{orden.orden_compra}}&wEjercicio={{orden.fecha|date:"Y"}}" target="_blank">Ver esta orden de compra en el sitio de la Municipalidad de Bahía Blanca</a></p>
 </div>
 {% endblock %}

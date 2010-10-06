@@ -74,7 +74,7 @@
 	<td>$ <%= this.lineas[i].importe_unitario %></td>
       </tr>
     <% } %>
-      <tr><td colspan="3"><a href="<%= this.href %>" target="_blank">Ver esta orden en otra ventana</a></td></tr>
+      <tr><td colspan="3"><a href="<%= this.href %>" target="_blank">Ver esta orden en otra ventana</a> — <a target="_blank" href="http://www.bahiablanca.gov.ar/compras4/dcomprV2.asp?wOCabc=<%= this.href.split('/')[2] %>&wEjercicio=<%= this.href.split('/')[3] %>">Ver esta orden en el sitio de la Municipalidad</a></td></tr>
     </table>
     ]]>
 </script>
