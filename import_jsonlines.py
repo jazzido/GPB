@@ -43,11 +43,14 @@ def _import_compralinea(cl):
         return 
     # ['CompraLineaItem', {'importe_total': 77.0, 'cantidad': '1', 'unidad_medida': 'UNIDAD/ES', 'orden_compra': '1356', 'detalle': 'FILTRO DE ACEITE P/VEHICULO - MARCA FIAT - MODELO DUCATO MAXI CARGO 2.8 P/D- PIEZA PH - 4847 A - MARCA MOTOR FIAT - MODELO MOTOR DUCATO MAXI CARGO 2.8 P/D - TIPO DIESEL - REPUESTO ORIGINAL - FRAM.', 'importe': 77.0}]
 
-    if 'importe' not in cl: return 
+    if ('importe' not in cl) or ('cantidad' not in cl): return 
+
+    cant = re.match(r'(\d+)', cl['cantidad'])
+    if cant is None: return
 
     cli = models.CompraLineaItem(compra=compra,
                                  importe_unitario=str(cl['importe']),
-                                 cantidad=int(re.match(r'(\d+)', cl['cantidad']).groups()[0]),
+                                 cantidad=int(cant.groups()[0]),
                                  detalle=cl['detalle'])
 
     cli.save()
