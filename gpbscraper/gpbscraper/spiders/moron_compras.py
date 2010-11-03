@@ -18,8 +18,6 @@ class ComprasSpider(BaseSpider):
     name = 'compras'
     allowed_domains = ['moron.gov.ar']
 
-    # fecha_desde = settings.get('FECHA_DESDE', datetime(datetime.now().year, datetime.now().month, 1).strftime('%d/%m/%Y'))
-    # fecha_hasta = settings.get('FECHA_HASTA', datetime.now().strftime('%d/%m/%Y'))
     anio = settings.get('ANIO', datetime.now().year)
     trimestre=settings.get('TRIMESTRE', datetime.now().month // 4 + 1)
 
@@ -30,11 +28,29 @@ class ComprasSpider(BaseSpider):
         hxs = HtmlXPathSelector(response)
         
         for tr in hxs.select('//div[@id="lasClases"]/table/tr[position() > 1]'):
+            cotizacion = tr.select('td[1]/a/text()').extract()[0]
+            url_cotizacion = tr.select('td[1]/a/@href').extract()[0]
+            url_cotizacion = urljoin(response.url, url_cotizacion)
             url_item = tr.select('td[6]/a/@href').extract()[0]
             url_item = urljoin(response.url, url_item)
-            request = Request(url_item, callback=self.parse_item)
+            request = Request(url_cotizacion, callback=self.parse_cotizacion)
+            request.meta['url_item'] = urljoin(response.url, url_item)
             request.meta['tipo'] = tr.select('td[5]/text()').extract()[0]
+            request.meta['cotizacion'] = cotizacion
             yield request
+
+    Destino_RE = re.compile(r"<b>Dependencia solicitante: </b>([^<]*)")
+
+    def parse_cotizacion(self, response):
+        destino, = self.Destino_RE.search(response.body).groups()
+        url_item = response.request.meta['url_item']
+        request = Request(url_item, callback=self.parse_item)
+        request.meta['tipo'] = response.request.meta['tipo']
+        request.meta['cotizacion'] = response.request.meta['cotizacion']
+        request.meta['destino'] = destino
+        yield request
+
+    Tooltips_RE = r"Tip\('[^']*', '([^']*)',"
 
     def parse_item(self, response):
         hxs = HtmlXPathSelector(response)
@@ -45,6 +61,7 @@ class ComprasSpider(BaseSpider):
             loader.add_xpath('fecha', 'td[2]/text()')
             loader.add_xpath('importe', 'td[3]/text()')
             loader.add_xpath('proveedor', 'td[4]/text()')
+            compra['destino'] = response.request.meta['destino']
             compra['tipo_compra'] = response.request.meta['tipo']
             compra = loader.load_item()
 
@@ -56,9 +73,7 @@ class ComprasSpider(BaseSpider):
             yield compra
             yield request
 
-        Tooltips_RE = r"Tip\('[^']*', '([^']*)',"
-
-        for each in hxs.select('//div[@id="buscador"]/script/text()').re(Tooltips_RE):
+        for each in hxs.select('//div[@id="buscador"]/script/text()').re(self.Tooltips_RE):
             proveedor = ProveedorItem()
             proveedor['cuit'] = None
             for line in each.split('<br/>'):
@@ -74,12 +89,6 @@ class ComprasSpider(BaseSpider):
                 else: raise Exception(u'Unknown field %r' % key)
             if proveedor['cuit']: yield proveedor
 
-    """
-    nombre = Field(output_processor=TakeFirst())
-    domicilio = Field(output_processor=TakeFirst())
-    cuit = Field(output_processor=TakeFirst())
-    localidad = Field(output_processor=TakeFirst())
-"""
     def parse_details(self, response):
         hxs = HtmlXPathSelector(response)
         for tr in hxs.select('//div[@id="lasClases"]/table/tr[position() > 1]'):
@@ -91,7 +100,6 @@ class ComprasSpider(BaseSpider):
             loader.add_xpath('importe_total', 'td[6]/text()')
             loader.add_xpath('detalle', 'td[4]/text()')
             linea['orden_compra'] = response.request.meta['compra']['orden_compra']
-            print linea
             # anio
 
             yield loader.load_item()
