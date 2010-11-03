@@ -14,16 +14,6 @@ $(document).ready(function() {
 			  tr.effect("highlight", {}, 1500);
                       };
 
-		      $('td.detalle a').click(function() {
-						  var tr = $(this).parent().parent();
-						  var a = $(this);
-						  $.getJSON($(this).attr('href') + 'json', 
-							    function(data) { 
-								tr.after('<tr class="detalle"><td colspan="' + $('td', tr).length + '">' + $('#detalle_template').jqote(data) + '</td></tr>');
-								tr.effect("highlight", {}, 1500);
-								a.remove();
-							    });
-
 
 		      $('td.detalle a').click(function(event) {
 			                          event.preventDefault();
