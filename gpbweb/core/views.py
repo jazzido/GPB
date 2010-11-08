@@ -3,6 +3,7 @@ from gpbweb.annoying.decorators import render_to
 from gpbweb.core import models
 from gpbweb.utils import gviz_api, tagcloud
 from datetime import datetime
+from django.contrib.sites.models import Site
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.db import connection, transaction
 from django.db.models import Sum
@@ -12,9 +13,10 @@ from django.template import RequestContext
 from django.utils.datastructures import SortedDict
 from django.utils import simplejson
 
-import calendar
+import calendar, csv
 
 PAGE_SIZE = 50
+CSV_FIELDNAMES = ['orden_de_compra', 'fecha', 'proveedor', 'destino', 'importe', 'url']
 
 def _gasto_por_mes(additional_where=''):
     cursor = connection.cursor()
@@ -76,7 +78,7 @@ def index(request, start_date, end_date):
         'reparticiones': top_reparticiones_por_gastos,
         'proveedores': models.Proveedor.objects.por_compras(compra__fecha__gte=start_date, compra__fecha__lte=end_date),
         'gasto_mensual_total': models.Compra.objects.total_periodo(fecha_desde=start_date, fecha_hasta=end_date),
-        'ordenes_de_compra': models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).order_by('-fecha')[:100],
+        'ordenes_de_compra': models.Compra.objects.select_related('proveedor', 'destino').filter(fecha__gte=start_date, fecha__lte=end_date).order_by('-fecha')[:100],
         'gasto_por_mes_datatable_js': gasto_por_mes_datatable.ToJSCode('gasto_por_mes',
                                                                        columns_order=('mes', 'total'),
                                                                        order_by='mes'),
@@ -106,16 +108,38 @@ def index_periodo(request, start_anio, start_mes, end_anio, end_mes):
                  datetime(int(end_anio), int(end_mes), calendar.monthrange(int(end_anio), int(end_mes))[1])) # ultimo dia del mes
 
 
+def ordenes_csv(request, compras, filename):
+    """ Renderear un CSV con un QuerySet de ordenes de compra """
 
-@render_to('list_ordenes.html')
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=%s.csv' % filename
+    
+    writer = csv.DictWriter(response, fieldnames=CSV_FIELDNAMES)
+    writer.writerow(dict((fn,fn) for fn in CSV_FIELDNAMES))
+
+    # CSV_FIELDNAMES = ['orden_de_compra', 'fecha', 'proveedor', 'destino', 'importe', 'url']
+
+    cur_domain = Site.objects.get_current().domain
+
+    for c in compras:
+        writer.writerow({
+                'orden_de_compra': c.oc_numero,
+                'fecha': c.fecha.strftime('%Y-%m-%d'),
+                'proveedor': c.proveedor.nombre.encode('utf-8'),
+                'destino': c.destino.nombre.encode('utf-8'),
+                'importe': c.importe,
+                'url': 'http://%s%s' % (cur_domain, c.get_absolute_url())
+                })
+
+    return response
+
+
 def index_ordenes(request, start_date, end_date):
 
-    # ["%s: %s -- %s" % (cli.cantidad, cli.importe_unitario, cli.detalle) for cli in CompraLineaItem.objects.search('office').select_related('compra')]
-    
     if request.GET.get('q') is not None:
         compras = models.Compra.objects.search(' & '.join(request.GET.get('q').split()))
     else:
-        compras = models.Compra.objects.select_related('proveedor') \
+        compras = models.Compra.objects.select_related('proveedor', 'destino') \
             .filter(fecha__gte=start_date,
                     fecha__lte=end_date) \
                     .order_by('-fecha')
@@ -129,10 +153,20 @@ def index_ordenes(request, start_date, end_date):
     except (EmptyPage, InvalidPage):
         ordenes_de_compra = paginator.page(paginator.num_pages)
 
-    return { 'ordenes_de_compra': ordenes_de_compra,
-             'start_date': start_date,
-             'end_date': end_date
-             }
+    format = request.GET.get('format')
+
+    if format == 'csv':
+        return ordenes_csv(request, 
+                           compras, 
+                           'ordenes-de-compra_%s_%s' % (start_date.strftime('%Y-%m'), end_date.strftime('%Y-%m')))
+
+    return render_to_response('list_ordenes.html',
+                              { 'ordenes_de_compra': ordenes_de_compra,
+                                'start_date': start_date,
+                                'end_date': end_date
+                                },
+                              context_instance=RequestContext(request))
+
 
 def index_ordenes_anual(request, anio):
     return index_ordenes(request, 
@@ -190,13 +224,24 @@ def reparticion(request, reparticion_slug, start_date, end_date):
 
 @render_to('reparticion/list_ordenes.html')
 def reparticion_ordenes(request, reparticion_slug, start_date, end_date):
+    
     reparticion = get_object_or_404(models.Reparticion, slug=reparticion_slug)
 
-    paginator = Paginator(models.Compra.objects.select_related('proveedor') \
+    compras_qs = models.Compra.objects.select_related('proveedor', 'destino') \
                             .filter(fecha__gte=start_date,
                                     fecha__lte=end_date,
                                     destino=reparticion) \
-                            .order_by('-fecha'), 
+                            .order_by('-fecha')
+
+    # CSV
+    format = request.GET.get('format')
+    if format == 'csv':
+        return ordenes_csv(request,
+                           compras_qs,
+                           '%s_%s_%s' % (reparticion_slug, start_date.strftime('%Y-%m'), end_date.strftime('%Y-%m')))
+
+
+    paginator = Paginator(compras_qs, 
                           PAGE_SIZE)
 
     # Si la pagina esta fuera de rango, mostrar la última
@@ -290,12 +335,23 @@ def proveedor(request, proveedor_slug, start_date, end_date):
 def proveedor_ordenes(request, proveedor_slug, start_date, end_date):
     proveedor = get_object_or_404(models.Proveedor, slug=proveedor_slug)
 
-    paginator = Paginator(models.Compra.objects.select_related('destino') \
+
+    compras_qs = models.Compra.objects.select_related('destino', 'proveedor') \
                             .filter(fecha__gte=start_date,
                                     fecha__lte=end_date,
                                     proveedor=proveedor) \
-                            .order_by('-fecha'), 
+                            .order_by('-fecha')
+    paginator = Paginator(compras_qs,
                           PAGE_SIZE)
+
+
+    # CSV
+    format = request.GET.get('format')
+    if format == 'csv':
+        return ordenes_csv(request,
+                           compras_qs,
+                           '%s_%s_%s' % (proveedor_slug, start_date.strftime('%Y-%m'), end_date.strftime('%Y-%m')))
+
 
     # Si la pagina esta fuera de rango, mostrar la última
     try:

@@ -194,3 +194,10 @@ table.ordenes_de_compra {
     background: transparent url("/static/img/feed-icon.png") no-repeat left top;
     padding-left: 18px;
 }
+
+.csv-link {
+    background: transparent url("/static/img/csv-icon.gif") no-repeat left top;
+    padding-left: 20px;
+    height: 20px;
+}
+
