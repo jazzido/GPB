@@ -12,6 +12,8 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.datastructures import SortedDict
 from django.utils import simplejson
+from django.views.decorators.http import condition
+from django.views.decorators.cache import cache_control
 
 import calendar, csv
 
@@ -56,6 +58,8 @@ def _get_page(request, param_name='page'):
 
     return page
         
+@condition(last_modified_func=lambda req, start_date, end_date: models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).latest('created_at').created_at)
+@cache_control(must_revalidate=True, max_age=1800)
 @render_to('index.html')
 def index(request, start_date, end_date):
 
