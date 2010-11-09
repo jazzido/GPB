@@ -15,10 +15,12 @@ from django.utils import simplejson
 from django.views.decorators.http import condition
 from django.views.decorators.cache import cache_control
 
-import calendar, csv
+import calendar, csv, hashlib
 
 PAGE_SIZE = 50
 CSV_FIELDNAMES = ['orden_de_compra', 'fecha', 'proveedor', 'destino', 'importe', 'url']
+
+sha1 = lambda m: hashlib.sha1(m).hexdigest()
 
 def _gasto_por_mes(additional_where=''):
     cursor = connection.cursor()
@@ -58,7 +60,8 @@ def _get_page(request, param_name='page'):
 
     return page
         
-@condition(last_modified_func=lambda req, start_date, end_date: models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).latest('created_at').created_at)
+@condition(last_modified_func=lambda req, start_date, end_date: models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).latest('created_at').created_at,
+           etag_func=lambda req, start_date, end_date: sha1('%s:%s' % (req.path, models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).latest('created_at').created_at)))
 @cache_control(must_revalidate=True, max_age=1800)
 @render_to('index.html')
 def index(request, start_date, end_date):
