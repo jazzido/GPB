@@ -18,7 +18,7 @@ class OrdenesDeCompraFeed(Feed):
 
     def _items(self):
         return models.Compra.objects.select_related('destino', 'proveedor') \
-            .order_by('-fecha').all()
+            .order_by('-created_at').all()
 
     def items(self):
         return self._items()[:100]
@@ -30,7 +30,7 @@ class OrdenesDeCompraFeed(Feed):
                                                                         item.importe)
 
     def item_pubdate(self, item):
-        return datetime(item.fecha.year, item.fecha.month, item.fecha.day)
+        return item.created_at
 
 
 class ProveedorOrdenesDeCompraFeed(OrdenesDeCompraFeed):
