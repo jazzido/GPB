@@ -78,7 +78,7 @@ Gastos de {{reparticion.nombre}} {{periodo|striptags}} - {{block.super}}
   {% endfor %}
 </table>
 {{request.gpb_date_range}}
-<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra con destino {{reparticion}} {{periodo}}</a> - <a href="{% url reparticion_ordenes_rss reparticion.slug %}" class="rss-link">Feed RSS de órdenes de compra</a>
+<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra con destino {{reparticion}} {{periodo}}</a> (<a class="csv-link" href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}?format=csv">CSV</a>) - <a href="{% url reparticion_ordenes_rss reparticion.slug %}" class="rss-link">Feed RSS de órdenes de compra</a>
 </div>
 {% endif %}
 {% endblock %}

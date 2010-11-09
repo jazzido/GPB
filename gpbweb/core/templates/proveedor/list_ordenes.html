@@ -34,7 +34,7 @@ Ordenes de Compra adjudicadas a {{proveedor.nombre}} {{periodo|striptags}} - {{b
         {% if ordenes_de_compra.has_next %}
             <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
         {% endif %}
-    </span>
+    </span> ― <a class="csv-link" href="?format=csv">Todas estas órdenes en formato CSV</a>
   </div>
   <table class="ordenes_de_compra">
     <colgroup>
@@ -79,7 +79,7 @@ Ordenes de Compra adjudicadas a {{proveedor.nombre}} {{periodo|striptags}} - {{b
         {% if ordenes_de_compra.has_next %}
             <a href="?page={{ ordenes_de_compra.next_page_number }}">siguiente</a>
         {% endif %}
-    </span>
+    </span> ― <a class="csv-link" href="?format=csv">Todas las órdenes en formato CSV</a>
   </div>
 
 </div>

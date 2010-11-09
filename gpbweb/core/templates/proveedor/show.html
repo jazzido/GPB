@@ -78,7 +78,7 @@ No hay órdenes de compra adjudicadas a {{proveedor|objlink}} {{periodo}}
   {% endfor %}
   {% endfor %}
 </table>
-<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a> - <a href="{% url proveedor_ordenes_rss proveedor.slug %}" class="rss-link">Feed RSS de órdenes de compra</a>
+<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a> (<a class="csv-link" href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}?format=csv">CSV</a>) - <a href="{% url proveedor_ordenes_rss proveedor.slug %}" class="rss-link">Feed RSS de órdenes de compra</a>
 </div>
 {% endif %}
 {% endblock %}
