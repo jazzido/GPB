@@ -38,13 +38,14 @@ class CompraItem(Item):
     # CONC: Concurso de precios
     tipo_compra = Field(output_processor=TakeFirst())
 
+    compra_linea_items = Field()
+
 class CompraLineaItem(Item):
     cantidad = Field(output_processor=TakeFirst())
     unidad_medida = Field(output_processor=TakeFirst())
     importe = Field(output_processor=lambda x: parse_money(x[0]))
     importe_total = Field(output_processor=lambda x: parse_money(x[0]))
     detalle = Field(output_processor=TakeFirst())
-    orden_compra = Field(output_processor=TakeFirst())
     anio = Field(output_processor=TakeFirst())
 
 

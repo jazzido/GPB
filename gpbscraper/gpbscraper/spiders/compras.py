@@ -27,7 +27,8 @@ class ComprasSpider(BaseSpider):
     #     Rule(SgmlLinkExtractor(allow=r'/compras4/comprasrV2'), callback='parse_compras'),
     # )
 
-    def load_compra_items(self, response, orden_compra):
+    def parse_compra_items(self, response):
+        orden_compra = response.request.meta['compra']
         hxs = HtmlXPathSelector(response)
         for tr in hxs.select('//table[contains(@width, "760")][2]/tr'):
             i = CompraLineaItem()
@@ -35,9 +36,10 @@ class ComprasSpider(BaseSpider):
             l.add_xpath('cantidad', 'td[1]/text()')
             l.add_xpath('importe', 'td[2]/text()')
             l.add_xpath('detalle', 'td[3]/text()')
-            l.add_value('orden_compra', orden_compra)
             x = l.load_item()
-            yield x
+            
+            orden_compra['compra_linea_items'].append(x)
+            yield orden_compra
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -52,12 +54,16 @@ class ComprasSpider(BaseSpider):
             l.add_xpath('proveedor', 'td[5]/text()')
             l.add_xpath('destino', 'td[6]/text()')
 
-            # compra_detalle_url = urljoin(response.url, tr.select('td[7]/a/@href').extract()[0])
-            # yield Request(compra_detalle_url, 
-            #               callback=lambda response: self.load_compra_items(response,
-            #                                                                tr.select('td[1]/text()').extract()[0]))
+            compra_detalle_url = urljoin(response.url, tr.select('td[7]/a/@href').extract()[0])
+            req = Request(compra_detalle_url, 
+                          callback=self.parse_compra_items)
 
-            yield l.load_item()
+            compra = l.load_item()
+            compra['compra_linea_items'] = []
+
+            req.meta['compra'] = l.load_item()
+            
+            yield req
 
         for url in hxs.select('//a[contains(@href, "/compras4/comprasrV2")]/@href').extract():
             yield Request(urljoin(response.url, url), callback=self.parse)
