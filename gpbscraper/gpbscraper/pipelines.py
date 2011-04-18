@@ -38,28 +38,37 @@ class ComprasPersisterPipeline(object):
 
     def process_item(self, spider, item):
         if isinstance(item, CompraItem):
-            d = threads.deferToThread(self._persistCompraItem, item)
-            d.addErrback(log.err, "No pude persistir el item %s" % item)
+            self._persistCompraItem(item)
 
         return item
     
-    def _persistCompraItem(self, item):
-        def inner(compra_item):
-            # fijarse si la orden de compra ya esta persistida. if so, no hacer nada.
-            if models.Compra.objects.filter(orden_compra=int(compra_item['orden_compra']), fecha=compra_item['fecha']).exists():
-                return
+    @transaction.commit_on_success
+    def _persistCompraItem(self, compra_item):
+        if models.Compra.objects.filter(orden_compra=int(compra_item['orden_compra']), fecha=compra_item['fecha']).exists():
+            return
 
-            proveedor, proveedor_created = models.Proveedor.objects.get_or_create(nombre=compra_item['proveedor'])
-            reparticion, reparticion_created = models.Reparticion.objects.get_or_create_by_canonical_name(compra_item['destino'])
-            compra = models.Compra(orden_compra=int(compra_item['orden_compra']),
-                                   importe=str(compra_item['importe']),
-                                   fecha=compra_item['fecha'],
-                                   suministro=compra_item['suministro'],
-                                   proveedor=proveedor,
-                                   destino=reparticion)
-            compra.save()
+        proveedor, proveedor_created = models.Proveedor.objects.get_or_create(nombre=compra_item['proveedor'])
+        reparticion, reparticion_created = models.Reparticion.objects.get_or_create_by_canonical_name(compra_item['destino'])
+        compra = models.Compra(orden_compra=int(compra_item['orden_compra']),
+                               importe=str(compra_item['importe']),
+                               fecha=compra_item['fecha'],
+                               suministro=compra_item['suministro'],
+                               proveedor=proveedor,
+                               destino=reparticion)
 
-        transaction.commit_on_success(inner(item))
+            
+        compra.save()
+
+
+        # persistir lineas
+        for cli in compra_item['compra_linea_items']:
+            cli_obj = models.CompraLineaItem(compra=compra,
+                                             importe_unitario=str(cli['importe']),
+                                             cantidad=cli['cantidad'],
+                                             detalle=cli['detalle'])
+            cli_obj.save()
+
+            
 
 
 

@@ -27,8 +27,5 @@ DEFAULT_ITEM_CLASS = 'gpbscraper.items.CompraItem'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_3; en-US) AppleWebKit/534.2 (KHTML, like Gecko) Chrome/6.0.453.1 Safari/534.2'
 
 ITEM_PIPELINES = ['gpbscraper.pipelines.ItemCounterPipeline', 'gpbscraper.pipelines.ComprasPersisterPipeline']
-#ITEM_PIPELINES = ['gpbscraper.pipelines.ProveedoresPersisterPipeline']#, 'gpbscraper.pipelines.CompraLineasPersisterPipeline']
-#ITEM_PIPELINES = ['gpbscraper.pipelines.CompraLineasPersisterPipeline']
-#ITEM_PIPELINES = []
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpbweb.settings')

@@ -23,10 +23,6 @@ class ComprasSpider(BaseSpider):
 
     start_urls = ['http://www.bahiablanca.gov.ar/compras4/comprasrV2.asp?ejercicio=%s&desde=%s&hasta=%s&title=&SUBMIT1=Buscar&page=1' % (anio, fecha_desde, fecha_hasta)]
 
-    # rules = (
-    #     Rule(SgmlLinkExtractor(allow=r'/compras4/comprasrV2'), callback='parse_compras'),
-    # )
-
     def parse_compra_items(self, response):
         orden_compra = response.request.meta['compra']
         hxs = HtmlXPathSelector(response)
@@ -39,7 +35,8 @@ class ComprasSpider(BaseSpider):
             x = l.load_item()
             
             orden_compra['compra_linea_items'].append(x)
-            yield orden_compra
+        
+        yield orden_compra
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)

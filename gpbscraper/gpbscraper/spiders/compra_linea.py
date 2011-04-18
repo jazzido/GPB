@@ -1,3 +1,7 @@
+#################################################################################
+##### este no se usa mas --- ahora se hace todo junto desde ComprasSpider #######
+#################################################################################
+
 import re
 
 from scrapy.conf import settings
