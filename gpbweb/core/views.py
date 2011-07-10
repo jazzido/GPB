@@ -16,12 +16,14 @@ from django.views.decorators.vary import vary_on_headers
 from django.views.decorators.http import condition
 from django.views.decorators.cache import cache_control
 
-import calendar, csv, hashlib
+import calendar, csv, hashlib, decimal
 
 PAGE_SIZE = 50
 CSV_FIELDNAMES = ['orden_de_compra', 'fecha', 'proveedor', 'destino', 'importe', 'url']
 
 sha1 = lambda m: hashlib.sha1(m).hexdigest()
+
+  
 
 def _gasto_por_mes(additional_where=''):
     cursor = connection.cursor()
@@ -45,7 +47,7 @@ def _reparticion_gastos_data(data):
     rv = []
     for r in data[:5]:
         rv.append({'reparticion': r.nombre, 'total': float(r.total_compras)})
-    rv.append({'reparticion': 'Otras Reparticiones', 'total': sum([float(r.total_compras) for r in data[5:]])})
+    rv.append({'reparticion': 'Resto de las reparticiones', 'total': sum([float(r.total_compras) for r in data[5:]])})
     return rv;
     
 
@@ -61,13 +63,12 @@ def _get_page(request, param_name='page'):
 
     return page
         
-@condition(last_modified_func=lambda req, start_date, end_date: models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).latest('created_at').created_at,
-           etag_func=lambda req, start_date, end_date: sha1('%s:%s' % (req.path, models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).latest('created_at').created_at)))
-@vary_on_headers('Accept-Encoding')
-@cache_control(must_revalidate=True, max_age=600)
-@render_to('index.html')
+# @condition(last_modified_func=lambda req, start_date, end_date: models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).latest('created_at').created_at,
+#            etag_func=lambda req, start_date, end_date: sha1('%s:%s' % (req.path, models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).latest('created_at').created_at)))
+# @vary_on_headers('Accept-Encoding')
+# @cache_control(must_revalidate=True, max_age=600)
+@render_to('index_new.html') ## XXX TODO renombrar index_new.html a index.html cuando este listo
 def index(request, start_date, end_date):
-
     gasto_por_mes_datatable = gviz_api.DataTable({ "mes": ("date", "Mes"),
                                       "total": ("number", "Gasto") })
 
@@ -82,11 +83,14 @@ def index(request, start_date, end_date):
 
     reparticion_gastos_datatable.LoadData(_reparticion_gastos_data(top_reparticiones_por_gastos))
 
+    gasto_mensual_total = models.Compra.objects.total_periodo(fecha_desde=start_date, fecha_hasta=end_date)
 
     return { 
         'reparticiones': top_reparticiones_por_gastos,
         'proveedores': models.Proveedor.objects.por_compras(compra__fecha__gte=start_date, compra__fecha__lte=end_date),
-        'gasto_mensual_total': models.Compra.objects.total_periodo(fecha_desde=start_date, fecha_hasta=end_date),
+        'gasto_mensual_total': gasto_mensual_total,
+        'gasto_mensual_promedio': gasto_mensual_total / decimal.Decimal(30),
+        'cantidad_ordenes_de_compra': models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).count(),
         'ordenes_de_compra': models.Compra.objects.select_related('proveedor', 'destino').filter(fecha__gte=start_date, fecha__lte=end_date).order_by('-fecha')[:100],
         'gasto_por_mes_datatable_js': gasto_por_mes_datatable.ToJSCode('gasto_por_mes',
                                                                        columns_order=('mes', 'total'),

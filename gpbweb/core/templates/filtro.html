@@ -1,26 +1,41 @@
 {% load meses %}
-
-<div class="span-24 last" id="filtro-container">
-  <p class="incr"><button>→ Filtrar por fecha</button></p>
-
-  <div class="span-23 prepend-1 last hide" id="filtro">
-    <div id="slider"></div>
-    {% month_range from request.fecha_minima until request.fecha_maxima as mrange %}
-    {% regroup mrange by year as year_months %}
-
-    <ul id="months-menu">
-      {% for year in year_months reversed %}
-      <li class="year">
-	<ul class="months">
+<div id="filtro_fecha" class="clearfix">
+  <ul>
+    <li>
+      <span class="boton">Filtrar por fecha &raquo;</span>
+      Actualmente usted esta viendo el per&iacute;odo: <a href="javascript:void(0);"><strong>{{start_date|date:"F"}}</strong> {{start_date|date:"Y"}} - <strong>{{end_date|date:"F"}}</strong> {{end_date|date:"Y"}}</a>
+    </li>
+    <li>
+      <form id="buscador" action="" method="">
+	<p><input type="text" name="s" placeholder="Buscar ordenes de compra..." id="s" /></p>
+      </form>
+    </li>
+  </ul>
+  {% month_range from request.fecha_minima until request.fecha_maxima as mrange %}
+  {% regroup mrange by year as year_months %}
+  <form action="/" method="post" id="timeline">
+    <span class="arrow"></span>
+    <fieldset>
+      <label for="valueAA">Desde:</label>
+      <select name="valueAA" id="valueAA">
+	{% for year in year_months reversed %}
+	<optgroup label="{{ year.grouper }}">
 	  {% for month in year.list reversed %}
-	  <li><a name="{{month|date:"Y/m"}}" href="{{request.gpb_base_url}}{{month|date:"Y/m"}}">{{month|date:"M"}}</a></li>
+	  <option value="{{month|date:"Y/m"}}" alt="{{month|date:"F Y"}}" {% if end_date.year == year.grouper and end_date.month == month.month%}selected="selected"{% endif %}>{{month|date:"M Y"}}</option>
 	  {% endfor %}
-	</ul><br />
-	<a href="{{request.gpb_base_url}}{{year.grouper}}" class="year-link">{{year.grouper}}</a>
-      </li>
-      {% endfor %}
-    </ul>
-    <p id="periodo-display">Ver período: <a href="#"></a></p>
-  </div>
-
-</div>
+	</optgroup>
+	{% endfor %}
+      </select>
+      <label for="valueBB">Hasta:</label>
+      <select name="valueBB" id="valueBB">
+	{% for year in year_months reversed %}
+	<optgroup label="{{ year.grouper }}">
+	  {% for month in year.list reversed %}
+	  <option value="{{month|date:"Y/m"}}" alt="{{month|date:"F Y"}}" {% if start_date.year == year.grouper and start_date.month == month.month%}selected="selected"{% endif %}>{{month|date:"M Y"}}</option>
+	  {% endfor %}
+	</optgroup>
+	{% endfor %}
+      </select>
+    </fieldset>
+  </form>
+</div><!-- /filtro_fecha -->
