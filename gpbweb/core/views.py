@@ -16,6 +16,12 @@ from django.views.decorators.vary import vary_on_headers
 from django.views.decorators.http import condition
 from django.views.decorators.cache import cache_control
 
+# For Colavorative captcha breaking
+import urllib2
+import random
+import pickle
+import os
+
 import calendar, csv, hashlib
 
 PAGE_SIZE = 50
@@ -444,3 +450,66 @@ def orden_de_compra(request, numero, anio, format='html'):
         return HttpResponseBadRequest()
               
                              
+@render_to('need_help.html')
+def need_help(request, format='html'):
+    NEED_HELP_FILE = '/tmp/need_help'
+    GOT_HELP_FILE  = '/tmp/got_help'
+    base = 'http://www.bahiablanca.gov.ar/compras/%s'
+    captchaSource = base % 'comprasrealizadas.aspx'
+
+    msg = 'no message'
+    if request.POST:
+       show = True
+       msg = 'Gracias! sos el colaborador numero %d' % random.randint(1,100000000000)
+       viewstate  = request.POST['__VIEWSTATE']
+       validation = request.POST['__EVENTVALIDATION']
+       txtCaptcha = request.POST['txtCaptcha'].upper()
+       save = int(request.POST['save'])
+
+       got_help = {
+          '__VIEWSTATE' : viewstate,
+          '__EVENTVALIDATION' : validation,
+          'txtCaptcha'  : txtCaptcha,
+       }
+       if save:
+          pickle.dump(got_help,open(GOT_HELP_FILE,'w'))
+          try:
+             os.unlink(NEED_HELP_FILE)
+          except:
+             pass
+    else:
+       msg = ''
+       # GET
+       show = not random.randint(0,20)
+       save = 0
+       try:
+          open(NEED_HELP_FILE,'r').close()
+          show = save = 1
+       except:
+          # file doesn't exist, we don't need help
+
+          # Show it anyway 1 every 20 users so we renew the captcha
+          if not show: return vars()
+
+       txtCaptcha = 'CaptchaImage.axd?guid='
+       viewstate  = 'id="__VIEWSTATE'
+       validation = 'id="__EVENTVALIDATION'
+       
+       r = urllib2.urlopen(captchaSource).read()
+       def extract(html, pattern1, pattern2 = ''):
+           pattern    = html.index(pattern1)
+           if pattern2:
+              pattern = html.index(pattern2, pattern)
+
+           patternEnd = html.index('"', pattern+len(pattern2))
+           pattern    = html[pattern+len(pattern2):patternEnd]
+           return pattern
+
+       try:
+          txtCaptcha = base % extract(r, txtCaptcha)
+          viewstate  = extract(r, viewstate, 'value="')
+          validation = extract(r, validation, 'value="')
+       except:
+          msg = 'La pagina de la municipalidad cambio, por favor comuniquese con manu'
+    return vars()
+

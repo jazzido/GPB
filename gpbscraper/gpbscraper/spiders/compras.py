@@ -6,14 +6,63 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.loader import XPathItemLoader
 from scrapy.spider import BaseSpider
-from scrapy.http import Request
+from scrapy.http import Request, FormRequest
 from gpbscraper.items import CompraItem, CompraLineaItem
 from urlparse import urljoin, urlsplit, urlparse
 from datetime import datetime
 
 import django.db.backends.postgresql_psycopg2
 
+import pickle
+import os
+
+url = 'http://www.bahiablanca.gov.ar/compras/comprasrealizadas.aspx'
+NEED_HELP_FILE = '/tmp/need_help'
+GOT_HELP_FILE  = '/tmp/got_help'
+
 class ComprasSpider(BaseSpider):
+    name = 'compras'
+    allowed_domains = ['bahiablanca.gov.ar']
+    fecha_desde = settings.get('FECHA_DESDE', datetime(datetime.now().year, datetime.now().month, 1).strftime('%d/%m/%Y'))
+    fecha_hasta = settings.get('FECHA_HASTA', datetime.now().strftime('%d/%m/%Y'))
+
+    def need_help(self, response):
+        if 'seguridad erroneo' in response.body:
+           open(NEED_HELP_FILE,'w').close()
+           os.unlink(GOT_HELP_FILE)
+           return True
+        return False
+
+    def start_requests(self):
+        formdata = pickle.load(open(GOT_HELP_FILE, 'r'))
+        for k in formdata.keys():
+            formdata[k] = formdata[k].encode('utf-8')
+
+        txtCaptcha = formdata['txtCaptcha']
+        del formdata['txtCaptcha']
+
+        formdata.update({
+            "__EVENTARGUMENT":"",
+            "__EVENTTARGET":"",
+            "__VIEWSTATEENCRYPTED":"",
+            "ctl00$ContentPlaceHolder1$txtCaptcha":txtCaptcha,
+            "ctl00$ContentPlaceHolder1$Button2":"Buscar",
+            "ctl00$ContentPlaceHolder1$meeFechaDesde_ClientState":"",
+            "ctl00$ContentPlaceHolder1$meeFechaHasta_ClientState":"",
+            "ctl00$ContentPlaceHolder1$txtFechaDesde":"01/01/2011",
+            "ctl00$ContentPlaceHolder1$txtFechaHasta":"31/12/2011",
+            "ctl00$ContentPlaceHolder1$txtProveedor":"%",
+        })
+
+        print formdata
+            
+        return [FormRequest(url, formdata = formdata, callback = self.parseFirst)]
+
+    def parseFirst(self, response):
+        if self.need_help(response):
+           return
+
+class ComprasSpider2(BaseSpider):
     name = 'compras'
     allowed_domains = ['bahiablanca.gov.ar']
 
