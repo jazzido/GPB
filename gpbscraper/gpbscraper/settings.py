@@ -25,7 +25,13 @@ NEWSPIDER_MODULE = 'gpbscraper.spiders'
 DEFAULT_ITEM_CLASS = 'gpbscraper.items.CompraItem'
 #USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 USER_AGENT = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_3; en-US) AppleWebKit/534.2 (KHTML, like Gecko) Chrome/6.0.453.1 Safari/534.2'
+DEFAULT_REQUEST_HEADERS = {'Accept-Language':'es'}
 
-ITEM_PIPELINES = ['gpbscraper.pipelines.ItemCounterPipeline', 'gpbscraper.pipelines.ComprasPersisterPipeline']
+#ITEM_PIPELINES = ['gpbscraper.pipelines.ItemCounterPipeline', 'gpbscraper.pipelines.ComprasPersisterPipeline']
+ITEM_PIPELINES = []
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpbweb.settings')
+
+SCHEDULER_MIDDLEWARES = {
+    'scrapy.contrib.schedulermiddleware.duplicatesfilter.DuplicatesFilterMiddleware': None,
+}

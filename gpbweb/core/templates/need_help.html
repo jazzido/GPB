@@ -1,0 +1,30 @@
+{{msg}}
+{% if show %}
+  {% if not request.POST %}
+    <img src="{{txtCaptcha}}">
+    <form method="POST">
+    <input type="hidden" name="__VIEWSTATE" value="{{viewstate}}">
+    <input type="hidden" name="__EVENTVALIDATION" value="{{validation}}">
+    <input type="hidden" name="save" value="{{save}}">
+    <input name="txtCaptcha">
+    {% csrf_token %}
+    </form>
+  {% else %}
+    <form method="POST" action="{{captchaSource}}">
+    <input type="hidden" name="__VIEWSTATE" value="{{viewstate}}">
+    <input type="hidden" name="__EVENTVALIDATION" value="{{validation}}">
+    <input type="hidden" name="__EVENTARGUMENT">
+    <input type="hidden" name="__EVENTTARGET">
+    <input type="hidden" name="__VIEWSTATEENCRYPTED">
+    <input type="hidden" name="ctl00$ContentPlaceHolder1$txtCaptcha" value="{{txtCaptcha}}">
+    <input type="hidden" name="ctl00$ContentPlaceHolder1$Button2" value="Buscar">
+    <input type="hidden" name="ctl00$ContentPlaceHolder1$meeFechaDesde_ClientState" value="">
+    <input type="hidden" name="ctl00$ContentPlaceHolder1$meeFechaHasta_ClientState" value="">
+    <input type="hidden" name="ctl00$ContentPlaceHolder1$txtFechaDesde" value="01/01/2011">
+    <input type="hidden" name="ctl00$ContentPlaceHolder1$txtFechaHasta" value="31/12/2011">
+    <input type="hidden" name="ctl00$ContentPlaceHolder1$txtProveedor" value="%">
+    <input type=submit>
+    </form>
+  {% endif %}
+{% endif %}
+
