@@ -31,3 +31,7 @@ DEFAULT_REQUEST_HEADERS = {'Accept-Language':'es'}
 ITEM_PIPELINES = []
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpbweb.settings')
+
+SCHEDULER_MIDDLEWARES = {
+    'scrapy.contrib.schedulermiddleware.duplicatesfilter.DuplicatesFilterMiddleware': None,
+}

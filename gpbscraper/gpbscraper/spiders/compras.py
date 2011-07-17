@@ -19,6 +19,8 @@ import os
 url = 'http://www.bahiablanca.gov.ar/compras/comprasrealizadas.aspx'
 NEED_HELP_FILE = '/tmp/need_help'
 GOT_HELP_FILE  = '/tmp/got_help'
+VIEWSTATE_FILE = '/tmp/viewstate'
+MAX_PAGES      = 20
 
 class ComprasSpider(BaseSpider):
     name = 'compras'
@@ -26,92 +28,179 @@ class ComprasSpider(BaseSpider):
     fecha_desde = settings.get('FECHA_DESDE', datetime(datetime.now().year, datetime.now().month, 1).strftime('%d/%m/%Y'))
     fecha_hasta = settings.get('FECHA_HASTA', datetime.now().strftime('%d/%m/%Y'))
 
+    def help_please(self, *args):
+        open(NEED_HELP_FILE,'w').close()
+        try: os.unlink(VIEWSTATE_FILE)
+        except: pass
+
+        try: os.unlink(GOT_HELP_FILE)
+        except: pass
+
     def need_help(self, response):
-        if 'seguridad erroneo' in response.body:
-           open(NEED_HELP_FILE,'w').close()
-           os.unlink(GOT_HELP_FILE)
+        # we need human help, signal that and flee.
+        if ('seguridad erroneo' in response.body) or ('txtCaptcha' in response.body):
+           self.help_please()
            return True
         return False
 
+    def formdata(self, target, argument):
+        data = {
+           '__EVENTTARGET':'ctl00$ContentPlaceHolder1$%s' % target,
+           '__EVENTARGUMENT':argument,
+           '__VIEWSTATEENCRYPTED':'',
+           }
+        data.update(self.viewstate)
+        return data
+
     def start_requests(self):
-        formdata = pickle.load(open(GOT_HELP_FILE, 'r'))
-        for k in formdata.keys():
-            formdata[k] = formdata[k].encode('utf-8')
+        self.pages = 0
+        try:
+           # Try and see if there's already a known __VIEWSTATE
+           self.viewstate = pickle.load(open(VIEWSTATE_FILE, 'r'))
 
-        txtCaptcha = formdata['txtCaptcha']
-        del formdata['txtCaptcha']
+           # We don't know the previous state,
+           # and the app is very picky. We try to get Page$Last
+           # if we are further than 10 pages from the end it'll work
+           # if it fails with an error, the flow is wrong, we try Page$First
+           lastPage  = self.formdata('gvOrdenes','Page$Last')
+           return  [FormRequest(url, formdata = lastPage, callback = self.parseAPage, errback = self.tryFirst)]
 
-        formdata.update({
-            "__EVENTARGUMENT":"",
-            "__EVENTTARGET":"",
-            "__VIEWSTATEENCRYPTED":"",
-            "ctl00$ContentPlaceHolder1$txtCaptcha":txtCaptcha,
-            "ctl00$ContentPlaceHolder1$Button2":"Buscar",
-            "ctl00$ContentPlaceHolder1$meeFechaDesde_ClientState":"",
-            "ctl00$ContentPlaceHolder1$meeFechaHasta_ClientState":"",
-            "ctl00$ContentPlaceHolder1$txtFechaDesde":"01/01/2011",
-            "ctl00$ContentPlaceHolder1$txtFechaHasta":"31/12/2011",
-            "ctl00$ContentPlaceHolder1$txtProveedor":"%",
-        })
+        except:
+           try:
+              # If there's no stored __VIEWSTATE, try solving the captcha
+              formdata = pickle.load(open(GOT_HELP_FILE, 'r'))
+              os.unlink(GOT_HELP_FILE)
 
-        print formdata
-            
-        return [FormRequest(url, formdata = formdata, callback = self.parseFirst)]
+              txtCaptcha = formdata['txtCaptcha']
+              del formdata['txtCaptcha']
+
+              formdata.update({
+                  "ctl00$ContentPlaceHolder1$txtCaptcha":txtCaptcha,
+                  "__EVENTARGUMENT":"",
+                  "__EVENTTARGET":"",
+                  "__VIEWSTATEENCRYPTED":"",
+                  "ctl00$ContentPlaceHolder1$Button2":"Buscar",
+                  "ctl00$ContentPlaceHolder1$meeFechaDesde_ClientState":"",
+                  "ctl00$ContentPlaceHolder1$meeFechaHasta_ClientState":"",
+                  "ctl00$ContentPlaceHolder1$txtFechaDesde":"01/01/2011",
+                  "ctl00$ContentPlaceHolder1$txtFechaHasta":"31/12/2011",
+                  "ctl00$ContentPlaceHolder1$txtProveedor":"%",
+              })
+              return [FormRequest(url, formdata = formdata, callback = self.parseFirst, errback = self.help_please)]
+           except:
+              self.help_please()
+           return []
+
+    def tryFirst(self, failure):
+        # Page$Last failed, try restart the cycle retrieving Page$First
+        formdata = self.formdata('gvOrdenes','Page$First')
+        return [FormRequest(url, formdata = formdata, callback = self.parseFirst, errback = self.help_please)]
+
+    def getViewState(self, hxs):
+        viewstate = hxs.select('//input[@name="__VIEWSTATE"]/@value').extract()[0]
+        validation = hxs.select('//input[@name="__EVENTVALIDATION"]/@value').extract()[0]
+        state = {'__VIEWSTATE':viewstate, '__EVENTVALIDATION':validation}
+        pickle.dump(state, open(VIEWSTATE_FILE,'w'))
+        self.viewstate = state
+
+    INTERESTING = "javascript:__doPostBack("
+    def postBackArgs(self, element):
+        url = element.select('@href').extract()
+        if not url: return None
+        url = url[0].encode('utf-8')
+        url = url.split("'")
+
+        if url[0] != self.INTERESTING:
+           return None
+
+        target   = url[1].split('$')[2]
+        argument = url[3]
+
+        return target, argument
 
     def parseFirst(self, response):
+        # from Page$First we just jump to Page$Last, and start the loop
         if self.need_help(response):
            return
 
-class ComprasSpider2(BaseSpider):
-    name = 'compras'
-    allowed_domains = ['bahiablanca.gov.ar']
+        hxs = HtmlXPathSelector(response)
+        self.getViewState(hxs)
+        
+        lastPage  = self.formdata('gvOrdenes','Page$Last')
+        return [FormRequest(url, formdata = lastPage, callback = self.parseAPage, errback = self.help_please)]
 
-    anio = settings.get('ANIO', datetime.now().year)
-    fecha_desde = settings.get('FECHA_DESDE', datetime(datetime.now().year, datetime.now().month, 1).strftime('%d/%m/%Y'))
-    fecha_hasta = settings.get('FECHA_HASTA', datetime.now().strftime('%d/%m/%Y'))
+    def parseAPage(self, response):
+        if self.need_help(response):
+           return
 
-    start_urls = ['http://www.bahiablanca.gov.ar/compras4/comprasrV2.asp?ejercicio=%s&desde=%s&hasta=%s&title=&SUBMIT1=Buscar&page=1' % (anio, fecha_desde, fecha_hasta)]
+        hxs = HtmlXPathSelector(response)
+        self.getViewState(hxs)
+        
+        self.pages += 1
+        for tr in hxs.select('//table[@id="ctl00_ContentPlaceHolder1_gvOrdenes"]/tr[position() > 1]'):
+            detalle = self.postBackArgs(tr.select('td[9]/a'))
+            if detalle:
+               detalle = self.postBackArgs(tr.select('td[9]/a'))
+               i = CompraItem()
+               l = XPathItemLoader(item=i, selector=tr)
+               l.add_xpath('orden_compra', 'td[1]/text()')
+               l.add_xpath('fecha', 'td[2]/text()')
+               l.add_xpath('importe', 'td[3]/text()')
+               l.add_xpath('proveedor', 'td[4]/text()')
+               l.add_xpath('dependencia', 'td[5]/text()')
+               l.add_xpath('suministro', 'td[6]/text()')
+               l.add_xpath('anio', 'td[7]/text()')
+               l.add_xpath('tipo', 'td[8]/text()')
+               compra = l.load_item()
+               compra['compra_linea_items'] = []
 
-    def parse_compra_items(self, response):
+               detalle  = self.formdata(*detalle)
+               req = FormRequest(url, formdata = detalle, callback = self.parseDetalle)
+               req.meta['compra'] = compra
+               yield req
+
+            # Get previous page
+            if self.pages < MAX_PAGES:
+               prev = None
+               for td in tr.select('td[@colspan="9"]//td'):
+                  args = self.postBackArgs(td.select('a'))
+                  if args:
+                     prev = args
+                  else:
+                     prev  = self.formdata(*prev)
+                     req = FormRequest(url, formdata = prev, callback = self.parseAPage)
+                     yield req
+                      
+    def parseDetalle(self, response):
+        if self.need_help(response):
+           return
+
+        hxs = HtmlXPathSelector(response)
+        self.getViewState(hxs)
+        
         orden_compra = response.request.meta['compra']
         hxs = HtmlXPathSelector(response)
-        for tr in hxs.select('//table[contains(@width, "760")][2]/tr'):
+        for tr in hxs.select('//table[@id="ctl00_ContentPlaceHolder1_gvDetalle"]/tr[position() > 1]'):
             i = CompraLineaItem()
             l = XPathItemLoader(item=i, selector=tr)
             l.add_xpath('cantidad', 'td[1]/text()')
-            l.add_xpath('importe', 'td[2]/text()')
+            # l.add_xpath('unidad_medida', 'td[2]/text()')
             l.add_xpath('detalle', 'td[3]/text()')
+            l.add_xpath('importe', 'td[4]/text()')
             x = l.load_item()
             
             orden_compra['compra_linea_items'].append(x)
-        
+            foundCurrent = False
+            for td in tr.select('td[@colspan="4"]//td'):
+               args = self.postBackArgs(td.select('a'))
+               if not args:
+                  foundCurrent = True
+               else:
+                  if foundCurrent:
+                     args  = self.formdata(*args)
+                     req = FormRequest(url, formdata = args, callback = self.parseDetalle)
+                     req.meta['compra'] = orden_compra
+                     yield req
         yield orden_compra
-
-    def parse(self, response):
-        hxs = HtmlXPathSelector(response)
-        
-        for tr in hxs.select('//div[@id="miListView"]/table/tr'):
-            i = CompraItem()
-            l = XPathItemLoader(item=i, selector=tr)
-            l.add_xpath('orden_compra', 'td[1]/text()')
-            l.add_xpath('fecha', 'td[2]/text()')
-            l.add_xpath('importe', 'td[3]/text()')
-            l.add_xpath('suministro', 'td[4]/text()')
-            l.add_xpath('proveedor', 'td[5]/text()')
-            l.add_xpath('destino', 'td[6]/text()')
-
-            compra_detalle_url = urljoin(response.url, tr.select('td[7]/a/@href').extract()[0])
-            req = Request(compra_detalle_url, 
-                          callback=self.parse_compra_items)
-
-            compra = l.load_item()
-            compra['compra_linea_items'] = []
-
-            req.meta['compra'] = l.load_item()
-            
-            yield req
-
-        for url in hxs.select('//a[contains(@href, "/compras4/comprasrV2")]/@href').extract():
-            yield Request(urljoin(response.url, url), callback=self.parse)
 
 SPIDER = ComprasSpider()
