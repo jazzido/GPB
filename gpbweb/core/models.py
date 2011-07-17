@@ -1,11 +1,13 @@
 # coding: utf-8
 
+import decimal
+from datetime import datetime
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from django_extensions.db import fields
 
-from datetime import datetime
 from gpbweb.postgres_fts import models as fts_models
 
 from south.modelsinspector import add_ignored_fields
@@ -123,6 +125,10 @@ class CompraManager(models.Manager):
                      promote=True)
 
         return c.distinct().order_by('-rank')
+
+    def promedio_mensual_periodo(self, fecha_desde, fecha_hasta):
+        t = self.total_periodo(fecha_desde, fecha_hasta)
+        return t / decimal.Decimal(str((fecha_hasta - fecha_desde).days / 30.0))
 
         
 
