@@ -73,7 +73,7 @@ def _get_page(request, param_name='page'):
 #            etag_func=lambda req, start_date, end_date: sha1('%s:%s' % (req.path, models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).latest('created_at').created_at)))
 # @vary_on_headers('Accept-Encoding')
 # @cache_control(must_revalidate=True, max_age=600)
-@render_to('index_new.html') ## XXX TODO renombrar index_new.html a index.html cuando este listo
+@render_to('index.html')
 def index(request, start_date, end_date):
     gasto_por_mes_datatable = gviz_api.DataTable({ "mes": ("date", "Mes"),
                                       "total": ("number", "Gasto") })

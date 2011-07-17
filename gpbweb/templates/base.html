@@ -1,83 +1,107 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-	  "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="es">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>{% block title %}Gasto Público Bahiense{% endblock %}</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-    <!-- Framework CSS -->
-    <link rel="stylesheet" href="/static/css/blueprint/screen.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="/static/css/blueprint/screen.css" type="text/css" media="print">
-    <!--[if lt IE 8]><link rel="stylesheet" href="/static/css/blueprint/screen.css" type="text/css" media="screen, projection"><![endif]-->
-    <link rel="stylesheet" href="/static/css/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/smoothness/jquery-ui.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="/static/css/style.css" type="text/css" media="screen, projection">
-    {% block rss %}
-    <link rel="alternate" type="application/rss+xml"  title="Gasto Público Bahiense RSS"  href="{% url ordenes_rss %}" />
-    {% endblock %}
-    <script src="http://www.google.com/jsapi" type="text/javascript"></script>
-    <script type="text/javascript">
-      google.load("jquery", "1.4.2");
-      google.load("jqueryui", "1.8.2");
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{% block title %}Gasto Público Bahiense{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/global.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="/static/css/redmond/jquery-ui-1.7.1.custom.css" type="text/css" />
+    <link rel="Stylesheet" href="/static/css/ui.slider.extras.css" type="text/css" />
+    <script type="text/javascript" src="/static/js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-ui-1.7.1.custom.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.jqote2.min.js"></script>
+    <script type="text/javascript" src="/static/js/selectToUISlider.jQuery.js"></script>
+    <script type="text/javascript" src="/static/js/app.js"></script>
+    <script src="/static/js/timeline.js" type="text/javascript" charset="utf-8"></script>
+    
+    <script src="http://www.google.com/jsapi" type="text/javascript"></script> 
+    <script type="text/javascript"> 
+      // google.load("jquery", "1.4.2");
+      // google.load("jqueryui", "1.8.2");
       google.load("visualization", "1", {'packages':["table", "linechart", "corechart"], 'language': 'es'});
     </script>
-    <script type="text/javascript" src="/static/js/jquery.enumerable.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.jqote2.min.js"></script>
+
     {% if start_date and end_date %} 
     <script type="text/javascript">
-        BASE_URL = '{{request.gpb_base_url}}';
-        RANGO_FECHAS = {};
-        RANGO_FECHAS.start = new Date('{{start_date|date:"Y-m-d"}}');
-	RANGO_FECHAS.end = new Date('{{end_date|date:"Y-m-d"}}');
-	if (RANGO_FECHAS.end > new Date()) RANGO_FECHAS.end = new Date();
+      BASE_URL = '{{request.gpb_base_url}}';
+      RANGO_FECHAS = {};
+      RANGO_FECHAS.start = new Date('{{start_date|date:"Y-m-d"}}');
+      RANGO_FECHAS.end = new Date('{{end_date|date:"Y-m-d"}}');
+      if (RANGO_FECHAS.end > new Date()) RANGO_FECHAS.end = new Date();
     </script>
     {% endif %}
-    <script type="text/javascript" src="/static/js/app.js"></script>
-    {% block extrajs %}{% endblock %}
+
+    
+    <script type="text/javascript">
+      var start_date = new Date('{{start_date|date:"Y-m-d"}}');
+      var end_date = new Date('{{end_date|date:"Y-m-d"}}');
+      if (end_date > new Date()) end_date = new Date();
+      
+      function draw_table() {
+      {{ gasto_por_mes_datatable_js|safe }}
+      var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM yyyy'});
+      date_formatter.format(gasto_por_mes, 0);
+      var number_formatter = new google.visualization.NumberFormat({prefix: '$', negativeColor: 'red', negativeParens: true, groupingSymbol:'.', decimalSymbol:','});
+      number_formatter = number_formatter.format(gasto_por_mes, 1);
+      
+      var linechart = new google.visualization.LineChart(document.getElementById('table_div_jscode'));
+      linechart.draw(gasto_por_mes, {showRowNumber: true, legend: 'none'});
+      
+      {{reparticion_datatable_js|safe}}
+      var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
+      piechart.draw(reparticion_gastos, 
+      { width: 420, height: 400, legend: 'none' });
+      }
+      
+      google.setOnLoadCallback(draw_table);
+      
+    </script>
+
   </head>
   <body>
-    <div class="container">
-      <h1 class="span-10"><a href="/">Gasto Público Bahiense</a></h1>
-      <div class="span-12 last about-header">
-	¿Para qué se usa tu plata?
-	<a href="/acerca-de-gpb/">[Sobre GPB]</a>
-      </div>
+    <div id="principal">
+      <div id="cabecera" class="clearfix">
+	<div id="logo">
+	  <h1>
+	    <a href="/" title="Gasto P&uacute;blico Bahiense - ¿Para qué se usa tu plata?">Gasto P&uacute;blico <span>Bahiense</span></a>
+	  </h1>
+	  <h2>¿Para qué se usa tu plata?</h2>
+	</div><!-- /logo -->
+	<div id="apoyo_de">
+	  <ul>
+	    <li><strong>Con el apoyo de:</strong></li>
+	    <li><a href="http://garagelab.tumblr.com/" target="_blank"><img src="/static/img/logo-garagelab.gif" alt="Logo Garagelab"/></a></li>
+	    <li>y</li>
+	    <li><a href="http://poderciudadano.org/" target="_blank"><img src="/static/img/logo-poder-ciudadano.gif" alt="Logo Poder Ciudadano" /></a></li>
+	  </ul>
+	</div><!-- /apoyo_de -->
+      </div><!-- /cabecera -->
       {% block content %}{% endblock %}
-      <hr class="prepend-top">
-      <div class="span-22 last footer">
-	<ul class="footer-menu">
-	  <li class="span-4"><a href="/proveedores/">Todos los proveedores</a></li> 
-	  <li class="span-4"><a href="/reparticiones/">Todas las reparticiones</a></li>
-	  <li class="span-10 last">
-	    <form action="/ordenes-de-compra/" method="get" id="ordenes-search">
-	      <label for="q">Buscar ordenes de compra:</label>
-	      <input type="text" name="q" id="q">
-	      <input type="submit" name="submit" value="&raquo;">
-	    </form>
-	  </li>
-	</ul>
-	<p class="span-22 last"><strong>Gasto Público Bahiense</strong> es un proyecto independiente, no depende de la Municipalidad de Bahía Blanca ― <a href="/acerca-de-gpb/">Acerca de Gasto Público Bahiense</a></p>
-      </div>
-    </div>
-<script type="text/html" id="detalle_template">
-  <![CDATA[
-   <table style="border-bottom: 1px solid black">
-     <tr>
-       <th>Cantidad</th>
-       <th>Detalle</th>
-       <th>Imp. unitario</th>
-     </tr>
-   <% for (var i=0; i < this.lineas.length; i++) { %>
-      <tr>
-	<td><%= this.lineas[i].cantidad %></td>
-	<td><%= this.lineas[i].detalle %></td>
-	<td>$ <%= this.lineas[i].importe_unitario %></td>
-      </tr>
-    <% } %>
-      <tr><td colspan="3"><a href="<%= this.href %>" target="_blank">Ver esta orden en otra ventana</a> — <a target="_blank" href="http://www.bahiablanca.gov.ar/compras4/dcomprV2.asp?wOCabc=<%= this.href.split('/')[2] %>&wEjercicio=<%= this.href.split('/')[3] %>">Ver esta orden en el sitio de la Municipalidad</a></td></tr>
-    </table>
-    ]]>
-</script>
-
+    </div><!-- /principal -->
+    <div id="footer">
+      <p>
+	<strong>Gasto Público Bahiense</strong> es un proyecto independiente, no depende de la Municipalidad de Bahía Blanca ― <a href="">Acerca de Gasto Público Bahiense</a>
+      </p>
+    </div><!-- /footer -->
+    <script type="text/html" id="detalle_template">
+      <![CDATA[
+        <table style="border-bottom: 1px solid black">
+	  <tr>
+	    <th>Cantidad</th>
+	    <th>Detalle</th>
+	    <th>Imp. unitario</th>
+	  </tr>
+	  <% for (var i=0; i < this.lineas.length; i++) { %>
+	     <tr>
+	       <td><%= this.lineas[i].cantidad %></td>
+	       <td><%= this.lineas[i].detalle %></td>
+	       <td>$ <%= this.lineas[i].importe_unitario %></td>
+	     </tr>
+	     <% } %>
+	     <tr><td colspan="3"><a href="<%= this.href %>" target="_blank">Ver esta orden en otra ventana</a></td></tr>
+	  </table>
+	  ]]>
+    </script>
   </body>
 </html>
