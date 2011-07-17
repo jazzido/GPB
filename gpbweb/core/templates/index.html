@@ -1,127 +1,198 @@
-{% extends "base.html" %}
 {% load objlink %}
 {% load currency %}
 {% load tiempo_en_letras %}
 {% load meses %}
 {% load common_html %}
 {% load cache %}
+<!-- XXX TODO FALTA EXTRAER EL BASE TEMPLATE, HACERLO -->
 
-{% block extrajs %}
-<script type="text/javascript">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-  var start_date = new Date('{{start_date|date:"Y-m-d"}}');
-  var end_date = new Date('{{end_date|date:"Y-m-d"}}');
-  if (end_date > new Date()) end_date = new Date();
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Gasto Público Bahiense</title>
+    <link rel="stylesheet" href="/static/css/global.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="/static/css/redmond/jquery-ui-1.7.1.custom.css" type="text/css" />
+    <link rel="Stylesheet" href="/static/css/ui.slider.extras.css" type="text/css" />
+    <script type="text/javascript" src="/static/js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-ui-1.7.1.custom.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.jqote2.min.js"></script>
+    <script type="text/javascript" src="/static/js/selectToUISlider.jQuery.js"></script>
+    <script type="text/javascript" src="/static/js/app.js"></script>
+    <script src="/static/js/timeline.js" type="text/javascript" charset="utf-8"></script>
+    
+    <script src="http://www.google.com/jsapi" type="text/javascript"></script> 
+    <script type="text/javascript"> 
+      // google.load("jquery", "1.4.2");
+      // google.load("jqueryui", "1.8.2");
+      google.load("visualization", "1", {'packages':["table", "linechart", "corechart"], 'language': 'es'});
+    </script>
 
-  function draw_table() {
-    {{ gasto_por_mes_datatable_js|safe }}
-    var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM yyyy'});
-    date_formatter.format(gasto_por_mes, 0);
-    var number_formatter = new google.visualization.NumberFormat({prefix: '$', negativeColor: 'red', negativeParens: true, groupingSymbol:'.', decimalSymbol:','});
-    number_formatter = number_formatter.format(gasto_por_mes, 1);
+    
+    <script type="text/javascript">
+      var start_date = new Date('{{start_date|date:"Y-m-d"}}');
+      var end_date = new Date('{{end_date|date:"Y-m-d"}}');
+      if (end_date > new Date()) end_date = new Date();
+      
+      function draw_table() {
+      {{ gasto_por_mes_datatable_js|safe }}
+      var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM yyyy'});
+      date_formatter.format(gasto_por_mes, 0);
+      var number_formatter = new google.visualization.NumberFormat({prefix: '$', negativeColor: 'red', negativeParens: true, groupingSymbol:'.', decimalSymbol:','});
+      number_formatter = number_formatter.format(gasto_por_mes, 1);
+      
+      var linechart = new google.visualization.LineChart(document.getElementById('table_div_jscode'));
+      linechart.draw(gasto_por_mes, {showRowNumber: true, legend: 'none'});
+      
+      {{reparticion_datatable_js|safe}}
+      var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
+      piechart.draw(reparticion_gastos, 
+      { width: 420, height: 400, legend: 'none' });
+      }
+      
+      google.setOnLoadCallback(draw_table);
+      
+    </script>
 
-    var linechart = new google.visualization.LineChart(document.getElementById('table_div_jscode'));
-    linechart.draw(gasto_por_mes, {showRowNumber: true});
-  
-    {{reparticion_datatable_js|safe}}
-    var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
-    piechart.draw(reparticion_gastos, {width: 385, height: 270, legend: 'bottom' });
+  </head>
+  <body>
+    <div id="principal">
+      <div id="cabecera" class="clearfix">
+	<div id="logo">
+	  <h1>
+	    <a href="/" title="Gasto P&uacute;blico Bahiense - ¿Para qué se usa tu plata?">Gasto P&uacute;blico <span>Bahiense</span></a>
+	  </h1>
+	  <h2>¿Para qué se usa tu plata?</h2>
+	</div><!-- /logo -->
+	<div id="apoyo_de">
+	  <ul>
+	    <li><strong>Con el apoyo de:</strong></li>
+	    <li><a href="/"><img src="/static/img/logo-garagelab.gif" alt="Logo Garagelab" /></a></li>
+	    <li>y</li>
+	    <li><a href="/"><img src="/static/img/logo-poder-ciudadano.gif" alt="Logo Poder Ciudadano" /></a></li>
+	  </ul>
+	</div><!-- /apoyo_de -->
+      </div><!-- /cabecera -->
+      <div id="descripcion">
+	<h2><strong>Gasto Público Bahiense</strong> es una herramienta para explorar los datos de compras a proveedores que publica la <strong>Municipalidad de Bahía Blanca, Argentina</strong>. <a href="javascript:void(0);">&rarr;</a></h2>
+      </div><!-- /descripcion -->
+      <div id="contador_gastos" class="clearfix">
+	{% tiempo_en_letras start_date end_date as periodo %}
+	<h3>{{periodo|first_upper}}, la Municipalidad de Bahía Blanca:</h3>
+	<dl class="small first">
+	  <div>
+	    <dd>Emitió órdenes de compra por</dd>
+	    <dt>{{gasto_mensual_total|currency}}</dt>
+	  </div>
+	</dl>
+	<dl class="small">
+	  <div>
+	    <dd>Promedio de gasto mensual</dd>
+	    <dt>{{gasto_mensual_promedio|currency}}</dt>
+	  </div>
+	</dl>
+	<dl class="small">
+	  <div>
+	    <dd>Proveedores Totales</dd>
+	    <dt>{{cantidad_proveedores_unicos}}</dt>
+	  </div>
+	</dl>
+	<dl class="small last">
+	  <div>
+	    <dd>Cantidad de Ordenes de Compra</dd>
+	    <dt>{{cantidad_ordenes_de_compra}}</dt>
+	  </div>
+	</dl>
+      </div><!-- /contador_gastos -->
+      {% include "filtro.html" %}
+      <div id="contenedor" class="clearfix">
+	<div class="bloque">
+	  <div class="caja izquierda">
+	    <h4>Las 5 reparticiones que más gastaron {{periodo}}</h4>
+	    <p>Para ver más info mueva el mouse sobre el gráfico:</p>
+	    <div id="piechart_div"></div> 
+	  </div><!-- /caja izquierda -->
+	  <div class="caja derecha">
+	    <h4>Los 10 proveedores más beneficiados {{periodo}}</h4>
+	    <p>Para ver más info haga clic en cualquiera de los siguientes items listados a continuación:</p>
+	    
+	    <ol class="lista-proveedores">
+	      {% for p in proveedores|slice:":10" %}
+	      <li>{{p|objlink}}<strong>{{p.total_compras|currency}}</strong></li>
+	      {% endfor %}
+	    </ol>
 
-  }
+	    <h4>Palabras clave en las ordenes de compra</h4>
+	    <p>Para ver más info haga clic en cualquiera de los siguientes items listados a continuación:</p>
+	  </div><!-- /caja derecha -->
+	</div><!-- /bloque -->
+	<div class="bloque">
+	  <h3 class="grande">Evolución del gasto {{periodo}}</h3>
+	  <div id="table_div_jscode" style="height: 200px; width: 100%"></div>
+	</div><!-- /bloque -->
+	<div class="bloque">
+	  <h3 class="grande">Ordenes de compra emitidas por la Municipalidad {{periodo}}</h3>
+	  <p>Las órdenes de compra aquí exhibidas se extraen de la sección <a href="http://www.bahiablanca.gov.ar/compras/comprasrealizadas.aspx"><strong>Compras Realizadas</strong></a> del sitio web de la Municipalidad de Bahía Blanca, única fuente oficial para dicha información.</p>
+	  <table class="ordenes_de_compra table">
+	    {% regroup ordenes_de_compra by fecha as compras_por_dia %}
+	    <colgroup>
+	      <col class="destino" />
+	      <col class="proveedor" />
+	      <col class="importe" />
+	      <col class="detalle" />
+	    </colgroup>
+	    <tbody>
+	      <tr class="encabezados">
+		<th>Destino</th>
+		<th>Proveedor</th>
+		<th>Importe</th>
+		<th></th>
+	      </tr>
+	      {% for dia in compras_por_dia|slice:":4" %}						
 
-  google.setOnLoadCallback(draw_table);
+	      <tr class="grupo_fecha">
+		<th colspan="4">{{dia.grouper|date:"d/m/Y"}}</th>
+	      </tr>
+	      {% for c in dia.list %}
+	      <tr class="orden">
+		<td>{{c.destino|objlink}}</td>
+		<td>{{c.proveedor|objlink}}</td>
+		<td>{{c.importe|currency}}</td>
+		<td><a class="ordenes_de_compra_detalle" href="{{c.get_absolute_url}}">Ver detalle</a></td>
+	      </tr>
+	      {% endfor %}
+	      {% endfor %}
 
-</script>
-{% endblock %}
-
-{% block content %}
-{% tiempo_en_letras start_date end_date as periodo %}
-<hr>
-<h2 class="alt">{{periodo|first_upper}}, la Municipalidad de Bahía Blanca emitió órdenes de compra por <strong>{{gasto_mensual_total|currency}}</strong>.</h2>
-{% include "filtro.html" %}
-<hr>
-<div class="span-10 colborder">
-  <h5>Las 5 reparticiones que más gastaron {{periodo}}</h5>
-  <div id="piechart_div"></div> 
-  <table class="tabla-sumario">
-    <caption>Las 5 reparticiones que más gastaron {{periodo}}</caption>
-    <thead>
-      <tr>
-	<th>Reparticion</th>
-	<th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for r in reparticiones|slice:":5" %}
-      <tr>
-	<td>{{r|objlink}}</td>
-	<td><strong>{{r.total_compras|currency}}</strong></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-<div class="span-13 last">
-  <h5>Los 10 proveedores más beneficiados {{periodo}}</h5>
-  <table class="tabla-sumario">
-    <caption>Los 10 proveedores más beneficiados {{ periodo }}</caption>
-    <thead>
-      <tr>
-	<th>Proveedor</th>
-	<th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in proveedores|slice:":10" %}
-      <tr>
-	<td>{{p|objlink}}</td>
-	<td><strong>{{p.total_compras|currency}}</strong></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% cache 500 index_tagcloud %}
-  {% include "palabras_clave.html" %}
-  {% endcache %}
-</div>
-<hr class="space" />
-<div class="span-24 last">
-  <h3>Evolución del gasto {{periodo}}</h3>
-  <div id="table_div_jscode" style="height: 200px; width: 100%"></div>
-</div>
-<hr class="space" />
-<div class="span-24 last append-bottom">
-  {% regroup ordenes_de_compra by fecha as compras_por_dia %}
-  <h3>Ordenes de compra emitidas por la Municipalidad {{periodo}}</h3>
-  <table class="ordenes_de_compra">
-    <colgroup>
-      <col class="destino" />
-      <col class="proveedor"/>
-      <col class="importe" />
-      <col class="detalle" />
-    </colgroup>
-    <tr class="encabezados">
-      <th>Destino</th>
-      <th>Proveedor</th>
-      <th>Importe</th>
-      <th></th>
-    </tr>
-    {% for dia in compras_por_dia|slice:":4" %}
-    <tr class="grupo_fecha">
-      <th colspan="4">{{dia.grouper|date:"d/m/Y"}}</th>
-    </tr>
-    {% for c in dia.list %}
-    <tr class="orden">
-      <td>{{c.destino|objlink}}</td>
-      <td>{{c.proveedor|objlink}}</td>
-      <td>{{c.importe|currency}}</td>
-      <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
-    </tr>
-    {% endfor %}
-    {% endfor %}
-  </table>
-  <a href="/ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra emitidas por la municipalidad {{periodo}}</a> (<a class="csv-link" href="/ordenes-de-compra/{{request.gpb_date_range}}?format=csv">CSV</a>) ― <a href="{% url ordenes_rss %}" class="rss-link">Feed RSS de órdenes de compra</a>
-</div>
-
-{% endblock %}
-
+	    </tbody>
+	  </table>
+	</div><!-- /bloque -->
+      </div><!-- /contenedor -->
+    </div><!-- /principal -->
+    <div id="footer">
+      <p>
+	<strong>Gasto Público Bahiense</strong> es un proyecto independiente, no depende de la Municipalidad de Bahía Blanca ― <a href="">Acerca de Gasto Público Bahiense</a>
+      </p>
+    </div><!-- /footer -->
+    <script type="text/html" id="detalle_template">
+      <![CDATA[
+        <table style="border-bottom: 1px solid black">
+	  <tr>
+	    <th>Cantidad</th>
+	    <th>Detalle</th>
+	    <th>Imp. unitario</th>
+	  </tr>
+	  <% for (var i=0; i < this.lineas.length; i++) { %>
+	     <tr>
+	       <td><%= this.lineas[i].cantidad %></td>
+	       <td><%= this.lineas[i].detalle %></td>
+	       <td>$ <%= this.lineas[i].importe_unitario %></td>
+	     </tr>
+	     <% } %>
+	     <tr><td colspan="3"><a href="<%= this.href %>" target="_blank">Ver esta orden en otra ventana</a></td></tr>
+	  </table>
+	  ]]>
+    </script>
+  </body>
+</html>

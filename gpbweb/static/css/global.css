@@ -2,7 +2,7 @@
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big,
 cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd,
-ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, hr, button {
+ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, hr {
 	background: transparent;
 	border: 0;
 	font-size: 100%;
@@ -112,7 +112,8 @@ h4 {
 }
 
 /*- Ancho de la Pantalla -*/
-#principal {
+#principal,
+#footer {
 	margin: 0 auto;
 	width: 1000px;
 }
@@ -146,7 +147,7 @@ h4 {
 #logo {
 	border-right: 1px solid #dcdcdc;
 	float: left;
-	padding: 0 20px 0 0;
+	padding: 0 25px 0 0;
 }
 
 #logo a {
@@ -157,14 +158,37 @@ h4 {
 	color: #6e6e6e;
 }
 
+#apoyo_de img {
+	vertical-align:middle;
+}
+
+#apoyo_de {
+	float:left;
+}
+
+#apoyo_de ul {
+	margin:8px 0 0 20px;
+}
+
+#apoyo_de ul li {
+	display:inline;
+}	
+#apoyo_de ul li a {
+	opacity:0.5;
+	margin:0 5px;
+}
+
+#apoyo_de ul li a:hover {
+	opacity:1;
+}
+
 #descripcion {
-	float: left;
-	padding: 0 0 0 20px;
-	width: 580px;
+	padding: 2em 0;
+	border-bottom: 1px solid #dcdcdc;
 }
 
 #descripcion h2 {
-	font-size: 16px;
+	font-size: 18px;
 	font-weight: 200;
 	line-height: 1.25em;
 	letter-spacing: -0.05em;
@@ -295,6 +319,11 @@ h4 {
 
 #timeline select {
 	margin: 0 15px 0 0;
+}
+
+#btn-filtrar {
+	float: right;
+	margin: 0 530px 0 0;
 }
 
 /*------------------------------*/
@@ -487,6 +516,22 @@ table tr.detalle td {
 .detalle table tr th:first-child {
 	border-left:0;
 }
+
+.caja-destacada {
+	background:#EEE;
+	padding:8px;
+	margin:2em 0 0;
+	border-radius:3px;
+}
+
+#footer {
+	padding:1em 0;
+	text-align:center;
+}
+#footer p {
+	margin:0.3em 0;
+}
+
 
 /*- End of Bloques ----------------------------------------------------*/
 /*-----------------------------------------------------------------------------------------------*/
