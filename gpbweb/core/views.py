@@ -29,7 +29,6 @@ PAGE_SIZE = 50
 CSV_FIELDNAMES = ['orden_de_compra', 'fecha', 'proveedor', 'destino', 'importe', 'url']
 
 sha1 = lambda m: hashlib.sha1(m).hexdigest()
-
   
 
 def _gasto_por_mes(additional_where=''):
@@ -92,13 +91,17 @@ def index(request, start_date, end_date):
 
     gasto_mensual_total = models.Compra.objects.total_periodo(fecha_desde=start_date, fecha_hasta=end_date)
 
+    
+
     return { 
         'reparticiones': top_reparticiones_por_gastos,
         'proveedores': models.Proveedor.objects.por_compras(compra__fecha__gte=start_date, compra__fecha__lte=end_date),
         'gasto_mensual_total': gasto_mensual_total,
-        'gasto_mensual_promedio': gasto_mensual_total / decimal.Decimal(30),
+        'gasto_mensual_promedio': models.Compra.objects.promedio_mensual_periodo(start_date, 
+                                                                                 datetime.now() if datetime.now() < end_date else end_date),
         'cantidad_ordenes_de_compra': models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).count(),
         'ordenes_de_compra': models.Compra.objects.select_related('proveedor', 'destino').filter(fecha__gte=start_date, fecha__lte=end_date).order_by('-fecha')[:100],
+        'cantidad_proveedores_unicos': models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).values('proveedor').distinct().count(),
         'gasto_por_mes_datatable_js': gasto_por_mes_datatable.ToJSCode('gasto_por_mes',
                                                                        columns_order=('mes', 'total'),
                                                                        order_by='mes'),
