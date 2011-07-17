@@ -87,6 +87,7 @@ MIDDLEWARE_CLASSES = (
     'gpbweb.core.middleware.SmartAppendSlashMiddleware',
     'gpbweb.core.middleware.DateLimitsMiddleware',
     'gpbweb.core.middleware.StripDateRangeMiddleware',
+    'gpbweb.core.middleware.FilterQueryToDateRangeMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 

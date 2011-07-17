@@ -6,6 +6,19 @@ from django.conf import settings
 from django import http
 from django.core.urlresolvers import resolve
 
+class FilterQueryToDateRangeMiddleware(object):
+    """ Redirigir queries del filtro a un query de periodo """
+
+    def process_request(self, request):
+
+        if not ('filter_end_date' in request.GET and 'filter_start_date' in request.GET): 
+          return
+
+        if not (re.match(mensual_expression, request.GET['filter_end_date'] + '/')  and re.match(mensual_expression, request.GET['filter_start_date'] + '/')):
+            return http.HttpResponseBadRequest()
+
+        return http.HttpResponseRedirect('{0}/{1}/{2}'.format(request.gpb_base_url, request.GET['filter_start_date'], request.GET['filter_end_date']))
+
 
 class StripDateRangeMiddleware(object):
 
@@ -18,7 +31,6 @@ class StripDateRangeMiddleware(object):
                 request.gpb_base_url = m.groups()[0] + '/'
                 if request.gpb_base_url == '/': request.gpb_base_url = ''
                 request.gpb_date_range = '/'.join(m.groups()[1:])
-                print request.gpb_date_range
                 return None
 
 

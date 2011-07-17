@@ -13,12 +13,12 @@
   </ul>
   {% month_range from request.fecha_minima until request.fecha_maxima as mrange %}
   {% regroup mrange by year as year_months %}
-  <form action="/" method="post" id="timeline">
+  <form action="" method="get" id="timeline">
     <span class="arrow"></span>
     <fieldset>
       <button id="btn-filtrar" type="submit">Filtrar</button>
       <label for="valueAA">Desde:</label>
-      <select name="valueAA" id="valueAA">
+      <select name="filter_end_date" id="valueAA">
 	{% for year in year_months reversed %}
 	<optgroup label="{{ year.grouper }}">
 	  {% for month in year.list reversed %}
@@ -28,7 +28,7 @@
 	{% endfor %}
       </select>
       <label for="valueBB">Hasta:</label>
-      <select name="valueBB" id="valueBB">
+      <select name="filter_start_date" id="valueBB">
 	{% for year in year_months reversed %}
 	<optgroup label="{{ year.grouper }}">
 	  {% for month in year.list reversed %}
