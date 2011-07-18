@@ -17,7 +17,9 @@ class FilterQueryToDateRangeMiddleware(object):
         if not (re.match(mensual_expression, request.GET['filter_end_date'] + '/')  and re.match(mensual_expression, request.GET['filter_start_date'] + '/')):
             return http.HttpResponseBadRequest()
 
-        return http.HttpResponseRedirect('{0}/{1}/{2}'.format(request.gpb_base_url, request.GET['filter_start_date'], request.GET['filter_end_date']))
+        print request.gpb_base_url
+
+        return http.HttpResponseRedirect('{0}{1}{2}/{3}'.format(request.gpb_base_url, '/' if request.gpb_base_url[-1] != '/' else '', request.GET['filter_start_date'], request.GET['filter_end_date']))
 
 
 class StripDateRangeMiddleware(object):
