@@ -7,9 +7,9 @@
 {% load cache %}
 
 {% block content %}
-      <div id="descripcion">
-	<h2><strong>Gasto Público Bahiense</strong> es una herramienta para explorar los datos de compras a proveedores que publica la <strong>Municipalidad de Bahía Blanca, Argentina</strong>. <a href="javascript:void(0);">&rarr;</a></h2>
-      </div><!-- /descripcion -->
+<div id="descripcion">
+  <h2><strong>Gasto Público Bahiense</strong> es una herramienta para explorar los datos de compras a proveedores que publica la <strong>Municipalidad de Bahía Blanca, Argentina</strong>. <a href="javascript:void(0);">&rarr;</a></h2>
+</div><!-- /descripcion -->
 
 <div id="contador_gastos" class="clearfix">
   {% tiempo_en_letras start_date end_date as periodo %}
@@ -100,6 +100,7 @@
 
       </tbody>
     </table>
+    <p class="caja-destacada"><a href="#">Ver todas las ordenes de compra emitidas por la municipalidad en lo que va del año 2011</a> (<a href="#">CSV</a>) ― <a class="rss-link" href="#">Feed RSS de órdenes de compra</a></p>
   </div><!-- /bloque -->
 </div><!-- /contenedor -->
 {% endblock %}

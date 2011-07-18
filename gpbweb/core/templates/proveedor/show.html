@@ -3,12 +3,10 @@
 {% load currency %}
 {% load tiempo_en_letras %}
 {% load common_html %}
-
 {% block rss %}
 {{block.super}}
 <link rel="alternate" type="application/rss+xml"  title="Canal RSS del proveedor {{proveedor}}"  href="{% url proveedor_ordenes_rss proveedor.slug %}" />
 {% endblock %}
-
 
 {% block title %}
 {% tiempo_en_letras start_date end_date as periodo %}
@@ -17,68 +15,71 @@ Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
 
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
-<hr>
-<h2 class="alt">
-{% if facturacion_mensual_total == 0 %}
-No hay órdenes de compra adjudicadas a {{proveedor|objlink}} {{periodo}}
-{% else %}
-{{periodo|first_upper}}, la Municipalidad adjudicó órdenes de compra a {{proveedor|objlink}} por <strong>{{facturacion_mensual_total|currency}}</strong>.
-{% endif %}
-</h2>
+<div id="contador_gastos" class="clearfix">
+  <h3>
+    {% if facturacion_mensual_total == 0 %}
+    No hay órdenes de compra adjudicadas a {{proveedor|objlink}} {{periodo}}
+    {% else %}
+    Datos para el proveedor <strong>{{proveedor|objlink}}</strong> {{periodo}}:
+    {% endif %}
+  </h3>
+  <dl class="small first">
+    <div>
+      <dd>Importe total en órdenes de compra adjudicadas</dd>
+      <dt>{{facturacion_mensual_total|currency}}</dt>
+    </div>
+  </dl>
+  <dl class="small">
+    <div>
+      <dd>Cantidad de órdenes de compra adjudicadas</dd>
+      <dt></dt>
+    </div>
+  </dl>
+</div> <!-- /contador_gastos -->
 {% include "filtro.html" %}
-<hr>
-{% if facturacion_mensual_total > 0 %}
-<div class="span-10 colborder">
-  <h5>Principales destinos de los suministros de {{proveedor}} {{periodo}}</h5>
-  <table class="tabla-sumario">
-    <thead>
-      <tr>
-	<th>Repartición</th>
-	<th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
+<div id="contenedor" class="clearfix">
+  <div class="bloque">
+    <div class="caja izquierda">
+      <h4>Principales destinos de los suministros de {{proveedor}} {{periodo}}</h4>
+      <ol class="lista-proveedores">
       {% for c in clientes|slice:":5" %}
-      <tr>
-	<td>{{c|objlink}}</td>
-	<td><strong>{{c.total_compras|currency}}</strong></td>
-      </tr>
+      <li>{{c|objlink}}<strong>{{c.total_compras|currency}}</strong></li>
       {% endfor %}
-    </tbody>
-  </table>
+      </ol>
+    </div>
+  </div>
+  <div class="bloque">
+    <h3 class="grande">Órdenes de compra adjudicadas a {{proveedor}} {{periodo}}</h3>
+    <table class="ordenes_de_compra table">
+      {% regroup ordenes_de_compra by fecha as compras_por_dia %}
+      <colgroup>
+	<col class="destino" />
+	<col class="importe" />
+	<col class="detalle" />
+      </colgroup>
+      <tbody>
+	<tr class="encabezados">
+	  <th>Destino</th>
+	  <th>Importe</th>
+	  <th></th>
+	</tr>
+	{% for dia in compras_por_dia|slice:":4" %}						
+	<tr class="grupo_fecha">
+	  <th colspan="4">{{dia.grouper|date:"d/m/Y"}}</th>
+	</tr>
+	{% for c in dia.list %}
+	<tr class="orden">
+	  <td>{{c.destino|objlink}}</td>
+	  <td>{{c.importe|currency}}</td>
+	  <td><a class="ordenes_de_compra_detalle" href="{{c.get_absolute_url}}">Ver detalle</a></td>
+	</tr>
+	{% endfor %}
+	{% endfor %}
+      </tbody>
+    </table>
+    <p class="caja-destacada"><a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a> (<a class="csv-link" href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}?format=csv">CSV</a>) - <a href="{% url proveedor_ordenes_rss proveedor.slug %}" class="rss-link">Feed RSS de órdenes de compra</a> </p>
+
+  </div>
 </div>
-<div class="span-10 last">
-  {% include "palabras_clave.html" %}
-</div>
-<hr class="space">
-<div class="span-24 last append-bottom">
-<h3>Ordenes de compra adjudicadas al proveedor {{reparticion}} {{periodo}}</h3>
-<table class="ordenes_de_compra">
-  <colgroup>
-    <col class="destino" />
-    <col class="importe" />
-    <col class="detalle" />
-  </colgroup>
-  <tr class="encabezados">
-    <th>Destino</th>
-    <th>Importe</th>
-    <th></th>
-  </tr>
-  {% regroup ordenes_de_compra by fecha as compras_por_dia %}
-  {% for dia in compras_por_dia|slice:":4" %}
-  <tr class="grupo_fecha">
-    <th colspan="3">{{dia.grouper|date:"d/m/Y"}}</th>
-  </tr>
-  {% for c in dia.list %}
-  <tr class="orden">
-    <td>{{c.destino|objlink}}</td>
-    <td>{{c.importe|currency}}</td>
-    <td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
-  </tr>
-  {% endfor %}
-  {% endfor %}
-</table>
-<a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a> (<a class="csv-link" href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}?format=csv">CSV</a>) - <a href="{% url proveedor_ordenes_rss proveedor.slug %}" class="rss-link">Feed RSS de órdenes de compra</a>
-</div>
-{% endif %}
+
 {% endblock %}

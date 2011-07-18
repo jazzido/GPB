@@ -524,6 +524,10 @@ table tr.detalle td {
 	border-radius:3px;
 }
 
+  .caja-destacada a:hover {
+      text-decoration: underline;
+  }
+
 #footer {
 	padding:1em 0;
 	text-align:center;
