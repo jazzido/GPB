@@ -379,6 +379,7 @@ h4 {
 	float: right;
 }
 
+
 .tabla-sumario {
 	font-size: 12px;
 	letter-spacing: -0.05em;
@@ -415,7 +416,7 @@ h4 {
 }
 
 .caja {
-	width: 50%;
+	width: 48%;
 }
 
 .grande {
@@ -568,8 +569,7 @@ table.ordenes_de_compra tr:hover a.ordenes_de_compra_detalle {
 }
 
 ul.tagcloud {
-    width: 90%;
-    margin: 1em 0 1em 2em !important;
+    width: 100%;
 }
 
   ul.tagcloud li {
