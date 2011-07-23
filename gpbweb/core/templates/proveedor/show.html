@@ -17,7 +17,7 @@ Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
 {% tiempo_en_letras start_date end_date as periodo %}
 <div id="contador_gastos" class="clearfix">
   <h3>
-    {% if facturacion_mensual_total == 0 %}
+    {% if facturacion_total_periodo == 0 %}
     No hay órdenes de compra adjudicadas a {{proveedor|objlink}} {{periodo}}
     {% else %}
     Datos para el proveedor <strong>{{proveedor|objlink}}</strong> {{periodo}}:
@@ -26,13 +26,19 @@ Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
   <dl class="small first">
     <div>
       <dd>Importe total en órdenes de compra adjudicadas</dd>
-      <dt>{{facturacion_mensual_total|currency}}</dt>
+      <dt>{{facturacion_total_periodo|currency}}</dt>
     </div>
   </dl>
   <dl class="small">
     <div>
       <dd>Cantidad de órdenes de compra adjudicadas</dd>
-      <dt></dt>
+      <dt>{{ordenes_de_compra.count}}</dt>
+    </div>
+  </dl>
+  <dl class="small last">
+    <div>
+      <dd>Gasto mensual promedio</dd>
+      <dt>{{gasto_mensual_promedio|currency}}</dt>
     </div>
   </dl>
 </div> <!-- /contador_gastos -->
@@ -46,6 +52,10 @@ Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
       <li>{{c|objlink}}<strong>{{c.total_compras|currency}}</strong></li>
       {% endfor %}
       </ol>
+    </div> <!-- /caja izquierda -->
+    <div class="caja derecha">
+      <h4>Palabras más frecuentes en las órdenes de compra de {{proveedor}} {{periodo}}</h4>
+      {% include "palabras_clave.html" %}
     </div>
   </div>
   <div class="bloque">
@@ -77,7 +87,7 @@ Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
 	{% endfor %}
       </tbody>
     </table>
-    <p class="caja-destacada"><a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a> (<a class="csv-link" href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}?format=csv">CSV</a>) - <a href="{% url proveedor_ordenes_rss proveedor.slug %}" class="rss-link">Feed RSS de órdenes de compra</a> </p>
+    <p class="caja-destacada"><a href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}">Ver todas las ordenes de compra adjudicadas a {{proveedor.nombre}} {{periodo}}</a> - <a class="csv-link" href="{{request.gpb_base_url }}ordenes-de-compra/{{request.gpb_date_range}}?format=csv" title="Órdenes de compra en formato CSV">CSV</a> - <a title="Canal RSS de órdenes de compra" href="{% url proveedor_ordenes_rss proveedor.slug %}" class="rss-link">RSS</a> </p>
 
   </div>
 </div>

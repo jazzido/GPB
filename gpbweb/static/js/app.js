@@ -23,7 +23,7 @@ $(document).ready(function() {
 					      if (tr.hasClass('seleccionada')) 
 						  return;
 					      tr.addClass('seleccionada');
-					      $.getJSON($($('a', tr)[2]).attr('href') + 'json', 
+					      $.getJSON($($('a.ordenes_de_compra_detalle', tr)[0]).attr('href') + 'json', 
 							    function(data) { 
 								tr.after('<tr class="detalle"><td colspan="' + $('td', tr).length + '">' + $('#detalle_template').jqote(data) + '</td></tr>');
 							    });

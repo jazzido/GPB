@@ -127,10 +127,10 @@ class CompraManager(models.Manager):
         return c.distinct().order_by('-rank')
 
     def promedio_mensual_periodo(self, fecha_desde, fecha_hasta):
+        """ Gasto promedio cada 30 dias """
+
         t = self.total_periodo(fecha_desde, fecha_hasta)
         return t / decimal.Decimal(str((fecha_hasta - fecha_desde).days / 30.0))
-
-        
 
 
 class Compra(models.Model):

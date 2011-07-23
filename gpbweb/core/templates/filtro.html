@@ -13,7 +13,7 @@
   </ul>
   {% month_range from request.fecha_minima until request.fecha_maxima as mrange %}
   {% regroup mrange by year as year_months %}
-  <form action="" method="get" id="timeline">
+  <form action="" method="get" id="timeline" style="display: none;">
     <span class="arrow"></span>
     <fieldset>
       <button id="btn-filtrar" type="submit">Filtrar</button>

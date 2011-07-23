@@ -9,56 +9,6 @@
     <link rel="stylesheet" href="/static/css/redmond/jquery-ui-1.7.1.custom.css" type="text/css" />
     <link rel="Stylesheet" href="/static/css/ui.slider.extras.css" type="text/css" />
     {% block rss %}{% endblock %}
-    <script type="text/javascript" src="/static/js/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery-ui-1.7.1.custom.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.jqote2.min.js"></script>
-    <script type="text/javascript" src="/static/js/selectToUISlider.jQuery.js"></script>
-    <script type="text/javascript" src="/static/js/app.js"></script>
-    <script src="/static/js/timeline.js" type="text/javascript" charset="utf-8"></script>
-    
-    <script src="http://www.google.com/jsapi" type="text/javascript"></script> 
-    <script type="text/javascript"> 
-      // google.load("jquery", "1.4.2");
-      // google.load("jqueryui", "1.8.2");
-      google.load("visualization", "1", {'packages':["table", "linechart", "corechart"], 'language': 'es'});
-    </script>
-
-    {% if start_date and end_date %} 
-    <script type="text/javascript">
-      BASE_URL = '{{request.gpb_base_url}}';
-      RANGO_FECHAS = {};
-      RANGO_FECHAS.start = new Date('{{start_date|date:"Y-m-d"}}');
-      RANGO_FECHAS.end = new Date('{{end_date|date:"Y-m-d"}}');
-      if (RANGO_FECHAS.end > new Date()) RANGO_FECHAS.end = new Date();
-    </script>
-    {% endif %}
-
-    
-    <script type="text/javascript">
-      var start_date = new Date('{{start_date|date:"Y-m-d"}}');
-      var end_date = new Date('{{end_date|date:"Y-m-d"}}');
-      if (end_date > new Date()) end_date = new Date();
-      
-      function draw_table() {
-      {{ gasto_por_mes_datatable_js|safe }}
-      var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM yyyy'});
-      date_formatter.format(gasto_por_mes, 0);
-      var number_formatter = new google.visualization.NumberFormat({prefix: '$', negativeColor: 'red', negativeParens: true, groupingSymbol:'.', decimalSymbol:','});
-      number_formatter = number_formatter.format(gasto_por_mes, 1);
-      
-      var linechart = new google.visualization.LineChart(document.getElementById('table_div_jscode'));
-      linechart.draw(gasto_por_mes, {showRowNumber: true, legend: 'none'});
-      
-      {{reparticion_datatable_js|safe}}
-      var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
-      piechart.draw(reparticion_gastos, 
-      { width: 420, height: 400, legend: 'none' });
-      }
-      
-      google.setOnLoadCallback(draw_table);
-      
-    </script>
-
   </head>
   <body>
     <div id="principal">
@@ -78,7 +28,8 @@
 	  </ul>
 	</div><!-- /apoyo_de -->
       </div><!-- /cabecera -->
-      {% block content %}{% endblock %}
+      {% block content %}
+      {% endblock %}
     </div><!-- /principal -->
     <div id="footer">
       <p>
@@ -104,5 +55,26 @@
 	  </table>
 	  ]]>
     </script>
+    <script src="http://www.google.com/jsapi" type="text/javascript"></script> 
+    <script type="text/javascript"> 
+      google.load("jquery", "1.3.2");
+      google.load("jqueryui", "1.7.1");
+      google.load("visualization", "1", {'packages':["table", "linechart", "corechart"], 'language': 'es'});
+    </script>
+    <script type="text/javascript" src="/static/js/jquery.jqote2.min.js"></script>
+    <script type="text/javascript" src="/static/js/selectToUISlider.jQuery.js"></script>
+    <script type="text/javascript" src="/static/js/app.js"></script>
+    <script type="text/javascript" src="/static/js/timeline.js" charset="utf-8"></script>
+    {% if start_date and end_date %} 
+    <script type="text/javascript">
+      BASE_URL = '{{request.gpb_base_url}}';
+      RANGO_FECHAS = {};
+      RANGO_FECHAS.start = new Date('{{start_date|date:"Y-m-d"}}');
+      RANGO_FECHAS.end = new Date('{{end_date|date:"Y-m-d"}}');
+      if (RANGO_FECHAS.end > new Date()) RANGO_FECHAS.end = new Date();
+    </script>
+    {% endif %}
+    {% block extra_js %}
+    {% endblock %}
   </body>
 </html>

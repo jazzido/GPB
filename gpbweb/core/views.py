@@ -221,21 +221,25 @@ def reparticiones(request):
 def reparticion(request, reparticion_slug, start_date, end_date):
     
     reparticion = get_object_or_404(models.Reparticion, slug=reparticion_slug)
+    facturacion_total_periodo = models.Compra.objects \
+        .filter(destino=reparticion, 
+                fecha__gte=start_date, fecha__lte=end_date) \
+                .aggregate(total=Sum('importe'))['total'] or 0
 
     return { 'reparticion': reparticion,
              'proveedores': models.Proveedor.objects.por_compras(compra__fecha__gte=start_date, 
                                                                  compra__fecha__lte=end_date, 
                                                                  compra__destino=reparticion),
-             'gasto_mensual_total': models.Compra.objects \
-                                        .filter(destino=reparticion, 
-                                                fecha__gte=start_date, fecha__lte=end_date) \
-                                        .aggregate(total=Sum('importe'))['total'] or 0,
+             'facturacion_total_periodo': facturacion_total_periodo,
+
+             'gasto_mensual_promedio': facturacion_total_periodo / decimal.Decimal(str(((datetime.now() if datetime.now() < end_date else end_date) - start_date).days / 30.0)),
 
              'ordenes_de_compra': models.Compra.objects \
                                         .select_related('proveedor') \
                                         .filter(fecha__gte=start_date, 
                                                 fecha__lte=end_date,
                                                 destino=reparticion).order_by('-fecha'),
+
 
              'tagcloud': _tagcloud(models.CompraLineaItem.objects \
                                         .filter(compra__fecha__gte=start_date,  
@@ -331,22 +335,24 @@ def proveedores(request):
 def proveedor(request, proveedor_slug, start_date, end_date):
     proveedor = get_object_or_404(models.Proveedor, slug=proveedor_slug)
 
+    ordenes_de_compra = models.Compra.objects.filter(fecha__gte=start_date, 
+                                                     fecha__lte=end_date,
+                                                     proveedor=proveedor).order_by('-fecha')
+
+    facturacion_total_periodo = ordenes_de_compra.aggregate(total=Sum('importe'))['total'] or 0
+
+    # print facturacion_total_periodo / decimal.Decimal(str(((datetime.now() if datetime.now() < end_date else end_date) - start_date).days / 30.0))
+
     return { 'proveedor' : proveedor,
              'clientes': models.Reparticion.objects.por_gastos(compra__fecha__gte=start_date, 
                                                                compra__fecha__lte=end_date,
                                                                compra__proveedor=proveedor),
 
-             'facturacion_mensual_total': models.Compra.objects \
-                                             .filter(proveedor=proveedor,
-                                                     fecha__gte=start_date, 
-                                                     fecha__lte=end_date) \
-                                             .aggregate(total=Sum('importe'))['total'] or 0,
+             'facturacion_total_periodo': facturacion_total_periodo,
+             'ordenes_de_compra': ordenes_de_compra,
+             'gasto_mensual_promedio': facturacion_total_periodo / decimal.Decimal(str(((datetime.now() if datetime.now() < end_date else end_date) - start_date).days / 30.0)),
 
-             'ordenes_de_compra': models.Compra.objects.filter(fecha__gte=start_date, 
-                                                               fecha__lte=end_date,
-                                                               proveedor=proveedor).order_by('-fecha'),
-
-             'tagcloud': _tagcloud(models.CompraLineaItem.objects.filter(compra__fecha__gte=start_date,  
+             'tagcloud': _tagcloud(models.CompraLineaItem.objects.filter(compra__fecha__gte=start_date,
                                                                          compra__fecha__lte=end_date,
                                                                          compra__proveedor=proveedor)),
 

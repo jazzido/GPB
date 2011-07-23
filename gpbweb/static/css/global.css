@@ -247,6 +247,7 @@ h4 {
 	font-size: 13px;
 	letter-spacing: -0.05em;
 	text-transform: uppercase;
+	height: 40px;
 }
 
 #contador_gastos h3 {
@@ -564,4 +565,32 @@ table.ordenes_de_compra a.ordenes_de_compra_detalle {
 
 table.ordenes_de_compra tr:hover a.ordenes_de_compra_detalle {
     visibility: visible;
+}
+
+ul.tagcloud {
+    width: 90%;
+    margin: 1em 0 1em 2em !important;
+}
+
+  ul.tagcloud li {
+    background: none repeat scroll 0 0 #EEEEEE;
+    display: block;
+    font-size: 11px;
+    padding: 5px;
+    /*text-align: center;*/
+    /* width: 80px; */
+    float: left; 
+    margin-right: 5px;
+    margin-bottom: 5px; 
+  }
+
+.rss-link  {
+    background: url("/static/img/feed-icon.png") no-repeat scroll left top transparent;
+    padding-left: 18px;
+}
+
+.csv-link  {
+    background: url("/static/img/csv-icon.gif") no-repeat scroll left top transparent;
+    height: 20px;
+    padding-left: 20px;
 }

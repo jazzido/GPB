@@ -56,9 +56,6 @@
 	<li>{{p|objlink}}<strong>{{p.total_compras|currency}}</strong></li>
 	{% endfor %}
       </ol>
-
-      <h4>Palabras clave en las ordenes de compra</h4>
-      <p>Para ver más info haga clic en cualquiera de los siguientes items listados a continuación:</p>
     </div><!-- /caja derecha -->
   </div><!-- /bloque -->
   <div class="bloque">
@@ -100,8 +97,36 @@
 
       </tbody>
     </table>
-    <p class="caja-destacada"><a href="#">Ver todas las ordenes de compra emitidas por la municipalidad en lo que va del año 2011</a> (<a href="#">CSV</a>) ― <a class="rss-link" href="#">Feed RSS de órdenes de compra</a></p>
+    <p class="caja-destacada"><a href="#">Ver todas las ordenes de compra emitidas por la municipalidad {{periodo}}</a> ― <a title="Órdenes de compra en formato CSV" class="csv-link" href="/ordenes-de-compra/{{request.gpb_date_range}}?format=csv">CSV</a> ― <a title="Canal RSS de órdenes de compra" class="rss-link" href="{% url ordenes_rss %}">Feed RSS de órdenes de compra</a></p>
   </div><!-- /bloque -->
 </div><!-- /contenedor -->
+{% block extra_js %
+{{block.super}}
+    
+    <script type="text/javascript">
+      // var start_date = new Date('{{start_date|date:"Y-m-d"}}');
+      // var end_date = new Date('{{end_date|date:"Y-m-d"}}');
+      // if (end_date > new Date()) end_date = new Date();
+      
+      function draw_table() {
+      {{ gasto_por_mes_datatable_js|safe }}
+      var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM yyyy'});
+      date_formatter.format(gasto_por_mes, 0);
+      var number_formatter = new google.visualization.NumberFormat({prefix: '$', negativeColor: 'red', negativeParens: true, groupingSymbol:'.', decimalSymbol:','});
+      number_formatter = number_formatter.format(gasto_por_mes, 1);
+      
+      var linechart = new google.visualization.LineChart(document.getElementById('table_div_jscode'));
+      linechart.draw(gasto_por_mes, {showRowNumber: true, legend: 'none'});
+      
+      {{reparticion_datatable_js|safe}}
+      var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
+      piechart.draw(reparticion_gastos, 
+      { width: 420, height: 400, legend: 'none' });
+      }
+      
+      google.setOnLoadCallback(draw_table);
+      
+    </script>
+{% endblock %}
 {% endblock %}
 
