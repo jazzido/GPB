@@ -7,12 +7,16 @@
 {% block title %}
 Detalle de la orden de compra {{orden.oc_numero}} - {{block.super}}
 {% endblock %}
+
+{% block heading %}
+<div id="descripcion">
+  <h2>Detalle de la orden de compra <strong>{{orden.oc_numero}}</strong> con fecha <strong>{{orden.fecha|date:"d/m/Y"}}</strong>, adjudicada a {{orden.proveedor|objlink}} con destino {{orden.destino|objlink}}</h2>
+</div>
+{% endblock %}
+
 {% block content %}
-<hr>
-<h2 class="alt">Detalle de la orden de compra <strong>{{orden.oc_numero}}</strong> con fecha <strong>{{orden.fecha|date:"d/m/Y"}}</strong>, adjudicada a {{orden.proveedor|objlink}} con destino {{orden.destino|objlink}}</h2>
-<hr>
-<div class="prepend-2 append-2 span-20 last append-bottom">
-  <table class="ordenes_de_compra">
+<div class="bloque">
+<table class="ordenes_de_compra">
     <colgroup>
       <col class="cantidad">
       <col class="detalle">
@@ -34,7 +38,8 @@ Detalle de la orden de compra {{orden.oc_numero}} - {{block.super}}
       <td colspan="2" style="text-align: right">Total:</td>
       <td><strong>{{orden.importe|currency}}</strong></td>
     </tr>
-  </table>
-  <p><a href="http://www.bahiablanca.gov.ar/compras4/dcomprV2.asp?wOCabc={{orden.orden_compra}}&wEjercicio={{orden.fecha|date:"Y"}}" target="_blank">Ver esta orden de compra en el sitio de la Municipalidad de Bahía Blanca</a></p>
+</table>
+<p>Debido a la implementación de la sección de compras en el sitio de la Municipalidad de Bahía Blanca, no podemos proveer un enlace a la fuente oficial de la información para esta órden de compra. Para verificar los datos aquí exhibidos, <a href="http://www.bahiablanca.gov.ar/compras/comprasrealizadas.aspx">ingrese al sitio de MBB</a> y busque la OC <strong>{{orden.oc_numero}}</strong> del año <strong>{{orden.fecha.year}}</strong> adjudicada al proveedor <strong>{{orden.proveedor}}</strong>
 </div>
+
 {% endblock %}
