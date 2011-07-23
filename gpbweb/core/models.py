@@ -101,10 +101,12 @@ class CompraManager(models.Manager):
     # es medio hacky, pero es lo que hay
     # idea encontrada aca: http://www.caktusgroup.com/blog/2009/09/28/custom-joins-with-djangos-queryjoin/
     def search(self, query):
-        c = self.extra(select={'rank': 'ts_rank_cd(core_compralineaitem.search_index, to_tsquery(\'spanish\', E\'%s\'), %d)' % (query, 32)},
+        c = self.extra(select={ 'rank': 'ts_rank_cd(core_compralineaitem.search_index, to_tsquery(\'spanish\', E\'%s\'), %d)' % (query, 32), 
+                                'highlight_proveedor': 'ts_headline(\'spanish\', core_proveedor.nombre, to_tsquery(\'spanish\', E\'%s\'), \'StartSel=<em>, StopSel=</em>\')' % (query),
+                                'highlight_reparticion': 'ts_headline(\'spanish\', core_reparticion.nombre, to_tsquery(\'spanish\', E\'%s\'), \'StartSel=<em>, StopSel=</em>\')' % (query)},
                        where=["core_compralineaitem.search_index @@ to_tsquery('spanish', %s)"
                               " OR core_proveedor.search_index @@ to_tsquery('spanish', %s)"
-                              " OR core_reparticion.search_index @@ to_tsquery('spanish', %s)"], 
+                              " OR core_reparticion.search_index @@ to_tsquery('spanish', %s)"],
                        params=[query, query, query])
 
         c.query.join((None, Compra._meta.db_table, None, None,))
@@ -124,7 +126,7 @@ class CompraManager(models.Manager):
                       'id',),
                      promote=True)
 
-        return c.distinct().order_by('-rank')
+        return c.distinct().order_by('-fecha', '-rank')
 
     def promedio_mensual_periodo(self, fecha_desde, fecha_hasta):
         """ Gasto promedio cada 30 dias """
