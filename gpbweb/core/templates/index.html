@@ -6,11 +6,15 @@
 {% load common_html %}
 {% load cache %}
 
-{% block content %}
+{% block heading %}
+{% if request.path == '/' %}
 <div id="descripcion">
   <h2><strong>Gasto Público Bahiense</strong> es una herramienta para explorar los datos de compras a proveedores que publica la <strong>Municipalidad de Bahía Blanca, Argentina</strong>. <a href="javascript:void(0);">&rarr;</a></h2>
 </div><!-- /descripcion -->
+{% endif %}
+{% endblock %}
 
+{% block content %}
 <div id="contador_gastos" class="clearfix">
   {% tiempo_en_letras start_date end_date as periodo %}
   <h3>{{periodo|first_upper}}, la Municipalidad de Bahía Blanca:</h3>
@@ -100,8 +104,8 @@
     <p class="caja-destacada"><a href="#">Ver todas las ordenes de compra emitidas por la municipalidad {{periodo}}</a> ― <a title="Órdenes de compra en formato CSV" class="csv-link" href="/ordenes-de-compra/{{request.gpb_date_range}}?format=csv">CSV</a> ― <a title="Canal RSS de órdenes de compra" class="rss-link" href="{% url ordenes_rss %}">Feed RSS de órdenes de compra</a></p>
   </div><!-- /bloque -->
 </div><!-- /contenedor -->
-{% block extra_js %
-{{block.super}}
+{% endblock %}
+{% block extra_js %}
     
     <script type="text/javascript">
       // var start_date = new Date('{{start_date|date:"Y-m-d"}}');
@@ -127,6 +131,5 @@
       google.setOnLoadCallback(draw_table);
       
     </script>
-{% endblock %}
 {% endblock %}
 
