@@ -12,8 +12,34 @@ from gpbweb.postgres_fts import models as fts_models
 
 from south.modelsinspector import add_ignored_fields
 
-add_ignored_fields(["^gpbweb\.postgres_fts\.models\.VectorField",])
+# add_ignored_fields(["^gpbweb\.postgres_fts\.models\.VectorField",
+#                     "^django_extensions\.db\.fields\.AutoSlugField",
+#                     "^django_extensions\.db\.fields\.CreationDateTimeField"])
+add_ignored_fields(["^gpbweb\.postgres_fts\.models\.VectorField"])
 
+
+##### BEGIN Monkeypatch de AutoSlugField y CreationDateTimeField
+# backporteado de aca: https://raw.github.com/django-extensions/django-extensions/master/django_extensions/db/fields/__init__.py
+def autoslug_south_field_triple(self):
+    "Returns a suitable description of this field for South."
+    # We'll just introspect the _actual_ field.
+    from south.modelsinspector import introspector
+    field_class = "django.db.models.fields.SlugField"
+    args, kwargs = introspector(self)
+    # That's our definition!
+    return (field_class, args, kwargs)
+
+def creationdatetime_south_field_triple(self):
+    "Returns a suitable description of this field for South."
+    # We'll just introspect ourselves, since we inherit.
+    from south.modelsinspector import introspector
+    field_class = "django.db.models.fields.DateTimeField"
+    args, kwargs = introspector(self)
+    return (field_class, args, kwargs)
+
+fields.AutoSlugField.south_field_triple = autoslug_south_field_triple
+fields.CreationDateTimeField.south_field_triple = creationdatetime_south_field_triple
+##### END Monkeypatch de AutoSlugField y CreationDateTimeField
 
 class ProveedorManager(models.Manager):
 
@@ -32,6 +58,7 @@ class Proveedor(models.Model):
     objects = ProveedorManager()
 
     nombre = models.TextField(_('Nombre'), max_length=256, null=False, blank=True, unique=True)
+    nombre_fantasia = models.TextField(_('Nombre fantasia'), null=True, blank=True)
     cuit = models.CharField(_('CUIT'), max_length=32, null=True, blank=True)
     domicilio = models.CharField(_('Domicilio'), max_length=128, null=True, blank=True)
     localidad = models.CharField(_('Localidad'), max_length=128, null=True, blank=True)
