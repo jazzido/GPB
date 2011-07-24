@@ -568,6 +568,11 @@ table.ordenes_de_compra tr:hover a.ordenes_de_compra_detalle {
     visibility: visible;
 }
 
+table.ordenes_de_compra em {
+    background-color: #FFFF9E;
+    font-style: normal;
+}
+
 ul.tagcloud {
     width: 100%;
 }

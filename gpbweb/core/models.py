@@ -3,7 +3,7 @@
 import decimal
 from datetime import datetime
 
-from django.db import models
+from django.db import models, connection, transaction
 from django.utils.translation import ugettext_lazy as _
 
 from django_extensions.db import fields
@@ -107,7 +107,9 @@ class CompraManager(models.Manager):
                        where=["core_compralineaitem.search_index @@ to_tsquery('spanish', %s)"
                               " OR core_proveedor.search_index @@ to_tsquery('spanish', %s)"
                               " OR core_reparticion.search_index @@ to_tsquery('spanish', %s)"],
-                       params=[query, query, query])
+                       params=[query, query, query]).select_related('proveedor', 'destino')
+
+        c.select_related('proveedor', 'destino')
 
         c.query.join((None, Compra._meta.db_table, None, None,))
         c.query.join((Compra._meta.db_table,  # core_compra
@@ -170,6 +172,14 @@ class CompraLineaItem(fts_models.SearchableModel):
     detalle = models.TextField(_('Detalle'), null=True, blank=True)
 
     objects = fts_models.SearchManager(fields=('detalle',), config='spanish')
+
+    def highlight(self, qs):
+        """ devuelve self.detalle con los tags de highglight para la búsqueda qs """
+
+        cursor = connection.cursor()
+        cursor.execute("SELECT ts_headline('spanish', detalle, to_tsquery('spanish', E'%s'), 'StartSel=<em>, StopSel=</em>, MinWords=300, MaxWords=2000') AS highlighted FROM %s WHERE id = %s" % (qs, CompraLineaItem._meta.db_table, self.id))
+        return cursor.fetchone()[0]
+       
 
     def __unicode__(self):
         return "%s (OC: %s)" % (self.detalle, self.compra.oc_numero)

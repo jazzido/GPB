@@ -22,7 +22,7 @@ import random
 import pickle
 import os
 
-import calendar, csv, hashlib, decimal
+import calendar, csv, hashlib, decimal, urlparse
 
 
 PAGE_SIZE = 50
@@ -167,7 +167,7 @@ def index_ordenes(request, start_date, end_date):
                     fecha__lte=end_date) \
                     .order_by('-fecha')
         
-    paginator = Paginator(compras, 
+    paginator = Paginator(compras.select_related('proveedor', 'destino'), 
                           PAGE_SIZE)
 
     # Si la pagina esta fuera de rango, mostrar la última
@@ -370,6 +370,7 @@ def proveedor_ordenes(request, proveedor_slug, start_date, end_date):
                                     fecha__lte=end_date,
                                     proveedor=proveedor) \
                             .order_by('-fecha')
+
     paginator = Paginator(compras_qs,
                           PAGE_SIZE)
 
@@ -442,7 +443,7 @@ def orden_de_compra(request, numero, anio, format='html'):
                                   context_instance=RequestContext(request))
     elif format == 'json':
         response = HttpResponse(content_type = 'application/javascript')
-
+        
         obj = { 'href': orden.get_absolute_url(),
                 'numero': orden.oc_numero,
                 'fecha': orden.fecha.strftime('%Y-%m-%d'),
@@ -455,6 +456,13 @@ def orden_de_compra(request, numero, anio, format='html'):
                               'importe_unitario': str(cli.importe_unitario),
                               'detalle': cli.detalle } for cli in orden.compralineaitem_set.all()]
                 }
+
+        # si viene de una búsqueda, reemplazo el detalle por la version highlighteada
+        if '?q=' in request.META.get('HTTP_REFERER'):
+            qs = urlparse.parse_qs(urlparse.urlparse(request.META.get('HTTP_REFERER')).query)['q'][0]
+            hilites = [cli.highlight(' & '.join(qs.split())) for cli in orden.compralineaitem_set.all()]
+            for i in range(len(obj['lineas'])):
+                obj['lineas'][i]['detalle'] = hilites[i]
 
         simplejson.dump(obj, response)
 
