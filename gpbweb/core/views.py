@@ -482,7 +482,7 @@ def need_help(request, format='html'):
     msg = 'no message'
     if request.POST:
        show = True
-       msg = 'Gracias! sos el colaborador numero %d' % random.randint(1,100000000000)
+       msg = 'Gracias! sos el colaborador numero %d' % 42
        viewstate  = request.POST['__VIEWSTATE']
        validation = request.POST['__EVENTVALIDATION']
        txtCaptcha = request.POST['txtCaptcha'].upper()
@@ -502,7 +502,7 @@ def need_help(request, format='html'):
     else:
        msg = ''
        # GET
-       show = not random.randint(0,20)
+       show = True #not random.randint(0,20)
        save = 0
        try:
           open(NEED_HELP_FILE,'r').close()

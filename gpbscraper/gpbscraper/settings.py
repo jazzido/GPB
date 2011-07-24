@@ -35,3 +35,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpbweb.settings')
 SCHEDULER_MIDDLEWARES = {
     'scrapy.contrib.schedulermiddleware.duplicatesfilter.DuplicatesFilterMiddleware': None,
 }
+
+RANDOMIZE_DOWNLOAD_DELAY = True
+DOWNLOAD_DELAY = 1
+
+LOG_LEVEL = 'DEBUG'

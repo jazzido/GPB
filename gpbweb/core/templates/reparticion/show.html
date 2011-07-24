@@ -81,7 +81,7 @@ Gastos de {{reparticion.nombre}} {{periodo|striptags}} - {{block.super}}
       <tr class="orden">
 	<td>{{c.proveedor|objlink}}</td>
 	<td>{{c.importe|currency}}</td>
-	<td class="detalle"><a title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
+	<td class="detalle"><a class="ordenes_de_compra_detalle" title="Detalle de la orden de compra {{c.orden_compra}}/{{c.fecha|date:"Y"}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
       </tr>
       {% endfor %}
       {% endfor %}

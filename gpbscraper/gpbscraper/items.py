@@ -11,11 +11,12 @@ from datetime import date
 
 spanish_date = lambda day,month,year: date(int(year),int(month),int(day))
 
-MONEY_RE = re.compile(r'([\d\.]+),(\d+)')
+MONEY_RE = re.compile(r'([\d\.]*),(\d+)')
 
 def parse_money(value):
     pesos, centavos = MONEY_RE.match(value.strip()).groups()
-    return float("%s.%s" % (pesos.replace('.', ''), centavos))
+    pesos = pesos.replace('.', '')
+    return float("%s.%s" % (pesos if pesos != '' else 0, centavos))
 
 class ProveedorItem(Item):
     nombre = Field(output_processor=TakeFirst())

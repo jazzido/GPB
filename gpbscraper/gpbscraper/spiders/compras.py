@@ -7,6 +7,9 @@ from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.loader import XPathItemLoader
 from scrapy.spider import BaseSpider
 from scrapy.http import Request, FormRequest
+from scrapy import log
+from scrapy.shell import inspect_response
+
 from gpbscraper.items import CompraItem, CompraLineaItem
 from urlparse import urljoin, urlsplit, urlparse
 from datetime import datetime
@@ -180,7 +183,9 @@ class ComprasSpider(BaseSpider):
            return
 
         hxs = HtmlXPathSelector(response)
+
         viewstate = self.getViewState(hxs, save = False)
+
         orden_compra = response.request.meta['compra']
         hxs = HtmlXPathSelector(response)
         for tr in hxs.select('//table[@id="ctl00_ContentPlaceHolder1_gvDetalle"]/tr[position() > 1]'):

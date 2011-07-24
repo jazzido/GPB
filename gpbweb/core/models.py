@@ -57,7 +57,7 @@ class Proveedor(models.Model):
 
     objects = ProveedorManager()
 
-    nombre = models.TextField(_('Nombre'), max_length=256, null=False, blank=True, unique=True)
+    nombre = models.TextField(_('Nombre'), max_length=256, null=False, blank=True)
     nombre_fantasia = models.TextField(_('Nombre fantasia'), null=True, blank=True)
     cuit = models.CharField(_('CUIT'), max_length=32, null=True, blank=True)
     domicilio = models.CharField(_('Domicilio'), max_length=128, null=True, blank=True)
@@ -67,7 +67,7 @@ class Proveedor(models.Model):
     created_at = fields.CreationDateTimeField()
 
     def __unicode__(self):
-        return self.nombre
+        return "%s (%s)" % (self.nombre, self.id)
 
     @models.permalink
     def get_absolute_url(self):
