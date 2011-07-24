@@ -27,9 +27,7 @@ class CompraItem(Item):
     orden_compra = Field(output_processor=TakeFirst())
     fecha = Field(output_processor=lambda x: spanish_date(*(x[0].split('/'))))
     importe = Field(output_processor=lambda x: parse_money(x[0]))
-    fecha = Field(output_processor=TakeFirst())
     proveedor = Field(output_processor=TakeFirst())
-    dependencia = Field(output_processor=TakeFirst())
     suministro = Field(output_processor=TakeFirst())
     destino = Field(output_processor=TakeFirst())
     # LPRI: Lic.Privada

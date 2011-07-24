@@ -15,6 +15,7 @@ import django.db.backends.postgresql_psycopg2
 
 import pickle
 import os
+import sys
 
 url = 'http://www.bahiablanca.gov.ar/compras/comprasrealizadas.aspx'
 NEED_HELP_FILE = '/tmp/need_help'
@@ -35,6 +36,7 @@ class ComprasSpider(BaseSpider):
 
         try: os.unlink(GOT_HELP_FILE)
         except: pass
+        pass
 
     def need_help(self, response):
         # we need human help, signal that and flee.
@@ -147,7 +149,7 @@ class ComprasSpider(BaseSpider):
                l.add_xpath('fecha', 'td[2]/text()')
                l.add_xpath('importe', 'td[3]/text()')
                l.add_xpath('proveedor', 'td[4]/text()')
-               l.add_xpath('dependencia', 'td[5]/text()')
+               l.add_xpath('destino', 'td[5]/text()')
                l.add_xpath('suministro', 'td[6]/text()')
                l.add_xpath('anio', 'td[7]/text()')
                l.add_xpath('tipo', 'td[8]/text()')
@@ -184,7 +186,7 @@ class ComprasSpider(BaseSpider):
             i = CompraLineaItem()
             l = XPathItemLoader(item=i, selector=tr)
             l.add_xpath('cantidad', 'td[1]/text()')
-            # l.add_xpath('unidad_medida', 'td[2]/text()')
+            l.add_xpath('unidad_medida', 'td[2]/text()')
             l.add_xpath('detalle', 'td[3]/text()')
             l.add_xpath('importe', 'td[4]/text()')
             x = l.load_item()
