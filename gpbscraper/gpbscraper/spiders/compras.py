@@ -43,13 +43,13 @@ class ComprasSpider(BaseSpider):
            return True
         return False
 
-    def formdata(self, target, argument):
+    def formdata(self, viewstate, target, argument):
         data = {
            '__EVENTTARGET':'ctl00$ContentPlaceHolder1$%s' % target,
            '__EVENTARGUMENT':argument,
            '__VIEWSTATEENCRYPTED':'',
            }
-        data.update(self.viewstate)
+        data.update(viewstate)
         return data
 
     def start_requests(self):
@@ -62,9 +62,9 @@ class ComprasSpider(BaseSpider):
            # and the app is very picky. We try to get Page$Last
            # if we are further than 10 pages from the end it'll work
            # if it fails with an error, the flow is wrong, we try Page$First
-           lastPage  = self.formdata('gvOrdenes','Page$Last')
+           # lastPage  = self.formdata(self.viewstate, 'gvOrdenes','Page$253')
+           lastPage  = self.formdata(self.viewstate, 'gvOrdenes','Page$Last')
            return  [FormRequest(url, formdata = lastPage, callback = self.parseAPage, errback = self.tryFirst)]
-
         except:
            try:
               # If there's no stored __VIEWSTATE, try solving the captcha
@@ -93,15 +93,15 @@ class ComprasSpider(BaseSpider):
 
     def tryFirst(self, failure):
         # Page$Last failed, try restart the cycle retrieving Page$First
-        formdata = self.formdata('gvOrdenes','Page$First')
+        formdata = self.formdata(self.viewstate, 'gvOrdenes','Page$First')
         return [FormRequest(url, formdata = formdata, callback = self.parseFirst, errback = self.help_please)]
 
-    def getViewState(self, hxs):
+    def getViewState(self, hxs, save = True):
         viewstate = hxs.select('//input[@name="__VIEWSTATE"]/@value').extract()[0]
         validation = hxs.select('//input[@name="__EVENTVALIDATION"]/@value').extract()[0]
         state = {'__VIEWSTATE':viewstate, '__EVENTVALIDATION':validation}
-        pickle.dump(state, open(VIEWSTATE_FILE,'w'))
-        self.viewstate = state
+        if save: pickle.dump(state, open(VIEWSTATE_FILE,'w'))
+        return state
 
     INTERESTING = "javascript:__doPostBack("
     def postBackArgs(self, element):
@@ -124,9 +124,9 @@ class ComprasSpider(BaseSpider):
            return
 
         hxs = HtmlXPathSelector(response)
-        self.getViewState(hxs)
+        viewstate = self.getViewState(hxs)
         
-        lastPage  = self.formdata('gvOrdenes','Page$Last')
+        lastPage  = self.formdata(viewstate, 'gvOrdenes','Page$Last')
         return [FormRequest(url, formdata = lastPage, callback = self.parseAPage, errback = self.help_please)]
 
     def parseAPage(self, response):
@@ -134,7 +134,7 @@ class ComprasSpider(BaseSpider):
            return
 
         hxs = HtmlXPathSelector(response)
-        self.getViewState(hxs)
+        viewstate = self.getViewState(hxs)
         
         self.pages += 1
         for tr in hxs.select('//table[@id="ctl00_ContentPlaceHolder1_gvOrdenes"]/tr[position() > 1]'):
@@ -154,30 +154,31 @@ class ComprasSpider(BaseSpider):
                compra = l.load_item()
                compra['compra_linea_items'] = []
 
-               detalle  = self.formdata(*detalle)
+               detalle  = self.formdata(viewstate, *detalle)
                req = FormRequest(url, formdata = detalle, callback = self.parseDetalle)
                req.meta['compra'] = compra
+               req.meta['viewstate'] = viewstate
                yield req
 
-            # Get previous page
-            if self.pages < MAX_PAGES:
-               prev = None
-               for td in tr.select('td[@colspan="9"]//td'):
-                  args = self.postBackArgs(td.select('a'))
-                  if args:
-                     prev = args
-                  else:
-                     prev  = self.formdata(*prev)
-                     req = FormRequest(url, formdata = prev, callback = self.parseAPage)
-                     yield req
+        # Get previous page
+        if self.pages < MAX_PAGES:
+           prev = None
+           for td in hxs.select('//td[@colspan="9"]//td'):
+              args = self.postBackArgs(td.select('a'))
+              if args:
+                 prev = args
+              else:
+                 prev = self.formdata(viewstate, *prev)
+                 req = FormRequest(url, formdata = prev, callback = self.parseAPage)
+                 yield req
                       
     def parseDetalle(self, response):
+        # Page 253, Orden 2665 has multiple pages
         if self.need_help(response):
            return
 
         hxs = HtmlXPathSelector(response)
-        self.getViewState(hxs)
-        
+        viewstate = self.getViewState(hxs, save = False)
         orden_compra = response.request.meta['compra']
         hxs = HtmlXPathSelector(response)
         for tr in hxs.select('//table[@id="ctl00_ContentPlaceHolder1_gvDetalle"]/tr[position() > 1]'):
@@ -189,18 +190,26 @@ class ComprasSpider(BaseSpider):
             l.add_xpath('importe', 'td[4]/text()')
             x = l.load_item()
             
-            orden_compra['compra_linea_items'].append(x)
+            if 'cantidad' in x:
+               orden_compra['compra_linea_items'].append(x)
             foundCurrent = False
-            for td in tr.select('td[@colspan="4"]//td'):
-               args = self.postBackArgs(td.select('a'))
-               if not args:
-                  foundCurrent = True
-               else:
-                  if foundCurrent:
-                     args  = self.formdata(*args)
-                     req = FormRequest(url, formdata = args, callback = self.parseDetalle)
-                     req.meta['compra'] = orden_compra
-                     yield req
-        yield orden_compra
+
+        lastPage = True	# when no paging
+        foundCurrent = False
+        for td in hxs.select('//td[@colspan="4"]//td'):
+           lastPage = False	# only commit in the last page
+           args = self.postBackArgs(td.select('a'))
+           if not args:	# page with no links
+              lastPage = True
+              foundCurrent = True
+           elif foundCurrent:
+             args  = self.formdata(viewstate, *args)
+             req = FormRequest(url, formdata = args, callback = self.parseDetalle)
+             req.meta['compra'] = orden_compra
+             yield req
+             break
+
+        if lastPage:
+           yield orden_compra
 
 SPIDER = ComprasSpider()
