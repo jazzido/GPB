@@ -67,7 +67,10 @@ class Proveedor(models.Model):
     created_at = fields.CreationDateTimeField()
 
     def __unicode__(self):
-        return "%s (%s)" % (self.nombre, self.id)
+        rv = self.nombre
+        if self.nombre != self.nombre_fantasia:
+            rv += " (%s)" % self.nombre_fantasia
+        return rv
 
     @models.permalink
     def get_absolute_url(self):
@@ -129,7 +132,7 @@ class CompraManager(models.Manager):
     # idea encontrada aca: http://www.caktusgroup.com/blog/2009/09/28/custom-joins-with-djangos-queryjoin/
     def search(self, query):
         c = self.extra(select={ 'rank': 'ts_rank_cd(core_compralineaitem.search_index, to_tsquery(\'spanish\', E\'%s\'), %d)' % (query, 32), 
-                                'highlight_proveedor': 'ts_headline(\'spanish\', core_proveedor.nombre, to_tsquery(\'spanish\', E\'%s\'), \'StartSel=<em>, StopSel=</em>\')' % (query),
+                                'highlight_proveedor': 'ts_headline(\'spanish\', CASE WHEN core_proveedor.nombre = core_proveedor.nombre_fantasia THEN core_proveedor.nombre ELSE core_proveedor.nombre || \' (\' || core_proveedor.nombre_fantasia || \')\' END, to_tsquery(\'spanish\', E\'%s\'), \'StartSel=<em>, StopSel=</em>\')' % (query),
                                 'highlight_reparticion': 'ts_headline(\'spanish\', core_reparticion.nombre, to_tsquery(\'spanish\', E\'%s\'), \'StartSel=<em>, StopSel=</em>\')' % (query)},
                        where=["core_compralineaitem.search_index @@ to_tsquery('spanish', %s)"
                               " OR core_proveedor.search_index @@ to_tsquery('spanish', %s)"

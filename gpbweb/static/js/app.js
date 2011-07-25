@@ -13,7 +13,11 @@ $(document).ready(function() {
 			  tr.effect("highlight", {}, 1500);
                       };
 
-		      $('tr.orden a').click(function(e){
+		      $('tr.orden a.tablelink').click(function(e){
+							   e.stopPropagation();
+		      });
+
+		      $('tr.orden a:not(.tablelink.ordenes_de_compra_detalle)').click(function(e){
 						e.preventDefault();
 		      });
 		      

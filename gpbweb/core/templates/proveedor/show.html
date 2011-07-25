@@ -79,7 +79,7 @@ Compras a {{proveedor.nombre}} {{periodo|striptags}} - {{block.super}}
 	</tr>
 	{% for c in dia.list %}
 	<tr class="orden">
-	  <td>{{c.destino|objlink}}</td>
+	  <td>{{c.destino|tablelink}}</td>
 	  <td>{{c.importe|currency}}</td>
 	  <td><a class="ordenes_de_compra_detalle" href="{{c.get_absolute_url}}">Ver detalle</a></td>
 	</tr>

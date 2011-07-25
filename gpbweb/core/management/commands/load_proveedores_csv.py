@@ -20,6 +20,8 @@ class Command(BaseCommand):
     def _doit(self, lines):
         for line in lines:
             nombre_fantasia, razon_social, cuit = map(lambda x: x.decode('utf-8'), line)
+
+            print >>sys.stderr, ("Proveedor: [%s, %s, %s]" % (nombre_fantasia, razon_social, cuit))
             
             # busco por cuit
             try:
@@ -27,6 +29,7 @@ class Command(BaseCommand):
                 proveedor.nombre_fantasia = nombre_fantasia
                 proveedor.nombre = razon_social
                 proveedor.save()
+                print >>sys.stderr, "   Encontre el CUIT."
                 continue
             except Proveedor.DoesNotExist:
                 pass # XXX aca que hago?
@@ -36,9 +39,18 @@ class Command(BaseCommand):
                 proveedor = Proveedor.objects.get(nombre=razon_social)
                 proveedor.nombre_fantasia = nombre_fantasia
                 proveedor.cuit = cuit
-                proveedor.
+                proveedor.save()
+                print >>sys.stderr, "   Encontre por razon social"
+                continue
             except Proveedor.DoesNotExist:
-                print >>sys.stderr, ("No existe registro para este proveedor: [%s, %s, %s]" % (nombre_fantasia, razon_social, cuit))
+                #print >>sys.stderr, ("   No existe registro para este proveedor: [%s, %s, %s]" % (nombre_fantasia, razon_social, cuit))
+                pass
+
+            # no esta, deberia crearlo
+            proveedor = Proveedor(nombre=razon_social, nombre_fantasia=nombre_fantasia, cuit=cuit)
+            proveedor.save()
+            print >>sys.stderr, "  Nuevo proveedor creado"
+            print >>sys.stderr
 
             
         

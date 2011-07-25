@@ -4,6 +4,13 @@
 {% load common_html %}
 {% load tiempo_en_letras %}
 
+{% block heading %}
+{% tiempo_en_letras start_date end_date as periodo %}
+<div id="descripcion">
+<h2>Órdenes de Compra para <strong>{{reparticion.nombre|first_upper}}</strong> <strong>{{periodo|striptags}}</strong></h2>
+</div>
+{% endblock %}
+
 {% block rss %}
 {{block.super}}
 <link rel="alternate" type="application/rss+xml"  title="Canal RSS de la repartición {{reparticion}}"  href="{% url reparticion_ordenes_rss reparticion.slug %}" />
@@ -15,11 +22,8 @@
 {% endblock %}
 {% block content %}
 {% tiempo_en_letras start_date end_date as periodo %}
-<hr>
-<h2 class="alt">Órdenes de compra con destino {{reparticion|objlink}} {{periodo}}</h2>
 {% include "filtro.html" %}
-<hr>
-<div class="prepend-3 append-3 span-18 last append-bottom">
+<div class="bloque">
   <div class="pagination">
     <span class="step-links">
         {% if ordenes_de_compra.has_previous %}

@@ -61,8 +61,8 @@
     {% for c in dia.list %}
     <tr class="orden">
       <td>{{c.oc_numero}}</td>
-      <td><a href="{{c.proveedor.get_absolute_url}}">{{c.highlight_proveedor|safe}}</a></td>
-      <td><a href="{{c.destino.get_absolute_url}}">{{c.highlight_reparticion|safe}}</a></td>
+      <td><a href="{{c.proveedor.get_absolute_url}}" class="tablelink"><img src="/static/img/url_icon.gif" /></a> <a href="{{c.proveedor.get_absolute_url}}">{{c.highlight_proveedor|safe}}</a></td>
+      <td><a href="{{c.destino.get_absolute_url}}" class="tablelink"><img src="/static/img/url_icon.gif" /></a> <a href="{{c.destino.get_absolute_url}}">{{c.highlight_reparticion|safe}}</a></td>
       <td>{{c.importe|currency}}</td>
       <td class="detalle"><a class="ordenes_de_compra_detalle" title="Detalle de la orden de compra {{c.oc_numero}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
     </tr>
@@ -71,8 +71,8 @@
     {% for c in dia.list %}
     <tr class="orden">
       <td>{{c.oc_numero}}</td>
-      <td>{{c.proveedor|objlink}}</td>
-      <td>{{c.destino|objlink}}</td>
+      <td>{{c.proveedor|tablelink}}</td>
+      <td>{{c.destino|tablelink}}</td>
       <td>{{c.importe|currency}}</td>
       <td class="detalle"><a class="ordenes_de_compra_detalle" title="Detalle de la orden de compra {{c.oc_numero}}" href="{{c.get_absolute_url}}">Ver detalle</a></td>
     </tr>

@@ -47,7 +47,7 @@ class ComprasPersisterPipeline(object):
         if models.Compra.objects.filter(orden_compra=int(compra_item['orden_compra']), fecha=compra_item['fecha']).exists():
             return
 
-        proveedor, proveedor_created = models.Proveedor.objects.get_or_create(nombre=compra_item['proveedor'])
+        proveedor, proveedor_created = models.Proveedor.objects.get_or_create(nombre_fantasia=compra_item['proveedor'])
         reparticion, reparticion_created = models.Reparticion.objects.get_or_create_by_canonical_name(compra_item['destino'])
         compra = models.Compra(orden_compra=int(compra_item['orden_compra']),
                                importe=str(compra_item['importe']),
@@ -83,7 +83,7 @@ class CompraLineasPersisterPipeline(object):
                                        spider)
 
     def process_item(self, spider, item):
-        @transaction.commit_on_success
+        @transaction.commit_on_successg
         def persist(item):
             compra = models.Compra.objects.get(fecha__year=item['anio'], orden_compra=int(item['orden_compra']))
             cli_obj = models.CompraLineaItem(compra=compra,

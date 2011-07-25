@@ -5,24 +5,30 @@
 {% block title %}
 Listado de Proveedores - {{block.super}}
 {% endblock %}
+
+{% block heading %}
+<div id="descripcion">
+  <h2>Proveedores con órdenes de compra adjudicadas por la Municipalidad <strong>desde 2008</strong></h2>
+</div>
+{% endblock %}
+
 {% block content %}
-<hr>
-<h2 class="alt">Proveedores con órdenes de compra adjudicadas por la Municipalidad entre 2008 y 2010</h2>
-<hr>
-<div class="span-24 last">
+<div class="bloque">
   <table>
     <tr>
-      <th>Nombre</th>
+      <th>Nombre Fantasía</th>
+      <th>Razón Social</th>
       <th>Domicilio</th>
       <th>Localidad</th>
       <th>CUIT</th>
     </tr>
     {% for p in proveedores %}
     <tr>
-      <td>{{p|objlink}}</td>
-      <td>{{p.domicilio|default_if_none:"-"}}</td>
-      <td>{{p.localidad|default_if_none:"-"}}</td>
-      <td>{{p.cuit|default_if_none:"-"}}</td>
+      <td><a href="{% url proveedor p.slug %}">{{p.nombre_fantasia}}</td>
+      <td>{{p.nombre|safe}}</td>
+      <td>{{p.domicilio|safe|default_if_none:"-"}}</td>
+      <td>{{p.localidad|safe|default_if_none:"-"}}</td>
+      <td>{{p.cuit|safe|default_if_none:"-"}}</td>
     </tr>
     {% endfor %}
   </table>

@@ -13,3 +13,9 @@ def objlink(obj):
         return mark_safe(u'<a href="%s">%s</a>' % (escape(obj.get_absolute_url()), unicode(obj)))
     else:
         return unicode(obj)
+
+@register.filter
+def tablelink(obj):
+    return mark_safe(u'<a href="%s" class="tablelink"><img src="/static/img/url_icon.gif" /></a> <a href="%s">%s</a>' % (escape(obj.get_absolute_url()), 
+                                                                                                                         escape(obj.get_absolute_url()),
+                                                                                                                         unicode(obj)))

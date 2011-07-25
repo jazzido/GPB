@@ -24,7 +24,7 @@ url = 'http://www.bahiablanca.gov.ar/compras/comprasrealizadas.aspx'
 NEED_HELP_FILE = '/tmp/need_help'
 GOT_HELP_FILE  = '/tmp/got_help'
 VIEWSTATE_FILE = '/tmp/viewstate'
-MAX_PAGES      = 20
+MAX_PAGES      = 20000
 
 class ComprasSpider(BaseSpider):
     name = 'compras'
@@ -87,8 +87,8 @@ class ComprasSpider(BaseSpider):
                   "ctl00$ContentPlaceHolder1$Button2":"Buscar",
                   "ctl00$ContentPlaceHolder1$meeFechaDesde_ClientState":"",
                   "ctl00$ContentPlaceHolder1$meeFechaHasta_ClientState":"",
-                  "ctl00$ContentPlaceHolder1$txtFechaDesde":"01/01/2011",
-                  "ctl00$ContentPlaceHolder1$txtFechaHasta":"31/12/2011",
+                  "ctl00$ContentPlaceHolder1$txtFechaDesde": self.fecha_desde,
+                  "ctl00$ContentPlaceHolder1$txtFechaHasta": self.fecha_hasta,
                   "ctl00$ContentPlaceHolder1$txtProveedor":"%",
               })
               return [FormRequest(url, formdata = formdata, callback = self.parseFirst, errback = self.help_please)]
