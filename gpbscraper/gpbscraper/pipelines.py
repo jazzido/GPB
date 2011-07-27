@@ -65,7 +65,8 @@ class ComprasPersisterPipeline(object):
             cli_obj = models.CompraLineaItem(compra=compra,
                                              importe_unitario=str(cli['importe']),
                                              cantidad=cli['cantidad'],
-                                             detalle=cli['detalle'])
+                                             detalle=cli['detalle'],
+                                             unidad_medida=cli['unidad_medida'])
             cli_obj.save()
 
             

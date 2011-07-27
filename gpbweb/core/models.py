@@ -199,6 +199,7 @@ class CompraLineaItem(fts_models.SearchableModel):
     compra = models.ForeignKey(Compra)
     importe_unitario = models.DecimalField(_('Importe'), decimal_places=2, max_digits=19)
     cantidad = models.CharField(_('Cantidad'), max_length=128, null=True, blank=True)
+    unidad_medida = models.CharField(_('Unidad de medida'), max_length=64, null=True, blank=True)
     detalle = models.TextField(_('Detalle'), null=True, blank=True)
 
     objects = fts_models.SearchManager(fields=('detalle',), config='spanish')
