@@ -603,3 +603,9 @@ ul.tagcloud {
 #descripcion a:hover {
     text-decoration: underline;
 }
+
+#filtro_fecha li span.boton {
+    cursor: pointer;
+}
+
+
