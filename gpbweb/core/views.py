@@ -40,24 +40,6 @@ def gasto_mensual(compras_queryset):
 
 
 
-def _gasto_por_mes(additional_where=''):
-    cursor = connection.cursor()
-    sql = """ SELECT DATE_TRUNC('month', fecha)::date AS mes, SUM(importe) AS importe_total
-                               FROM core_compra
-                               %(where_clause)s
-                               GROUP BY mes
-                               ORDER BY mes ASC """ % {'where_clause': additional_where }
-
-    cursor.execute(sql)
-    gasto_mensual = []
-    while True:
-        c = cursor.fetchone()
-        if c is None: break
-        gasto_mensual.append({'mes': c[0], 'total': float(c[1])})
-
-    return gasto_mensual
-
-
 def _reparticion_gastos_data(data):
     rv = []
     for r in data[:5]:
@@ -84,11 +66,13 @@ def _get_page(request, param_name='page'):
 # @cache_control(must_revalidate=True, max_age=600)
 @render_to('index.html')
 def index(request, start_date, end_date):
+
+    ordenes_de_compra = models.Compra.objects.select_related('proveedor', 'destino').filter(fecha__gte=start_date, fecha__lte=end_date)
+
     gasto_por_mes_datatable = gviz_api.DataTable({ "mes": ("date", "Mes"),
                                       "total": ("number", "Gasto") })
 
-    gasto_por_mes_datatable.LoadData(_gasto_por_mes("WHERE core_compra.fecha BETWEEN '%s' AND '%s'" 
-                                                    % (start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))))
+    gasto_por_mes_datatable.LoadData([{'mes': r['mes'], 'total': float(r['total'])} for r in gasto_mensual(ordenes_de_compra)])
 
     reparticion_gastos_datatable = gviz_api.DataTable({"reparticion": ("string", "Reparticion"),
                                                        "total": ("number", "Gasto")})
@@ -109,7 +93,7 @@ def index(request, start_date, end_date):
         'gasto_mensual_promedio': models.Compra.objects.promedio_mensual_periodo(start_date, 
                                                                                  datetime.now() if datetime.now() < end_date else end_date),
         'cantidad_ordenes_de_compra': models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).count(),
-        'ordenes_de_compra': models.Compra.objects.select_related('proveedor', 'destino').filter(fecha__gte=start_date, fecha__lte=end_date).order_by('-fecha')[:100],
+        'ordenes_de_compra': ordenes_de_compra.order_by('-fecha')[:100],
         'cantidad_proveedores_unicos': models.Compra.objects.filter(fecha__gte=start_date, fecha__lte=end_date).values('proveedor').distinct().count(),
         'gasto_por_mes_datatable_js': gasto_por_mes_datatable.ToJSCode('gasto_por_mes',
                                                                        columns_order=('mes', 'total'),
