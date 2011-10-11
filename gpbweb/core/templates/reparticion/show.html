@@ -60,6 +60,10 @@ Gastos de {{reparticion.nombre}} {{periodo|striptags}} - {{block.super}}
     </div>
   </div> <!-- /bloque -->
   <div class="bloque">
+    <h3 class="grande">Evolución del gasto de {{reparticion}} {{periodo}}</h3>
+    <table id="table_div_jscode" style="height: 200px"></table>
+  </div> <!-- /bloque -->
+  <div class="bloque">
     <h3 class="grande">Ordenes de compra con destino {{reparticion}} {{periodo}}</h3>
     <table class="ordenes_de_compra table">
       <colgroup>
@@ -91,4 +95,23 @@ Gastos de {{reparticion.nombre}} {{periodo|striptags}} - {{block.super}}
     </p>
   </div> <!-- /bloque -->
 </div>
+{% endblock %}
+
+{% block extra_js %}
+ 
+    <script type="text/javascript">
+      function draw_table() {
+        {{ gasto_por_mes_datatable_js|safe }}
+        var date_formatter = new google.visualization.DateFormat({pattern: 'MMMM yyyy'});
+        date_formatter.format(gasto_por_mes, 0);
+        var number_formatter = new google.visualization.NumberFormat({prefix: '$', negativeColor: 'red', negativeParens: true, groupingSymbol:'.', decimalSymbol:','});
+        number_formatter = number_formatter.format(gasto_por_mes, 1);
+        
+        var linechart = new google.visualization.LineChart(document.getElementById('table_div_jscode'));
+        linechart.draw(gasto_por_mes, {showRowNumber: true, legend: 'none'});
+      }
+      
+      google.setOnLoadCallback(draw_table);
+      
+    </script>
 {% endblock %}

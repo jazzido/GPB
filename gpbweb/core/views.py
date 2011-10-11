@@ -31,6 +31,15 @@ CSV_FIELDNAMES = ['orden_de_compra', 'fecha', 'proveedor', 'destino', 'importe',
 sha1 = lambda m: hashlib.sha1(m).hexdigest()
   
 
+def gasto_mensual(compras_queryset):
+    """ gasto mensual para +compras_queryset+ """
+    return compras_queryset.extra(select={'mes': "DATE_TRUNC('month', fecha)::date", 
+                                          'order_by': ['mes']}) \
+                           .values('mes') \
+                           .annotate(total=Sum('importe'))
+
+
+
 def _gasto_por_mes(additional_where=''):
     cursor = connection.cursor()
     sql = """ SELECT DATE_TRUNC('month', fecha)::date AS mes, SUM(importe) AS importe_total
@@ -226,6 +235,18 @@ def reparticion(request, reparticion_slug, start_date, end_date):
                 fecha__gte=start_date, fecha__lte=end_date) \
                 .aggregate(total=Sum('importe'))['total'] or 0
 
+    ordenes_de_compra = models.Compra.objects \
+                              .select_related('proveedor') \
+                              .filter(fecha__gte=start_date, 
+                                      fecha__lte=end_date,
+                                      destino=reparticion)
+
+    gasto_por_mes_datatable = gviz_api.DataTable({ "mes": ("date", "Mes"),
+                                                   "total": ("number", "Gasto") })
+
+    gasto_por_mes_datatable.LoadData([{'mes': r['mes'], 'total': float(r['total'])} for r in gasto_mensual(ordenes_de_compra)])
+
+
     return { 'reparticion': reparticion,
              'proveedores': models.Proveedor.objects.por_compras(compra__fecha__gte=start_date, 
                                                                  compra__fecha__lte=end_date, 
@@ -234,11 +255,11 @@ def reparticion(request, reparticion_slug, start_date, end_date):
 
              'gasto_mensual_promedio': facturacion_total_periodo / decimal.Decimal(str(((datetime.now() if datetime.now() < end_date else end_date) - start_date).days / 30.0)),
 
-             'ordenes_de_compra': models.Compra.objects \
-                                        .select_related('proveedor') \
-                                        .filter(fecha__gte=start_date, 
-                                                fecha__lte=end_date,
-                                                destino=reparticion).order_by('-fecha'),
+             'gasto_por_mes_datatable_js': gasto_por_mes_datatable.ToJSCode('gasto_por_mes',
+                                                                            columns_order=('mes', 'total'),
+                                                                            order_by='mes'),
+
+             'ordenes_de_compra': ordenes_de_compra.order_by('-fecha'),
 
 
              'tagcloud': _tagcloud(models.CompraLineaItem.objects \
@@ -340,8 +361,6 @@ def proveedor(request, proveedor_slug, start_date, end_date):
                                                      proveedor=proveedor).order_by('-fecha')
 
     facturacion_total_periodo = ordenes_de_compra.aggregate(total=Sum('importe'))['total'] or 0
-
-    # print facturacion_total_periodo / decimal.Decimal(str(((datetime.now() if datetime.now() < end_date else end_date) - start_date).days / 30.0))
 
     return { 'proveedor' : proveedor,
              'clientes': models.Reparticion.objects.por_gastos(compra__fecha__gte=start_date, 
