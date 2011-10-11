@@ -358,7 +358,13 @@ def proveedor(request, proveedor_slug, start_date, end_date):
 
     ordenes_de_compra = models.Compra.objects.filter(fecha__gte=start_date, 
                                                      fecha__lte=end_date,
-                                                     proveedor=proveedor).order_by('-fecha')
+                                                     proveedor=proveedor)
+
+    gasto_por_mes_datatable = gviz_api.DataTable({ "mes": ("date", "Mes"),
+                                                   "total": ("number", "Gasto") })
+
+    gasto_por_mes_datatable.LoadData([{'mes': r['mes'], 'total': float(r['total'])} for r in gasto_mensual(ordenes_de_compra)])
+
 
     facturacion_total_periodo = ordenes_de_compra.aggregate(total=Sum('importe'))['total'] or 0
 
@@ -368,8 +374,13 @@ def proveedor(request, proveedor_slug, start_date, end_date):
                                                                compra__proveedor=proveedor),
 
              'facturacion_total_periodo': facturacion_total_periodo,
-             'ordenes_de_compra': ordenes_de_compra,
+             'ordenes_de_compra': ordenes_de_compra.order_by('-fecha'),
              'gasto_mensual_promedio': facturacion_total_periodo / decimal.Decimal(str(((datetime.now() if datetime.now() < end_date else end_date) - start_date).days / 30.0)),
+
+             'gasto_por_mes_datatable_js': gasto_por_mes_datatable.ToJSCode('gasto_por_mes',
+                                                                            columns_order=('mes', 'total'),
+                                                                            order_by='mes'),
+
 
              'tagcloud': _tagcloud(models.CompraLineaItem.objects.filter(compra__fecha__gte=start_date,
                                                                          compra__fecha__lte=end_date,
