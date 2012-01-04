@@ -31,6 +31,7 @@ class ComprasSpider(BaseSpider):
     allowed_domains = ['bahiablanca.gov.ar']
     fecha_desde = settings.get('FECHA_DESDE', datetime(datetime.now().year, datetime.now().month, 1).strftime('%d/%m/%Y'))
     fecha_hasta = settings.get('FECHA_HASTA', datetime.now().strftime('%d/%m/%Y'))
+    anio = settings.get('ANIO', settings.get('FECHA_DESDE', datetime(datetime.now().year, datetime.now().month, 1).strftime('%d/%m/%Y')).split('/')[2])
 
     def help_please(self, *args):
         open(NEED_HELP_FILE,'w').close()
@@ -58,6 +59,10 @@ class ComprasSpider(BaseSpider):
         return data
 
     def start_requests(self):
+
+#        if self.fecha_desde.year != self.fecha_hasta.year:
+#            raise RuntimeError("Una consulta no puede abarcar mas de un anio")
+
         self.pages = 0
         try:
            # Try and see if there's already a known __VIEWSTATE
@@ -89,6 +94,7 @@ class ComprasSpider(BaseSpider):
                   "ctl00$ContentPlaceHolder1$meeFechaHasta_ClientState":"",
                   "ctl00$ContentPlaceHolder1$txtFechaDesde": self.fecha_desde,
                   "ctl00$ContentPlaceHolder1$txtFechaHasta": self.fecha_hasta,
+                  "ctl00$ContentPlaceHolder1$ddlEjercicio": self.anio,
                   "ctl00$ContentPlaceHolder1$txtProveedor":"%",
               })
               return [FormRequest(url, formdata = formdata, callback = self.parseFirst, errback = self.help_please)]
