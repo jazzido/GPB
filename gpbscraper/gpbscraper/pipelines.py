@@ -44,11 +44,13 @@ class ComprasPersisterPipeline(object):
     
     @transaction.commit_on_success
     def _persistCompraItem(self, compra_item):
+
         if models.Compra.objects.filter(orden_compra=int(compra_item['orden_compra']), fecha=compra_item['fecha']).exists():
             return
 
         proveedor, proveedor_created = models.Proveedor.objects.get_or_create(nombre_fantasia=compra_item['proveedor'])
         reparticion, reparticion_created = models.Reparticion.objects.get_or_create_by_canonical_name(compra_item['destino'])
+
         compra = models.Compra(orden_compra=int(compra_item['orden_compra']),
                                importe=str(compra_item['importe']),
                                fecha=compra_item['fecha'],
