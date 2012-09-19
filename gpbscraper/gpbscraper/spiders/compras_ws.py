@@ -27,7 +27,6 @@ class ComprasSpiderWS(BaseSpider):
     def start_requests(self):
         if self.key is None: raise Exception("KEY cannot be None")
 
-# 5a246e6932c6e05f025764d502104501b9171563
         return [Request(BASE_URL + urllib.urlencode({
                         'Key': self.key,
                         'Anio': self.anio,
