@@ -82,6 +82,6 @@ class ComprasSpiderWS(BaseSpider):
 
             orden_compra['compra_linea_items'].append(l)
 
-            yield orden_compra
+        yield orden_compra
 
 SPIDER = ComprasSpiderWS()
