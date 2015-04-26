@@ -74,6 +74,31 @@
       RANGO_FECHAS.end = new Date('{{end_date|date:"Y-m-d"}}');
       if (RANGO_FECHAS.end > new Date()) RANGO_FECHAS.end = new Date();
     </script>
+    <script type="text/javascript">
+      var loc = window.location.toString(),
+          p = /http:\/\/(www\.)?gastopublicobahiense\.org\/((reparticion|proveedor)\/.+)?.+/;
+      $(function() {
+          $('form#timeline').submit(function(e) {
+              e.preventDefault();
+              var f = $(this);
+              var end = $('select[name=filter_end_date]', f).val();
+              var start = $('select[name=filter_start_date]', f).val();
+
+              var range = start + '/' + end;
+
+              var m = loc.match(p);
+              if (m === null) {
+                  window.location.assign('http://' + window.location.host + '/' + range);
+              }
+              else if ((m.length === 4) && (m[2] !== undefined)) {
+                  window.location.assign('http://' + window.location.host + '/' + m[2] + '/' + range);
+              }
+
+              return false;
+          });
+      });
+    </script>
+
     {% endif %}
     {% block extra_js %}
     {% endblock %}
