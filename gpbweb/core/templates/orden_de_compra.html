@@ -39,7 +39,7 @@ Detalle de la orden de compra {{orden.oc_numero}} - {{block.super}}
       <td><strong>{{orden.importe|currency}}</strong></td>
     </tr>
 </table>
-<p>Debido a la implementación de la sección de compras en el sitio de la Municipalidad de Bahía Blanca, no podemos proveer un enlace directo a la fuente oficial de la información para esta órden de compra. Para verificar los datos aquí exhibidos, <a href="http://www.bahiablanca.gov.ar/compras/comprasrealizadas.aspx">ingrese al sitio de MBB</a> y busque la OC <strong>{{orden.oc_numero}}</strong> del año <strong>{{orden.fecha.year}}</strong> adjudicada al proveedor <strong>{{orden.proveedor}}</strong>
+<p>Para verificar los datos en su origen, remitirse a la seccion <a href="http://gabierto.bahiablanca.gob.ar/compras/data/detalleordencompras.php?oc={{orden.orden_compra}}&an={{orden.fecha|date:"Y"}}">Compras del Municipio</a> del sitio de la <a href="http://gabierto.bahiablanca.gov.ar/">Secretaria de Innovacion y Gobierno Abierto</a> de la <a href="http://bahiablanca.gov.ar">MBB</a></p>
 </div>
 
 {% endblock %}
