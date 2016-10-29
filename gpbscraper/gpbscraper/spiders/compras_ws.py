@@ -41,9 +41,9 @@ class ComprasSpiderWS(BaseSpider):
         root = xml.fromstring(response.body)
 
         for cr in root[1][0].getchildren():
-            req = Request(OC_DETAIL_BASE_URL + urllib.urlencode({'Key': 
-                                                                 self.key, 
-                                                                 'Anio': self.anio, 
+            req = Request(OC_DETAIL_BASE_URL + urllib.urlencode({'Key':
+                                                                 self.key,
+                                                                 'Anio': self.anio,
                                                                  'OrdenCompra': cr.find('ORDENCOMPRA').text}),
                           callback=self.getOCDetalle)
 
@@ -54,11 +54,17 @@ class ComprasSpiderWS(BaseSpider):
             item['importe'] = cr.find('IMPORTE').text
             item['proveedor'] = cr.find('PROVEEDOR').text
             item['destino'] = cr.find('DEPENDENCIA').text
-            
-            tipo, suministro, anio = re.search("(.+) (\d+)/(\d+)", cr.find('EXPEDIENTE').text).groups()
-            item['anio'] = anio
-            item['tipo'] = tipo
-            item['suministro'] = suministro
+
+            m = re.search("(.+) (\d+)/(\d+)", cr.find('EXPEDIENTE').text)
+            if m is not None:
+                tipo, suministro, anio =  m.groups()
+                item['anio'] = anio
+                item['tipo'] = tipo
+                item['suministro'] = suministro
+            else:
+                item['anio'] = self.anio
+                item['tipo'] = ''
+                item['suministro'] = ''
 
             item['compra_linea_items'] = []
 
@@ -68,7 +74,7 @@ class ComprasSpiderWS(BaseSpider):
 
 
     def getOCDetalle(self, response):
-        
+
         root = xml.fromstring(response.body)
 
         orden_compra = response.request.meta['compra']
