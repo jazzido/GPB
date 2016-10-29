@@ -3,3 +3,5 @@ django_extensions==0.4
 psycopg2==2.2.1
 Scrapy==0.9
 South==0.7.1
+lxml
+
